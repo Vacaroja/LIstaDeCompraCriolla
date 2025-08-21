@@ -2,11 +2,12 @@ package com.ccc.listadecompracriolla.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.ccc.listadecompracriolla.pydolarnetwork.Bcv
+import com.ccc.listadecompracriolla.pydolarnetwork.ApiDolarServices
+import kotlin.String
 
 // @Entity le dice a Room que esta clase representa una tabla en la base de datos
 // 'tableName' es opcional, si no se especifica, usa el nombre de la clase
-@Entity(tableName = "bcv_data")
+/*@Entity(tableName = "bcv_data")
 data class BcvEntity(
 
     @PrimaryKey val id: Int = 1, // Usamos un ID fijo (1) porque solo habrá 1 entrada de BCV en esta tabla
@@ -49,5 +50,40 @@ fun BcvEntity.toBcv(): Bcv {
         priceOld = this.priceOld,
         symbol = this.symbol,
         title = this.title
+    )
+}*/
+
+@Entity(tableName = "bcv_data")
+data class BcvEntity(
+
+    @PrimaryKey val id: Int = 1, // Usamos un ID fijo (1) porque solo habrá 1 entrada de BCV en esta tabla
+    val fuente : String?,
+    val nombre:String?,
+    val compra: Float?,
+    val venta: Float?,
+    val promedio: Float?,
+    val fechaActualizacion : String?
+
+)
+
+fun BcvEntity.toApiDolarServices(): ApiDolarServices{
+    return ApiDolarServices(
+        fuente =this.fuente,
+        nombre = this.nombre,
+        compra =this.compra,
+         venta =this.venta,
+        promedio =this.promedio,
+        fechaActualizacion =this.fechaActualizacion
+    )
+}
+
+fun ApiDolarServices.toBcvEntity(): BcvEntity{
+    return BcvEntity(
+        fuente =this.fuente,
+        nombre = this.nombre,
+        compra =this.compra,
+        venta =this.venta,
+        promedio =this.promedio,
+        fechaActualizacion =this.fechaActualizacion
     )
 }

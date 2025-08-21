@@ -1,8 +1,6 @@
 package com.ccc.listadecompracriolla.pydolarnetwork
 
-import com.google.gson.annotations.SerializedName
-
-data class ApiDolarServices(
+/* class ApiDolarServices(
     val datetime: Datetime,
     val monitors: Monitors
 )
@@ -28,5 +26,15 @@ data class Bcv(
     @SerializedName("price_old") val priceOld: Double,
     val symbol: String,
     val title: String
-)
+)*/
 
+class ApiDolarServices(
+    val fuente : String?,
+    val nombre:String?,
+    val compra: Float?,
+    val venta: Float?,
+    val promedio: Float?,
+    val fechaActualizacion : String?,
+
+
+)

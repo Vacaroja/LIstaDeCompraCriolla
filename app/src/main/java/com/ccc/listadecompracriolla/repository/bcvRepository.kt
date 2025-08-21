@@ -43,7 +43,7 @@ class BcvRepository @Inject constructor(
         withContext(Dispatchers.IO) {
             try {
                 val bcvFromApi = DolarApi.retrofitService.getData() // Llama a tu servicio de API
-                val bcvEntity = bcvFromApi.monitors.bcv.toBcvEntity()// Convierte el modelo de API a la entidad de DB
+                val bcvEntity = bcvFromApi.toBcvEntity()// Convierte el modelo de API a la entidad de DB
                 bcvDao.insertBcv(bcvEntity) // Guarda en la DB
             } catch (e: Exception) {
                 // Maneja el error, ej. loguea el error o propaga una excepción más específica

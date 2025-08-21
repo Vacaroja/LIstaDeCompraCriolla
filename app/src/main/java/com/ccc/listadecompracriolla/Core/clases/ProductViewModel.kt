@@ -3,7 +3,8 @@ package com.ccc.listadecompracriolla.Core.clases
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ccc.listadecompracriolla.pydolarnetwork.Bcv
+import com.ccc.listadecompracriolla.pydolarnetwork.ApiDolarServices
+
 import com.ccc.listadecompracriolla.pydolarnetwork.DolarApi
 import com.ccc.listadecompracriolla.repository.ClientRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -118,8 +119,8 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     }
 //----------------------------------------------BCV----------------------------
     // LiveData para los datos del BCV
-    private val _bcvData = MutableStateFlow<Bcv?>(null)
-    val bcvData: StateFlow<Bcv?> = _bcvData.asStateFlow() // Exponemos como StateFlow inmutable
+    private val _bcvData = MutableStateFlow<ApiDolarServices?>(null)
+    val bcvData: StateFlow<ApiDolarServices?> = _bcvData.asStateFlow() // Exponemos como StateFlow inmutable
 
     // 2. StateFlow para el estado de carga
     // Se inicializa en 'false' porque no estamos cargando al inicio.
@@ -146,7 +147,7 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
             try {
                 _tasa.value = when (tipoConversion) {
                     TipoConversion.DIRECTA -> 1f
-                    TipoConversion.DOLAR_A_BCV -> bcvPriceFloat.value ?: 1.0f
+                    TipoConversion.DOLAR_A_BCV -> bcvPriceFloat.value ?: 2.0f
                     TipoConversion.DOLAR_A_BS_USDT -> 129f
                 }
             } catch (e: NumberFormatException) {
@@ -172,14 +173,14 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
                 // Verifica la respuesta de la API
                 // La API de Pydolarve usa un "status": "success" dentro del JSON
                 // además del código HTTP 200.
-                val bcv = response.monitors.bcv
-                _bcvData.value = bcv
 
-                _bcvPriceFloat.value = bcv.price.toFloat()
+                _bcvData.value = response
+
+                _bcvPriceFloat.value = response.promedio
                 Log.d("DolarViewModel", "Datos BCV obtenidos: ${_bcvPriceFloat.value}")
                 Log.d(
                     "DolarViewModel",
-                    "Detalles: $bcvPriceFloat - ${response.monitors.bcv.lastUpdate}"
+                    "Detalles: $bcvPriceFloat - ${response.fechaActualizacion}"
                 )
             } catch (e: Exception) {
                 // Manejo de fallos de red o excepciones de parseo

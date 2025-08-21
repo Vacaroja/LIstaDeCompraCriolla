@@ -178,11 +178,11 @@ fun ClientListScreen(
             Row(
                 modifier = modifier
                     .align(Alignment.BottomStart)
-                    .padding(bottom = 120.dp, start = 5.dp)
+                    .padding(innerpadding)
                     .zIndex(1f) // Asegura que el botón esté por encima
             ) {
 
-                AnimatedContent(targetState = stateOfBalance) { isExpanded ->
+                AnimatedContent(targetState = stateOfBalance, modifier = modifier.padding(all = 5.dp)) { isExpanded ->
                     if (isExpanded) {
                         Row(
                         ) {
