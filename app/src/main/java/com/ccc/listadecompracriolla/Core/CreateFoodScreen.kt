@@ -75,6 +75,7 @@ fun CreateFoodScreen(
     var expanded by remember { mutableStateOf(false) }
     var dialogErrorAlert by remember { mutableStateOf(false) }
     val productos by viewModel.productos.collectAsState()
+    val actual by viewModel.actualList.collectAsState()
 
 
 
@@ -96,7 +97,8 @@ fun CreateFoodScreen(
                             cant = if (cantidad.isNotEmpty()) cantidad.toFloat() else 1f,
                             price = if (precio.isNotEmpty()) precio.toFloat() else 0f,
                             nota = nota,
-                            medida = unidad
+                            medida = unidad,
+                            client = actual.id
                         )
                         viewModel.addProduct(nuevoProducto)
                         navigateToback()
@@ -319,11 +321,4 @@ fun TopMenuCreateFood(
     )
 
 }
-//------------------------------------------Preview-----------------------------------------
 
-@Preview
-@Composable
-fun CreateFoodView() {
-    //CreateFoodScreen {}
-
-}

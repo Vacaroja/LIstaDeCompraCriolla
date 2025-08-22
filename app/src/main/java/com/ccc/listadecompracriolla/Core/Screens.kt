@@ -9,4 +9,4 @@ object Home
 object ClientList
 
 @Serializable
-object SearchFood
+object CreateFood

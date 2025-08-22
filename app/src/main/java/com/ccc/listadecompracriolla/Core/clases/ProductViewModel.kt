@@ -2,6 +2,7 @@ package com.ccc.listadecompracriolla.Core.clases
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ccc.listadecompracriolla.Core.clientlist.formatNumber
 import com.ccc.listadecompracriolla.pydolarnetwork.ApiDolarServices
 import com.ccc.listadecompracriolla.pydolarnetwork.DolarApi
 import com.ccc.listadecompracriolla.repository.ClientRepository
@@ -19,6 +20,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductViewModel @Inject constructor(private val clientRepository: ClientRepository): ViewModel() {
+
+    private val _clientList = MutableStateFlow<List<ClientList>>(emptyList())
+    val clientList: StateFlow<List<ClientList>> = _clientList.asStateFlow()
+
+    private val _actualList = MutableStateFlow(ClientList())
+    val actualList: StateFlow<ClientList> = _actualList.asStateFlow()
+
     private val _productos = MutableStateFlow<List<Product>>(emptyList())
     val productos: StateFlow<List<Product>> = _productos.asStateFlow()
 
@@ -36,8 +44,7 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = false
         )*/
-    
-    //--------------------------------tasa-------------------------------------
+
 
     //--------------------------------total-------------------------------------
     val total: StateFlow<Float> = _productos
@@ -65,7 +72,22 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
             started = SharingStarted.WhileSubscribed(200),
             initialValue = 0f
         )
+    init {
+        _clientList.value = listOf(ClientList(name = "Comida"))
+        _actualList.value = ClientList(id = 1, name = "Comida")
+
+    }
 //---------------------------------------------Funciones-----------------------------------------------------
+
+    //-----------------------------------------addClientList--------------------------------
+
+    fun addClientList(client: ClientList){
+        viewModelScope.launch {
+            _clientList.update { currentL ->
+                currentL + client
+            }
+        }
+    }
 
     //-----------------------------------agregarProducto----------------------------------
     fun addProduct(producto: Product) {
@@ -117,8 +139,8 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     }
     //-----------------------------addPresupuesto------------------------------
 
-    fun addPresu(Presu: String){
-        _presupuesto.value = Presu
+    fun addPresu(presu: String){
+        _presupuesto.value = presu
     }
 
 

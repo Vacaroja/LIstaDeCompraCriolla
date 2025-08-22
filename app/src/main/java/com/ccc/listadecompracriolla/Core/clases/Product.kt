@@ -1,8 +1,9 @@
 package com.ccc.listadecompracriolla.Core.clases
 
 data class ClientList(
-    val id : Int = 1,
-    var name: String,
+    val id : Int? = 0,
+    var name: String? = "",
+    var presupuesto: String? = ""
 )
 
 data class ClientProductList(
@@ -17,5 +18,6 @@ data class Product(
     var price: Float = 0f,
     var checked: Boolean = false,
     var nota: String = "",
-    var medida : String = ""
+    var medida : String = "",
+    val client: Int? = null
     )
