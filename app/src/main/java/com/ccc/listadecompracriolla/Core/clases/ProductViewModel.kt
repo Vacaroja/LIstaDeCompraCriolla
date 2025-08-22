@@ -1,10 +1,8 @@
 package com.ccc.listadecompracriolla.Core.clases
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ccc.listadecompracriolla.pydolarnetwork.ApiDolarServices
-
 import com.ccc.listadecompracriolla.pydolarnetwork.DolarApi
 import com.ccc.listadecompracriolla.repository.ClientRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,11 +10,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,11 +23,11 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     val productos: StateFlow<List<Product>> = _productos.asStateFlow()
 
     //--------------------------------presupuesto-------------------------------------
-    private val _presupuesto = MutableStateFlow(0f)
-    val presupuesto: StateFlow<Float> = _presupuesto.asStateFlow()
+    private val _presupuesto = MutableStateFlow("")
+    val presupuesto: StateFlow<String> = _presupuesto.asStateFlow()
 
-    val presupuestoExcedido: StateFlow<Boolean> = _productos
-        .combine(_presupuesto) { productos, presupuesto ->
+    /*val presupuestoExcedido: StateFlow<Boolean> = _productos
+        .combine(_presupuesto) { productos, presupuesto? ->
             val totalActual = productos.fold(0f) { acc, p -> acc + (p.price * p.cant) }
             totalActual > presupuesto
         }
@@ -37,7 +35,7 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = false
-        )
+        )*/
     
     //--------------------------------tasa-------------------------------------
 
@@ -117,6 +115,13 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
             }
         }
     }
+    //-----------------------------addPresupuesto------------------------------
+
+    fun addPresu(Presu: String){
+        _presupuesto.value = Presu
+    }
+
+
 //----------------------------------------------BCV----------------------------
     // LiveData para los datos del BCV
     private val _bcvData = MutableStateFlow<ApiDolarServices?>(null)
@@ -169,6 +174,7 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
             try {
                 // Realiza la llamada a la API
                 val response = DolarApi.retrofitService.getData()
+                val df = DecimalFormat("#.##")
 
                 // Verifica la respuesta de la API
                 // La API de Pydolarve usa un "status": "success" dentro del JSON
@@ -176,16 +182,11 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
 
                 _bcvData.value = response
 
-                _bcvPriceFloat.value = response.promedio
-                Log.d("DolarViewModel", "Datos BCV obtenidos: ${_bcvPriceFloat.value}")
-                Log.d(
-                    "DolarViewModel",
-                    "Detalles: $bcvPriceFloat - ${response.fechaActualizacion}"
-                )
+                _bcvPriceFloat.value = df.format(response.promedio).toFloat()
+
             } catch (e: Exception) {
                 // Manejo de fallos de red o excepciones de parseo
-                _errorMessage.value = "Fallo de red o de parseo: ${e.message}"
-                Log.e("DolarViewModel", "Excepción de red/parseo: ${e.message}", e)
+                _bcvPriceFloat.value = -1f
             } finally {
                 _isLoading.value = false // Indica que la carga ha terminado
             }
@@ -193,4 +194,3 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     }
 }
 
-//_productos.value = _productos.value + producto

@@ -19,7 +19,6 @@ volver clickeable las cards y textbutton
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -31,21 +30,20 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -55,7 +53,6 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -74,6 +71,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -89,14 +87,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ccc.listadecompracriolla.Core.clases.Product
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.R
@@ -104,7 +101,6 @@ import com.ccc.listadecompracriolla.ui.theme.Orange
 import java.text.NumberFormat
 import java.util.Locale
 
-//Product(1, "Leche", 1f, 5.5f)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ClientListScreen(
@@ -119,7 +115,7 @@ fun ClientListScreen(
     val isExtended by remember { derivedStateOf { scrollState.firstVisibleItemIndex == 0 } }
     val productos by viewModel.productos.collectAsState()
     var stateOfBalance by remember { mutableStateOf(false) }
-    var presupuesto by remember { mutableStateOf("") }
+    val presupuesto by viewModel.presupuesto.collectAsState()
     //variables para enfocar
     val focusManager = LocalFocusManager.current
     val focusElements = remember { FocusRequester() }
@@ -167,7 +163,7 @@ fun ClientListScreen(
                 println(productos)//reciclerview to watch items or products
                 items(
                     items = productos,
-                    key = {it.id}) { producto ->
+                    key = { it.id }) { producto ->
                     ProducIterator(
                         product = producto,
                         viewModel = viewModel,
@@ -182,19 +178,22 @@ fun ClientListScreen(
                     .zIndex(1f) // Asegura que el botón esté por encima
             ) {
 
-                AnimatedContent(targetState = stateOfBalance, modifier = modifier.padding(all = 5.dp)) { isExpanded ->
+                AnimatedContent(
+                    targetState = stateOfBalance,
+                    modifier = modifier.padding(all = 5.dp)
+                ) { isExpanded ->
                     if (isExpanded) {
-                        Row(
-                        ) {
+                        Row {
 
                             OutlinedTextField(
                                 modifier = modifier
                                     .width(180.dp)
-                                    .heightIn(min = 56.dp),//.focusRequester(focusElements),
+                                    .heightIn(min = 56.dp)
+                                    .focusRequester(focusElements),
                                 value = presupuesto,
                                 onValueChange = { nuevoValor ->
                                     if (nuevoValor.isEmpty() || nuevoValor.matches(Regex("^\\d*\\.?\\d*$"))) {
-                                        presupuesto = nuevoValor
+                                        viewModel.addPresu(nuevoValor)
                                     }
                                 },
                                 leadingIcon = {
@@ -209,8 +208,12 @@ fun ClientListScreen(
                                 textStyle = MaterialTheme.typography.bodyLarge.copy(
                                     textAlign = TextAlign.End  // Alineación derecha para valores numéricos
                                 ),
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+                                keyboardActions = KeyboardActions(onDone = {
+                                    stateOfBalance = !stateOfBalance
+                                })
                             )
+                            LaunchedEffect(Unit) { focusElements.requestFocus() }
                         }
                     } else {
                         Card(colors = CardDefaults.cardColors(Orange)) {
@@ -227,7 +230,7 @@ fun ClientListScreen(
 
 
                                 }
-                                if (!presupuesto.isEmpty()) {
+                                if (presupuesto.isNotEmpty()) {
                                     TextButton(onClick = { stateOfBalance = !stateOfBalance }) {
                                         Text(
                                             text = (formatNumber(presupuesto.toFloat())),
@@ -409,8 +412,10 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
         skipPartiallyExpanded = false,
     )
     val tasa by viewModel.tasa.collectAsState()
+    val focusManager = LocalFocusManager.current
+    val focusElements = remember { FocusRequester() }
 //------------------------------------------variables de estado-----------------------------------------
-    println("patata${product.id} name:${product.name}")
+
     Card(
         modifier
             .fillMaxSize()
@@ -483,13 +488,19 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
                         sheetState = sheetState,
                         onDismissRequest = { showBottomSheet = false }
                     ) {
-                        Column(modifier.padding(15.dp), verticalArrangement = Arrangement.Center) {
-                            Text(text = "Coloque el precio que quierer cambiar", fontSize = 20.sp)
+
+                        Column(
+                            modifier.padding(15.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(text = "Coloque el precio que quiere cambiar", fontSize = 20.sp)
                             Row {
                                 OutlinedTextField(
                                     modifier = modifier
                                         .width(180.dp)
-                                        .heightIn(min = 56.dp),
+                                        .heightIn(min = 56.dp)
+                                        .focusRequester(focusElements),
                                     value = precio,
                                     onValueChange = { nuevoValor ->
                                         if (nuevoValor.isEmpty() || nuevoValor.matches(Regex("^\\d*\\.?\\d*$"))) {
@@ -497,11 +508,17 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
                                         }
                                     },
                                     label = { Text("precio") },
-                                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+                                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Done),
+                                    keyboardActions = KeyboardActions(onDone = {
+                                        focusManager.clearFocus()
+                                        showBottomSheet = false
+                                        viewModel.updatePrecio(product.id,precio.toFloat())
+                                    })
                                 )
+                                LaunchedEffect(Unit) { focusElements.requestFocus() }
                                 Spacer(modifier.weight(1f))
-                                Button(modifier = modifier.width(120.dp),onClick = {
-                                    product.price = precio.toFloat()
+                                Button(modifier = modifier.width(120.dp), onClick = {
+                                    viewModel.updatePrecio(product.id,precio.toFloat())
                                 }) { Text("cambiar") }
                             }
                         }
@@ -515,11 +532,6 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
 }
 //------------------------------------------Preview-----------------------------------------
 
-/*Preview
-@Composable
-fun Viewer() {
-    ClientListScreen(navigateToback = {}, navigateToCreateFood = {})
-}*/
 
 fun formatNumber(number: Float): String {
     // Puedes especificar la configuración regional (Locale) aquí.
