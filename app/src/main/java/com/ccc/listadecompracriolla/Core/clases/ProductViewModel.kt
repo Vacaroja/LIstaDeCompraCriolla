@@ -2,7 +2,6 @@ package com.ccc.listadecompracriolla.Core.clases
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ccc.listadecompracriolla.Core.clientlist.formatNumber
 import com.ccc.listadecompracriolla.pydolarnetwork.ApiDolarServices
 import com.ccc.listadecompracriolla.pydolarnetwork.DolarApi
 import com.ccc.listadecompracriolla.repository.ClientRepository
@@ -73,8 +72,9 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
             initialValue = 0f
         )
     init {
-        _clientList.value = listOf(ClientList(name = "Comida"))
         _actualList.value = ClientList(id = 1, name = "Comida")
+        _clientList.value = listOf(_actualList.value)
+
 
     }
 //---------------------------------------------Funciones-----------------------------------------------------

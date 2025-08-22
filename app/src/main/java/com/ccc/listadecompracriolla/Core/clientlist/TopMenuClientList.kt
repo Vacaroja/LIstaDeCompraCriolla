@@ -1,5 +1,6 @@
 package com.ccc.listadecompracriolla.Core.clientlist
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -15,6 +16,9 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -31,13 +35,14 @@ fun TopMenu(
     viewModel: ProductViewModel,
     navigateToback: () -> Unit
 ) {
+    var bottomSheetClient by remember { mutableStateOf(false) }
     val actualList by viewModel.actualList.collectAsState()
     val clientList by viewModel.actualList.collectAsState()
     TopAppBar(
         title = {
             Text(
                 text = "${actualList.name}",
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().clickable{bottomSheetClient = true},
                 textAlign = TextAlign.Center
             )
 //------------------------------------------NavigationIcons-----------------------------------------
@@ -104,6 +109,9 @@ fun TopMenu(
 
             )
     )
+    if (bottomSheetClient){
+        ModalBottomSheetClientList(viewModel) { bottomSheetClient = false }
+    }
 
 
 }
