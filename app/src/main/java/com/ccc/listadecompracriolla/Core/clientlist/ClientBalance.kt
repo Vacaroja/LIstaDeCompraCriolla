@@ -100,7 +100,7 @@ fun ClientBalance(
 
 
                     }
-                    if (presupuesto.isNotEmpty()) {
+                    if (presupuesto.isNotEmpty() && presupuesto != ".") {
                         TextButton(onClick = { onDimiss() }) {
                             Text(
                                 text = (formatNumber(presupuesto.toFloat())),

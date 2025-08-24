@@ -4,7 +4,7 @@ package com.ccc.listadecompracriolla.Core
 /*Cosas por hacer
 //cambiar tipo de teclado en selector de cantidad y precio
 //cambiar por lista desplegable la medida
-Mejorar Topbar y colocar "LISTO"
+arreglar error con el .
  */
 
 import androidx.compose.foundation.layout.Column
@@ -89,8 +89,8 @@ fun CreateFoodScreen(
                         val nuevoProducto = Product(
                             id = productos.size + 1, // O usa un UUID
                             name = nombre,
-                            cant = if (cantidad.isNotEmpty()) cantidad.toFloat() else 1f,
-                            price = if (precio.isNotEmpty()) precio.toFloat() else 0f,
+                            cant = if (cantidad.isNotEmpty() && cantidad != ".") cantidad.toFloat() else 1f,
+                            price = if (precio.isNotEmpty() && precio != ".") precio.toFloat() else 0f,
                             nota = nota,
                             medida = unidad,
                             client = actual.id

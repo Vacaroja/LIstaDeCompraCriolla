@@ -1,12 +1,12 @@
 package com.ccc.listadecompracriolla.Core.clientlist
 
+import android.icu.text.DecimalFormat
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
@@ -46,15 +46,18 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
     var showBottomSheet by remember { mutableStateOf(false) }//var of BottomScreen
     val focusManager = LocalFocusManager.current
     val tasa by viewModel.tasa.collectAsState()
+    val df = DecimalFormat("#.##")
+    val maxLinesName = 3
+    val fontSizeName = 15.sp
+    val fontSizePrice = 12.sp
 
 //------------------------------------------variables de estado-----------------------------------------
 
     Card(
         modifier
             .fillMaxSize()
-            .padding(2.dp)
-            .border(border = BorderStroke(1.dp, Color.Red), shape = RoundedCornerShape(16.dp))
-            .padding(10.dp),
+            .padding(10.dp).clickable{},
+        border = BorderStroke(1.dp,Color.Black),
         colors = CardDefaults.cardColors()
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -67,71 +70,88 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
                 },//cambiar valor de producto para ver cuales productos estan en carrito
                 checked = checked
             )
+
             if (!checked) {
-                TextButton(
-                    onClick = {},
-
-                    )
-                { Text(product.name, color = Color.Blue, fontSize = 20.sp) }
+                Text(
+                    product.name,
+                    color = Color.Blue,
+                    fontSize = fontSizeName,
+                    modifier = modifier.widthIn(max = 90.dp),
+                    maxLines = maxLinesName
+                )
             } else {
-                TextButton(
-                    onClick = {},
-
-                    ) {
                     Text(
                         product.name, color = Color.Blue,
                         textDecoration = TextDecoration.LineThrough,
-                        fontSize = 20.sp
+                        fontSize = fontSizeName,
+                        modifier = modifier.widthIn(max = 90.dp),
+                        maxLines = maxLinesName
                     )
-                }
+
             }
+
 //------------------------------------------añadir y disminuir cantidad-----------------------------------------
 
             //convertir en Textbutton para cambiarlo directamente
-            Spacer(modifier = Modifier.weight(1f)) //espaciado de los botones
-            IconButton(onClick = { cantidad += 1;viewModel.updateCantidad(product.id, cantidad) }) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "plus"
+
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = {
+                    cantidad += 1;viewModel.updateCantidad(
+                    product.id,
+                    cantidad
                 )
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "plus"
+                    )
+                }
+                Text(text = "$cantidad")
+                IconButton(onClick = {
+                    if (cantidad > 0) cantidad -= 1 else cantidad
+                    viewModel.updateCantidad(product.id, cantidad)
+                }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_minus),
+                        contentDescription = "minus"
+                    )
+                }
             }
-            Text(text = "$cantidad")
-            IconButton(onClick = {
-                if (cantidad > 0) cantidad -= 1 else cantidad
-                viewModel.updateCantidad(product.id, cantidad)
-            }) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_minus),
-                    contentDescription = "minus"
-                )
-            }
-//------------------------------------------buttonBottomSheettToChangePrice-----------------------------------------
 
             TextButton(onClick = { showBottomSheet = true }) {
                 Text(
-                    text = "Costo: ${product.price * product.cant * tasa}",
+                    text = if (product.price != 0f) "$: ${df.format(product.price * product.cant * tasa)}" else "$",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp
+                    fontSize = fontSizePrice
+
                 )
+            }
+
+//------------------------------------------Price*Cant-----------------------------------------
+
+
 //------------------------------------------BottomSheettToChangePrice-----------------------------------------
-
-                if (showBottomSheet) {
-                    SheetToChangePrice(
-                        precio = precio,
-                        onDismiss = { showBottomSheet = false },
-                        onSave = {
-                            focusManager.clearFocus()
-                            showBottomSheet = false
+            if (showBottomSheet) {
+                SheetToChangePrice(
+                    precio = precio,
+                    onDismiss = { showBottomSheet = false },
+                    onSave = {
+                        focusManager.clearFocus()
+                        showBottomSheet = false
+                        try {
                             viewModel.updatePrecio(product.id, precio.toFloat())
-                        },
-                        onChange = { nuevoValor ->
-                            if (nuevoValor.isEmpty() || nuevoValor.matches(Regex("^\\d*\\.?\\d*$"))) {
-                                precio = nuevoValor
-                            }
-                        })
+                        }catch (_: Exception){
+                            viewModel.updatePrecio(product.id, 0f)
+                        }
+                        precio = ""
+                    },
+                    onChange = { nuevoValor ->
+                        if (nuevoValor.isEmpty() || nuevoValor.matches(Regex("^\\d*\\.?\\d*$"))) {
+                            precio = nuevoValor
+                        }
+                    })
 
-
-                }
 
             }
 

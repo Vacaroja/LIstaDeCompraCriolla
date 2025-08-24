@@ -37,7 +37,7 @@ fun TopMenu(
 ) {
     var bottomSheetClient by remember { mutableStateOf(false) }
     val actualList by viewModel.actualList.collectAsState()
-    val clientList by viewModel.actualList.collectAsState()
+
     TopAppBar(
         title = {
             Text(

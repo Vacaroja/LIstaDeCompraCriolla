@@ -160,14 +160,8 @@ fun ClientListScreen(
 }
 
 
-//----------------------------------------------TopmenuClientList----------------------
 
 
-//------------------------------------------ProducIterator-----------------------------------------
-
-
-
-//------------------------------------------Preview-----------------------------------------
 @Composable
 fun SheetToChangePrice(
     modifier: Modifier = Modifier,
@@ -205,7 +199,7 @@ fun SheetToChangePrice(
                     },
                     label = { Text("precio") },
                     keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Phone,
+                        keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Done
                     ),
                     textStyle = MaterialTheme.typography.bodyLarge.copy(
