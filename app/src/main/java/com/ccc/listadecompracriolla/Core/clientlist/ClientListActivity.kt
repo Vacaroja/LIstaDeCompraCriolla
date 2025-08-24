@@ -42,6 +42,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -85,6 +86,7 @@ fun ClientListScreen(
     val scrollState = rememberLazyListState()
     val isExtended by remember { derivedStateOf { scrollState.firstVisibleItemIndex == 0 } }
     val productos by viewModel.productos.collectAsState()
+    val clients by viewModel.actualList.collectAsState()
     var stateOfBalance by remember { mutableStateOf(false) }
 
     //variables para enfocar
@@ -115,13 +117,14 @@ fun ClientListScreen(
 
             if (!isExtended) {
                 FloatingActionButton(
-                    onClick = { /* Misma acción */ },
-                    modifier = Modifier.padding(16.dp)
+                    onClick = { navigateToCreateFood() },
+                    modifier = Modifier.padding(16.dp).padding(horizontal = 20.dp)
                 ) {
                     Icon(Icons.Default.Add, "Agregar PRODUCTO")
                 }
             }
-        }
+        },
+        floatingActionButtonPosition = if (isExtended) FabPosition.End else FabPosition.EndOverlay
     ) { innerpadding ->
 //------------------------------------------iterationOfProducts-----------------------------------------
         Box(modifier = modifier.clickable { focusManager.clearFocus();stateOfBalance = false }) {
@@ -136,11 +139,11 @@ fun ClientListScreen(
                 items(
                     items = productos,
                     key = { it.id }) { producto ->
-                    ProducIterator(
+                    if (producto.client == clients.id){
+                        ProducIterator(
                         product = producto,
                         viewModel = viewModel,
-
-                        )
+                    )}
                 }
             }
             Row(

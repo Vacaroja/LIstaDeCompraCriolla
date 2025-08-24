@@ -56,7 +56,7 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
     Card(
         modifier
             .fillMaxSize()
-            .padding(10.dp).clickable{},
+            .padding(5.dp).clickable{},
         border = BorderStroke(1.dp,Color.Black),
         colors = CardDefaults.cardColors()
     ) {

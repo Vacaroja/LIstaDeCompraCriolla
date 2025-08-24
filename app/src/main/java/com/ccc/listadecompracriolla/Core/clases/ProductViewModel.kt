@@ -30,6 +30,11 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     private val _productos = MutableStateFlow<List<Product>>(emptyList())
     val productos: StateFlow<List<Product>> = _productos.asStateFlow()
 
+    /*private val _currentProduct = MutableStateFlow<List<Product>>(emptyList())
+    val currentProduct: StateFlow<List<Product>> = _currentProduct.asStateFlow()*/
+
+
+
     //--------------------------------presupuesto-------------------------------------
     private val _presupuesto = MutableStateFlow("")
     val presupuesto: StateFlow<String> = _presupuesto.asStateFlow()
@@ -72,14 +77,28 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
             started = SharingStarted.WhileSubscribed(200),
             initialValue = 0f
         )
+//--------------------------------------------INIT-----------------------------------------------
     init {
+
         _actualList.value = ClientList(id = 1, name = "Comida")
         _clientList.value = listOf(_actualList.value)
 
 
+
     }
 //---------------------------------------------Funciones-----------------------------------------------------
+   /* //---------------------------------------------chargeCurrentProducts-------------------------------------
 
+    fun currentProduct(clientId: Int?){
+        val currentListP = _productos.value.filter { it.client == clientId }
+        _currentProduct.value = currentListP
+    }*/
+    //------------------------------changeCurrentList-----------------------------------------------
+    fun changeCurrentList(clientId: Int?) {
+        val currentList = _clientList.value.firstOrNull() { it.id == clientId }
+        if (currentList != null) _actualList.value = currentList else _actualList
+
+    }
     //-----------------------------------------addClientList--------------------------------
 
     fun addClientList(client: ClientList){
@@ -89,10 +108,7 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
             }
         }
     }
-    fun changeCurrentList(clientId: Int?) {
-        val currentList = _clientList.value.firstOrNull() { it.id == clientId }
-        if (currentList != null) _actualList.value = currentList else _actualList
-    }
+
 
     //-----------------------------------agregarProducto----------------------------------
     fun addProduct(producto: Product) {
