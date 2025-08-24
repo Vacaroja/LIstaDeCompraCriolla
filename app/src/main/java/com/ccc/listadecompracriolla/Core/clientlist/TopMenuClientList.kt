@@ -110,7 +110,7 @@ fun TopMenu(
             )
     )
     if (bottomSheetClient){
-        ModalBottomSheetClientList(viewModel) { bottomSheetClient = false }
+        ModalBottomSheetClientList(viewModel = viewModel,onDismiss= { bottomSheetClient = false },onChange = {currentList -> viewModel.changeCurrentList(currentList)})
     }
 
 

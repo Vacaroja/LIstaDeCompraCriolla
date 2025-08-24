@@ -27,7 +27,12 @@ import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ModalBottomSheetClientList(viewModel: ProductViewModel,modifier:Modifier = Modifier, onDismiss: () -> Unit) {
+fun ModalBottomSheetClientList(
+    viewModel: ProductViewModel,
+    modifier: Modifier = Modifier,
+    onDismiss: () -> Unit,
+    onChange: (Int?) -> Unit
+) {
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = false,
     )
@@ -49,10 +54,20 @@ fun ModalBottomSheetClientList(viewModel: ProductViewModel,modifier:Modifier = M
             LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 90.dp)) {
                 items(items = clientL) { client ->
                     Card(
-                        modifier = Modifier.padding(2.dp).clickable{}) {
-                        Box(contentAlignment = Alignment.Center){
-                            Text(text = "${client.name}",
-                                modifier= modifier.heightIn(min=25.dp).widthIn(min=25.dp).padding(6.dp))
+                        modifier = Modifier
+                            .padding(2.dp)
+                            .clickable {
+                                onChange(client.id)
+                                onDismiss()
+                            }) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(
+                                text = "${client.name}",
+                                modifier = modifier
+                                    .heightIn(min = 25.dp)
+                                    .widthIn(min = 25.dp)
+                                    .padding(6.dp)
+                            )
                         }
                     }
                 }
