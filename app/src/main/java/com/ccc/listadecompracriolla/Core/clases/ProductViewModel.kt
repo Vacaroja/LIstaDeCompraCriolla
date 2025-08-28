@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -173,7 +172,12 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
             }
         }
     }
-
+//---------------------deleteProduct----------------------------
+fun deleteProduct(idProd:Int){
+    val product= _productos.value.toMutableList()
+    product.removeIf { it.id == idProd }
+    _productos.value = product.toList()
+}
 
 //----------------------------------------------BCV----------------------------
     // LiveData para los datos del BCV
@@ -208,7 +212,7 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
                     TipoConversion.DOLAR_A_BCV -> bcvPriceFloat.value ?: 2.0f
                     TipoConversion.DOLAR_A_BS_USDT -> 129f
                 }
-            } catch (e: NumberFormatException) {
+            } catch (_: NumberFormatException) {
                 tipoConversion
             }
         }
@@ -237,7 +241,7 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
 
                 _bcvPriceFloat.value = df.format(response.promedio).toFloat()
 
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 // Manejo de fallos de red o excepciones de parseo
                 _bcvPriceFloat.value = -1f
             } finally {

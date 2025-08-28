@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -56,7 +57,8 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
     Card(
         modifier
             .fillMaxSize()
-            .padding(5.dp).clickable{},
+            .padding(5.dp)
+            .clickable {},
         border = BorderStroke(1.dp,Color.Black),
         colors = CardDefaults.cardColors()
     ) {
@@ -125,6 +127,13 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
                     fontWeight = FontWeight.Bold,
                     fontSize = fontSizePrice
 
+                )
+            }
+            //-------------------------borrar-----------------------
+            IconButton(onClick = { viewModel.deleteProduct(product.id) }) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "minus"
                 )
             }
 
