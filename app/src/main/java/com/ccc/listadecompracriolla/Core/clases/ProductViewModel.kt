@@ -95,8 +95,11 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     }*/
     //------------------------------changeCurrentList-----------------------------------------------
     fun changeCurrentList(clientId: Int?) {
-        val currentList = _clientList.value.firstOrNull() { it.id == clientId }
-        if (currentList != null) _actualList.value = currentList else _actualList
+        val currentList = _clientList.value.firstOrNull { it.id == clientId }
+        if (currentList != null) {
+            _actualList.value = currentList
+            _presupuesto.value = currentList.presupuesto
+        }
 
     }
     //-----------------------------------------addClientList--------------------------------
@@ -160,8 +163,15 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     }
     //-----------------------------addPresupuesto------------------------------
 
-    fun addPresu(presu: String){
+    fun addPresu(clientId: Int?,presu: String){
         _presupuesto.value = presu
+        _clientList.update { currentList ->
+            currentList.map { client ->
+                if (client.id == clientId){
+                    client.copy(presupuesto = presu)
+                }else{client}
+            }
+        }
     }
 
 

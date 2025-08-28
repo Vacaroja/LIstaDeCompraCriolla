@@ -24,20 +24,13 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,14 +38,9 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -61,15 +49,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import java.text.NumberFormat
 import java.util.Locale
@@ -124,7 +105,7 @@ fun ClientListScreen(
                 }
             }
         },
-        floatingActionButtonPosition = if (isExtended) FabPosition.End else FabPosition.EndOverlay
+        floatingActionButtonPosition = if (isExtended) FabPosition.End else FabPosition.Center
     ) { innerpadding ->
 //------------------------------------------iterationOfProducts-----------------------------------------
         Box(modifier = modifier.clickable { focusManager.clearFocus();stateOfBalance = false }) {
@@ -146,74 +127,33 @@ fun ClientListScreen(
                     )}
                 }
             }
-            Row(
-                modifier = modifier
-                    .align(Alignment.BottomStart)
-                    .padding(innerpadding)
-                    .zIndex(1f) // Asegura que el botón esté por encima
-            ) {
+            if (isExtended){
+                Row(
+                    modifier = modifier.align(Alignment.BottomStart)
+                        .padding(innerpadding)
+                    // Asegura que el botón esté por encima
+                ) {
+                    ClientBalance(viewModel, stateOfBalance = stateOfBalance) {
+                        stateOfBalance = !stateOfBalance
+                    }
 
-                ClientBalance(viewModel, stateOfBalance = stateOfBalance) {
-                    stateOfBalance = !stateOfBalance
+
                 }
-
             }
         }
-    }
-}
+        if (!isExtended){
+            Box{
+                Row(
+                    modifier = modifier.align(Alignment.BottomStart)
+                        .padding(innerpadding)
+                    // Asegura que el botón esté por encima
+                ) {
+                    ClientBalance(viewModel, stateOfBalance = stateOfBalance) {
+                        stateOfBalance = !stateOfBalance
+                    }
 
 
-
-
-@Composable
-fun SheetToChangePrice(
-    modifier: Modifier = Modifier,
-    precio: String,
-    onSave: () -> Unit,
-    onChange: (String) -> Unit,
-    onDismiss: () -> Unit
-) {
-
-    val focusElements = remember { FocusRequester() }
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = false,
-    )
-    ModalBottomSheet(
-        modifier = Modifier.fillMaxHeight(),
-        sheetState = sheetState,
-        onDismissRequest = { onDismiss() }
-    ) {
-
-        Column(
-            modifier.padding(15.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = "Coloque el precio que quiere cambiar", fontSize = 20.sp)
-            Row {
-                OutlinedTextField(
-                    modifier = modifier
-                        .width(180.dp)
-                        .heightIn(min = 56.dp)
-                        .focusRequester(focusElements),
-                    value = precio,
-                    onValueChange = { nuevoValor ->
-                        onChange(nuevoValor)
-                    },
-                    label = { Text("precio") },
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done
-                    ),
-                    textStyle = MaterialTheme.typography.bodyLarge.copy(
-                        textAlign = TextAlign.End  // Alineación derecha para valores numéricos
-                    ),
-                    keyboardActions = KeyboardActions(onDone = {
-                        onSave()
-                    })
-                )
-                LaunchedEffect(Unit) { focusElements.requestFocus() }
-
+                }
             }
         }
     }

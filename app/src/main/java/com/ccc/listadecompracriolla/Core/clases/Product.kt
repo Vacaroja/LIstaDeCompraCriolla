@@ -3,7 +3,7 @@ package com.ccc.listadecompracriolla.Core.clases
 data class ClientList(
     val id : Int? = 0,
     var name: String? = "",
-    var presupuesto: String? = ""
+    var presupuesto: String = ""
 )
 
 data class ClientProductList(

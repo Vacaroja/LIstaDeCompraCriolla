@@ -1,6 +1,7 @@
 package com.ccc.listadecompracriolla.Core.clientlist
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -14,17 +15,22 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -42,6 +48,7 @@ fun ClientBalance(
     stateOfBalance: Boolean,
     onDimiss: () -> Unit
 ) {
+    val actualPresu by viewModel.actualList.collectAsState()
     val presupuesto by viewModel.presupuesto.collectAsState()
     val focusElements = remember { FocusRequester() }
     AnimatedContent(
@@ -53,13 +60,13 @@ fun ClientBalance(
 
                 OutlinedTextField(
                     modifier = modifier
-                        .width(180.dp)
+                        .width(150.dp)
                         .heightIn(min = 56.dp)
                         .focusRequester(focusElements),
                     value = presupuesto,
                     onValueChange = { nuevoValor ->
-                        if (nuevoValor.isEmpty() || nuevoValor.matches(Regex("^\\d*\\.?\\d*$"))) {
-                            viewModel.addPresu(nuevoValor)
+                        if (nuevoValor.isEmpty() || nuevoValor.matches(Regex("^\\d*\\.?\\d*$"))){
+                            viewModel.addPresu(actualPresu.id,nuevoValor)
                         }
                     },
                     leadingIcon = {
@@ -95,7 +102,7 @@ fun ClientBalance(
                         Icon(
                             painter = painterResource(id = R.drawable.account_balance),
                             contentDescription = "Presupuesto",
-                            modifier = Modifier.size(40.dp)
+                            modifier = Modifier.size(30.dp)
                         )
 
 
@@ -104,7 +111,7 @@ fun ClientBalance(
                         TextButton(onClick = { onDimiss() }) {
                             Text(
                                 text = (formatNumber(presupuesto.toFloat())),
-                                fontSize = 20.sp,
+                                fontSize = 16.sp,
                                 maxLines = 1
                             )
                         }
