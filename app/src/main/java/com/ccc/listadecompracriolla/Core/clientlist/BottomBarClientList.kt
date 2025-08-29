@@ -38,8 +38,7 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
 
 
     BottomAppBar(containerColor = Orange) {
-//------------------------------------------BottomPresupuesto-----------------------------------------
-//------------------------------------------animacion que revisar y ver si borrar-----------------------------------------
+
 
 
 //------------------------------------------BottomInCarPrice-----------------------------------------
