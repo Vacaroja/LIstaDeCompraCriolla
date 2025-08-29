@@ -135,13 +135,21 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     // Función para togglear el check
     fun toggleCheck(productId: Int) {
         _productos.update { currentList ->
-            currentList.map { product ->
-                if (product.id == productId) {
-                    product.copy(checked = !product.checked)
-                } else {
-                    product
-                }
-            }
+            val index = currentList.indexOfFirst { it.id == productId }
+            if (index != -1){
+                val mutableList = currentList.toMutableList()
+
+                // Get the product and toggle its 'checked' state
+                val productToUpdate = mutableList[index]
+                val updatedProduct = productToUpdate.copy(checked = !productToUpdate.checked)
+
+                // Replace the old product with the updated one
+                mutableList[index] = updatedProduct
+
+                // Return the updated list
+                mutableList
+            }else currentList
+
         }
     }
 

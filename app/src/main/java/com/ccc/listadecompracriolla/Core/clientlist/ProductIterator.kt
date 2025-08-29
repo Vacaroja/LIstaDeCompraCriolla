@@ -47,6 +47,9 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
     var showBottomSheet by remember { mutableStateOf(false) }//var of BottomScreen
     val focusManager = LocalFocusManager.current
     val tasa by viewModel.tasa.collectAsState()
+
+
+    //-------------------------------------textParameters-------------------------------------
     val df = DecimalFormat("#.##")
     val maxLinesName = 3
     val fontSizeName = 15.sp
@@ -66,11 +69,10 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
 //------------------------------------------NameButton-----------------------------------------
 
             Checkbox(
-                onCheckedChange = {
-                    checked = it//verificar status de checkbox
+                onCheckedChange = { //verificar status de checkbox
                     viewModel.toggleCheck(product.id)
                 },//cambiar valor de producto para ver cuales productos estan en carrito
-                checked = checked
+                checked = product.checked
             )
 
             if (!checked) {
