@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,6 +40,8 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -77,10 +80,14 @@ fun ClientListScreen(
     val clients by viewModel.actualList.collectAsState()
     var stateOfBalance by remember { mutableStateOf(false) }
     val refreshState = rememberPullToRefreshState()
+    //variable corrutinas
     val coroutineScope = rememberCoroutineScope()
-
+    //snackBarState
+    val snackbarHostState = remember { SnackbarHostState() }
     //variables para enfocar
     val focusManager = LocalFocusManager.current
+    //failure Api
+    var failureApiMessage by remember { mutableStateOf(false) }
 
 
     PullToRefreshBox(state = refreshState, isRefreshing = loading, onRefresh = {
@@ -97,6 +104,7 @@ fun ClientListScreen(
         Scaffold(
             topBar = { TopMenu(viewModel = viewModel, navigateToback = { }) },
             bottomBar = { BottomClientList(viewModel = viewModel) },
+            snackbarHost = {SnackbarHost(hostState = snackbarHostState)},
             floatingActionButton = {//animacion del floatingActionButton
                 AnimatedVisibility(
                     visible = isExtended,
@@ -180,7 +188,10 @@ fun ClientListScreen(
                     }
                 }
             }
+
+
         }
+
 
     }
 }

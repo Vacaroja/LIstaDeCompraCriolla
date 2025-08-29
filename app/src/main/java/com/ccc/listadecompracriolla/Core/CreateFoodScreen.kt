@@ -29,6 +29,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
@@ -39,6 +42,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,8 +54,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.Product
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
+
 import com.ccc.listadecompracriolla.R
 import com.ccc.listadecompracriolla.ui.theme.Orange
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,6 +77,8 @@ fun CreateFoodScreen(
     var dialogErrorAlert by remember { mutableStateOf(false) }
     val productos by viewModel.productos.collectAsState()
     val actual by viewModel.actualList.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
 
 
@@ -84,7 +92,13 @@ fun CreateFoodScreen(
                 navigateToback = { navigateToback() },
                 saveProduct = {
                     if (nombre.isBlank()) {
-                        dialogErrorAlert = true
+                        scope.launch {
+                            snackbarHostState.showSnackbar(
+                                message = "Debe colocar un nombre",
+                                actionLabel = "OK",
+                                duration = SnackbarDuration.Short
+                            )
+                        }
                     } else {
                         val nuevoProducto = Product(
                             id = productos.size + 1, // O usa un UUID
@@ -106,7 +120,8 @@ fun CreateFoodScreen(
         },
 //------------------------------------------bottombar-----------------------------------------
 
-        bottomBar = { BottombarCreateFood() }//bottom bar por si quiero colocar una mariquera
+        bottomBar = { BottombarCreateFood() },
+        snackbarHost = {SnackbarHost(hostState = snackbarHostState)}//bottom bar por si quiero colocar una mariquera
     )
 //------------------------------------------initContent-----------------------------------------
 
@@ -239,7 +254,7 @@ fun CreateFoodScreen(
                         contentDescription = "Nota"
                     )
                 },
-                        shape = MaterialTheme.shapes.medium
+                shape = MaterialTheme.shapes.medium
 
             )
         }
