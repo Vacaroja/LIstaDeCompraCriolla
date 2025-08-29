@@ -10,15 +10,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 import javax.inject.Inject
+import kotlin.collections.filter
 
 @HiltViewModel
-class ProductViewModel @Inject constructor(private val clientRepository: ClientRepository): ViewModel() {
+class ProductViewModel @Inject constructor(private val clientRepository: ClientRepository) :
+    ViewModel() {
 
     private val _clientList = MutableStateFlow<List<ClientList>>(emptyList())
     val clientList: StateFlow<List<ClientList>> = _clientList.asStateFlow()
@@ -28,10 +31,6 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
 
     private val _productos = MutableStateFlow<List<Product>>(emptyList())
     val productos: StateFlow<List<Product>> = _productos.asStateFlow()
-
-    /*private val _currentProduct = MutableStateFlow<List<Product>>(emptyList())
-    val currentProduct: StateFlow<List<Product>> = _currentProduct.asStateFlow()*/
-
 
 
     //--------------------------------presupuesto-------------------------------------
@@ -51,11 +50,11 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
 
 
     //--------------------------------total-------------------------------------
-    val total: StateFlow<Float> = _productos
-        .map { products ->
-            products.fold(0f) { acc, product ->
-                acc + (product.price * product.cant)
-            }
+    val total: StateFlow<Float> = combine(_productos,_actualList) { products,actList ->//funcion que evalua los 2 stateFlows
+            products.filter { it.client == actList.id }//filtro para actualList y Product
+                .fold(0f) { acc, product ->//suma
+                    acc + (product.price * product.cant)
+                }
         }
         .stateIn(
             scope = viewModelScope,
@@ -63,47 +62,48 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
             initialValue = 0f
         )
 
+
     //------------------------------------Total en carrito (productos marcados)------------------
-    val inCar: StateFlow<Float> = _productos.map { products ->
-        products
-            .filter { it.checked }
-            .fold(0f) { acc, product ->
-                acc + (product.price * product.cant)
-            }
-    }
+    val inCar: StateFlow<Float> = combine(_productos,_actualList) { products,actList ->
+            products.filter { it.checked && it.client == actList.id }
+                .fold(0f) { acc, product ->
+                    acc + (product.price * product.cant)
+                }
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(200),
             initialValue = 0f
         )
-//--------------------------------------------INIT-----------------------------------------------
+
+
+    //--------------------------------------------INIT-----------------------------------------------
     init {
 
         _actualList.value = ClientList(id = 1, name = "Comida")
         _clientList.value = listOf(_actualList.value)
 
 
-
     }
-//---------------------------------------------Funciones-----------------------------------------------------
-   /* //---------------------------------------------chargeCurrentProducts-------------------------------------
 
-    fun currentProduct(clientId: Int?){
-        val currentListP = _productos.value.filter { it.client == clientId }
-        _currentProduct.value = currentListP
-    }*/
+    //---------------------------------------------Funciones-----------------------------------------------------
+    //---------------------------------------------chargeCurrentProducts-------------------------------------
+
+
     //------------------------------changeCurrentList-----------------------------------------------
     fun changeCurrentList(clientId: Int?) {
         val currentList = _clientList.value.firstOrNull { it.id == clientId }
         if (currentList != null) {
             _actualList.value = currentList
             _presupuesto.value = currentList.presupuesto
+            inCar
+
         }
 
     }
     //-----------------------------------------addClientList--------------------------------
 
-    fun addClientList(client: ClientList){
+    fun addClientList(client: ClientList) {
         viewModelScope.launch {
             _clientList.update { currentL ->
                 currentL + client
@@ -119,7 +119,6 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
                 currentList + producto
             }
         }
-
 
     }
 
@@ -162,27 +161,31 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     }
     //-----------------------------addPresupuesto------------------------------
 
-    fun addPresu(clientId: Int?,presu: String){
+    fun addPresu(clientId: Int?, presu: String) {
         _presupuesto.value = presu
         _clientList.update { currentList ->
             currentList.map { client ->
-                if (client.id == clientId){
+                if (client.id == clientId) {
                     client.copy(presupuesto = presu)
-                }else{client}
+                } else {
+                    client
+                }
             }
         }
     }
-//---------------------deleteProduct----------------------------
-fun deleteProduct(idProd:Int){
-    val product= _productos.value.toMutableList()
-    product.removeIf { it.id == idProd }
-    _productos.value = product.toList()
-}
 
-//----------------------------------------------BCV----------------------------
+    //---------------------deleteProduct----------------------------
+    fun deleteProduct(idProd: Int) {
+        val product = _productos.value.toMutableList()
+        product.removeIf { it.id == idProd }
+        _productos.value = product.toList()
+    }
+
+    //----------------------------------------------BCV----------------------------
     // LiveData para los datos del BCV
     private val _bcvData = MutableStateFlow<ApiDolarServices?>(null)
-    val bcvData: StateFlow<ApiDolarServices?> = _bcvData.asStateFlow() // Exponemos como StateFlow inmutable
+    val bcvData: StateFlow<ApiDolarServices?> =
+        _bcvData.asStateFlow() // Exponemos como StateFlow inmutable
 
     // 2. StateFlow para el estado de carga
     // Se inicializa en 'false' porque no estamos cargando al inicio.
@@ -198,6 +201,7 @@ fun deleteProduct(idProd:Int){
     // Se inicializa con null.
     private val _bcvPriceFloat = MutableStateFlow<Float?>(null)
     val bcvPriceFloat: StateFlow<Float?> = _bcvPriceFloat.asStateFlow()
+
     //--------------------------------tasa-------------------------------------
     private val _tasa = MutableStateFlow(1f)
     val tasa: StateFlow<Float> = _tasa.asStateFlow()
