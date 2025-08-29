@@ -40,20 +40,27 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -63,101 +70,121 @@ fun ClientListScreen(
     navigateToCreateFood: () -> Unit,
 ) {
 //------------------------------------------Variables-----------------------------------------
-
+    var loading by remember { mutableStateOf(false) }
     val scrollState = rememberLazyListState()
     val isExtended by remember { derivedStateOf { scrollState.firstVisibleItemIndex == 0 } }
     val productos by viewModel.productos.collectAsState()
     val clients by viewModel.actualList.collectAsState()
     var stateOfBalance by remember { mutableStateOf(false) }
+    val refreshState = rememberPullToRefreshState()
+    val coroutineScope = rememberCoroutineScope()
 
     //variables para enfocar
     val focusManager = LocalFocusManager.current
 
 
-//------------------------------------------Variables-----------------------------------------
+    PullToRefreshBox(state = refreshState, isRefreshing = loading, onRefresh = {
+        coroutineScope.launch {
+            loading = true
+            viewModel.searchDolarBcv()
+            delay(2.seconds)
+            loading = false
+        }
+    }) {
+        //------------------------------------------Variables-----------------------------------------
 
 
-    Scaffold(
-        topBar = { TopMenu(viewModel = viewModel, navigateToback = { }) },
-        bottomBar = { BottomClientList(viewModel = viewModel) },
-        floatingActionButton = {//animacion del floatingActionButton
-            AnimatedVisibility(
-                visible = isExtended,
-                enter = fadeIn() + expandHorizontally(),
-                exit = fadeOut() + shrinkHorizontally()
-            ) {
+        Scaffold(
+            topBar = { TopMenu(viewModel = viewModel, navigateToback = { }) },
+            bottomBar = { BottomClientList(viewModel = viewModel) },
+            floatingActionButton = {//animacion del floatingActionButton
+                AnimatedVisibility(
+                    visible = isExtended,
+                    enter = fadeIn() + expandHorizontally(),
+                    exit = fadeOut() + shrinkHorizontally()
+                ) {
 //------------------------------------------FBA-----------------------------------------
 
-                ExtendedFloatingActionButton(
-                    onClick = { navigateToCreateFood() },
-                    icon = { Icon(Icons.Default.Add, "Agregar producto") },
-                    text = { Text("AGREGAR") }, // Texto visible solo cuando no hay scroll
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
-
-            if (!isExtended) {
-                FloatingActionButton(
-                    onClick = { navigateToCreateFood() },
-                    modifier = Modifier.padding(16.dp).padding(horizontal = 20.dp)
-                ) {
-                    Icon(Icons.Default.Add, "Agregar PRODUCTO")
+                    ExtendedFloatingActionButton(
+                        onClick = { navigateToCreateFood() },
+                        icon = { Icon(Icons.Default.Add, "Agregar producto") },
+                        text = { Text("AGREGAR") }, // Texto visible solo cuando no hay scroll
+                        modifier = Modifier.padding(16.dp)
+                    )
                 }
-            }
-        },
-        floatingActionButtonPosition = if (isExtended) FabPosition.End else FabPosition.Center
-    ) { innerpadding ->
+
+                if (!isExtended) {
+                    FloatingActionButton(
+                        onClick = { navigateToCreateFood() },
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .padding(horizontal = 20.dp)
+                    ) {
+                        Icon(Icons.Default.Add, "Agregar PRODUCTO")
+                    }
+                }
+            },
+            floatingActionButtonPosition = if (isExtended) FabPosition.End else FabPosition.Center
+        ) { innerpadding ->
 //------------------------------------------iterationOfProducts-----------------------------------------
-        Box(modifier = modifier.clickable { focusManager.clearFocus();stateOfBalance = false }) {
+            Box(modifier = modifier.clickable {
+                focusManager.clearFocus();stateOfBalance = false
+            }) {
 
-            LazyColumn(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(innerpadding),
-                state = scrollState
-            ) {
-                //reciclerview to watch items or products
-                items(
-                    items = productos,
-                    key = { it.id }) { producto ->
-                    if (producto.client == clients.id){
-                        ProducIterator(
-                        product = producto,
-                        viewModel = viewModel,
-                    )}
+                LazyColumn(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(innerpadding),
+                    state = scrollState
+                ) {
+                    //reciclerview to watch items or products
+                    items(
+                        items = productos,
+                        key = { it.id }) { producto ->
+                        if (producto.client == clients.id) {
+                            ProducIterator(
+                                product = producto,
+                                viewModel = viewModel,
+                            )
+                        }
+                    }
+                }
+                if (isExtended) {
+                    Row(
+                        modifier = modifier
+                            .align(Alignment.BottomStart)
+                            .padding(innerpadding)
+                        // Asegura que el botón esté por encima
+                    ) {
+                        ClientBalance(viewModel, stateOfBalance = stateOfBalance) {
+                            stateOfBalance = !stateOfBalance
+                        }
+
+
+                    }
                 }
             }
-            if (isExtended){
-                Row(
-                    modifier = modifier.align(Alignment.BottomStart)
-                        .padding(innerpadding)
-                    // Asegura que el botón esté por encima
-                ) {
-                    ClientBalance(viewModel, stateOfBalance = stateOfBalance) {
-                        stateOfBalance = !stateOfBalance
+            if (!isExtended) {
+                Box {
+                    Row(
+                        modifier = modifier
+                            .align(Alignment.BottomStart)
+                            .padding(innerpadding)
+                        // Asegura que el botón esté por encima
+                    ) {
+                        ClientBalance(viewModel, stateOfBalance = stateOfBalance) {
+                            stateOfBalance = !stateOfBalance
+                        }
+
+
                     }
-
-
                 }
             }
         }
-        if (!isExtended){
-            Box{
-                Row(
-                    modifier = modifier.align(Alignment.BottomStart)
-                        .padding(innerpadding)
-                    // Asegura que el botón esté por encima
-                ) {
-                    ClientBalance(viewModel, stateOfBalance = stateOfBalance) {
-                        stateOfBalance = !stateOfBalance
-                    }
 
-
-                }
-            }
-        }
     }
 }
+
 
 fun formatNumber(number: Float): String {
     // Puedes especificar la configuración regional (Locale) aquí.
