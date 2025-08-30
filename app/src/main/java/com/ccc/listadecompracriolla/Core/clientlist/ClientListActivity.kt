@@ -22,24 +22,29 @@ import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.verticalScroll
+
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -55,10 +60,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
@@ -73,21 +78,24 @@ fun ClientListScreen(
     navigateToCreateFood: () -> Unit,
 ) {
 //------------------------------------------Variables-----------------------------------------
+    //var for pull to refresh
     var loading by remember { mutableStateOf(false) }
+    val refreshState = rememberPullToRefreshState()
+
     val scrollState = rememberLazyListState()
-    val isExtended by remember { derivedStateOf { scrollState.firstVisibleItemIndex == 0 } }
+    val isExtended by remember { derivedStateOf { scrollState.firstVisibleItemIndex == 0 } }//var for state of the FAB
+    //variables from viewmodels
     val productos by viewModel.productos.collectAsState()
     val clients by viewModel.actualList.collectAsState()
+    //variable to state of balance
     var stateOfBalance by remember { mutableStateOf(false) }
-    val refreshState = rememberPullToRefreshState()
+
     //variable corrutinas
     val coroutineScope = rememberCoroutineScope()
     //snackBarState
     val snackbarHostState = remember { SnackbarHostState() }
     //variables para enfocar
     val focusManager = LocalFocusManager.current
-    //failure Api
-    var failureApiMessage by remember { mutableStateOf(false) }
 
 
     PullToRefreshBox(state = refreshState, isRefreshing = loading, onRefresh = {
@@ -102,10 +110,24 @@ fun ClientListScreen(
 
 
         Scaffold(
-            topBar = { TopMenu(viewModel = viewModel, navigateToback = { }) },
+            topBar = {
+                TopMenu(
+                    viewModel = viewModel,
+                    navigateToback = { },
+                    onFailureApi = {//on failure Api show snackBar to internet
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar(
+                                message = "Debe conectarse a internet para usar el conversor de tasas",
+                                actionLabel = "OK",
+                                duration = SnackbarDuration.Short
+                            )
+                        }
+                    })
+            },
             bottomBar = { BottomClientList(viewModel = viewModel) },
-            snackbarHost = {SnackbarHost(hostState = snackbarHostState)},
-            floatingActionButton = {//animacion del floatingActionButton
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+            floatingActionButton = {
+                //animacion del floatingActionButton
                 AnimatedVisibility(
                     visible = isExtended,
                     enter = fadeIn() + expandHorizontally(),
@@ -122,11 +144,8 @@ fun ClientListScreen(
                 }
 
                 if (!isExtended) {
-                    FloatingActionButton(
-                        onClick = { navigateToCreateFood() },
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .padding(horizontal = 20.dp)
+                    FloatingActionButton(modifier = modifier.offset(0.dp,(60).dp).border(border = BorderStroke(4.dp,Color.White), shape = FloatingActionButtonDefaults.shape),
+                        onClick = { navigateToCreateFood() }
                     ) {
                         Icon(Icons.Default.Add, "Agregar PRODUCTO")
                     }
@@ -136,6 +155,7 @@ fun ClientListScreen(
         ) { innerpadding ->
 //------------------------------------------iterationOfProducts-----------------------------------------
             Box(modifier = modifier.clickable {
+                //var to hide keyboard if its show
                 focusManager.clearFocus();stateOfBalance = false
             }) {
 
@@ -157,10 +177,9 @@ fun ClientListScreen(
                         }
                     }
                 }
-                if (isExtended) {
                     Row(
                         modifier = modifier
-                            .align(Alignment.BottomStart)
+                            .align(if (isExtended) Alignment.BottomStart else Alignment.TopStart)
                             .padding(innerpadding)
                         // Asegura que el botón esté por encima
                     ) {
@@ -170,23 +189,7 @@ fun ClientListScreen(
 
 
                     }
-                }
-            }
-            if (!isExtended) {
-                Box {
-                    Row(
-                        modifier = modifier
-                            .align(Alignment.BottomStart)
-                            .padding(innerpadding)
-                        // Asegura que el botón esté por encima
-                    ) {
-                        ClientBalance(viewModel, stateOfBalance = stateOfBalance) {
-                            stateOfBalance = !stateOfBalance
-                        }
 
-
-                    }
-                }
             }
 
 

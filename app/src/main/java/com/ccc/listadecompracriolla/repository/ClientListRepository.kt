@@ -13,6 +13,14 @@ import kotlinx.coroutines.flow.map
 @Singleton
 class ClientRepository @Inject constructor(private val clientDao: ClientDao) {
 
+    // Opcional: Obtener todos los productos en general
+    fun getAllProducts(): Flow<List<ProductEntity>> {
+        return clientDao.getAllProducts()
+    }
+    // Opcional: Obtener todos los productos en general
+    fun getAllClients(): Flow<List<ClientListEntity>> {
+        return clientDao.getAllClients()
+    }
     // --- Obtener clientes con sus productos ---
     fun getAllClientsWithProducts(): Flow<List<ClientWithProducts>> {
         return clientDao.getClientsWithProducts()
@@ -59,10 +67,7 @@ class ClientRepository @Inject constructor(private val clientDao: ClientDao) {
         clientDao.deleteClientProductCrossRef(crossRef)
     }
 
-    // Opcional: Obtener todos los productos en general
-    fun getAllProducts(): Flow<List<ProductEntity>> {
-        return clientDao.getAllProducts()
-    }
+
 
     // Opcional: Obtener productos asociados a un cliente específico (si necesitas solo la lista de productos)
     @Deprecated("Usar getClientWithProductsById para la relación completa")

@@ -15,7 +15,7 @@ import com.ccc.listadecompracriolla.entities.ProductEntity
         ProductEntity::class,
         ClientProductCrossRef::class
     ],
-    version = 3,
+    version = 1,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

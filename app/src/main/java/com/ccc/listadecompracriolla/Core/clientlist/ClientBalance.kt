@@ -20,9 +20,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -50,7 +50,7 @@ fun ClientBalance(
     val inCar by viewModel.inCar.collectAsState()
     val tasa by viewModel.tasa.collectAsState()
     val focusElements = remember { FocusRequester() }
-    var deathPresu by remember { mutableStateOf(false) }
+    val deathPresu by viewModel.deathPresu.collectAsState()
     AnimatedContent(
         targetState = stateOfBalance,
         modifier = modifier.padding(all = 5.dp)
@@ -124,7 +124,7 @@ fun ClientBalance(
 
                     }
                     if (presupuesto.isNotEmpty() && presupuesto != ".") {
-                        deathPresu = if (presupuesto.toFloat() < inCar) true else false
+                        if (presupuesto.toFloat() < inCar) viewModel.validDeathPresu(true) else viewModel.validDeathPresu(false)
                         TextButton(onClick = { onDimiss() }) {
                             Text(
                                 text = (formatNumber((presupuesto.toFloat() * tasa) - (inCar * tasa))),

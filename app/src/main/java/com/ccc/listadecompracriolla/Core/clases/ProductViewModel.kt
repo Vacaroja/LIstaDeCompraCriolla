@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 import javax.inject.Inject
+import kotlin.text.toFloat
 
 @HiltViewModel
 class ProductViewModel @Inject constructor(private val clientRepository: ClientRepository) :
@@ -34,45 +35,40 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     //--------------------------------presupuesto-------------------------------------
     private val _presupuesto = MutableStateFlow("")
     val presupuesto: StateFlow<String> = _presupuesto.asStateFlow()
-
-    /*val presupuestoExcedido: StateFlow<Boolean> = _productos
-        .combine(_presupuesto) { productos, presupuesto? ->
-            val totalActual = productos.fold(0f) { acc, p -> acc + (p.price * p.cant) }
-            totalActual > presupuesto
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = false
-        )*/
+    //--------------------variable para verificar presupuesto excedito
+    private val _deathPresu = MutableStateFlow(false)
+    val deathPresu: StateFlow<Boolean> = _deathPresu.asStateFlow()
 
 
     //--------------------------------total-------------------------------------
-    val total: StateFlow<Float> = combine(_productos,_actualList) { products,actList ->//funcion que evalua los 2 stateFlows
+    val total: StateFlow<Float> =
+        combine(_productos, _actualList) { products, actList ->//funcion que evalua los 2 stateFlows
             products.filter { it.client == actList.id }//filtro para actualList y Product
                 .fold(0f) { acc, product ->//suma
                     acc + (product.price * product.cant)
                 }
         }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(200),
-            initialValue = 0f
-        )
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(200),
+                initialValue = 0f
+            )
 
 
     //------------------------------------Total en carrito (productos marcados)------------------
-    val inCar: StateFlow<Float> = combine(_productos,_actualList) { products,actList ->
-            products.filter { it.checked && it.client == actList.id }
-                .fold(0f) { acc, product ->
-                    acc + (product.price * product.cant)
-                }
-        }
+    val inCar: StateFlow<Float> = combine(_productos, _actualList) { products, actList ->
+        products.filter { it.checked && it.client == actList.id }
+            .fold(0f) { acc, product ->
+                acc + (product.price * product.cant)
+            }
+    }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(200),
             initialValue = 0f
         )
+
+    //------------------------------------DATABASES-------------------------------------
 
 
     //--------------------------------------------INIT-----------------------------------------------
@@ -94,7 +90,11 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
         if (currentList != null) {
             _actualList.value = currentList
             _presupuesto.value = currentList.presupuesto
-            inCar
+            try {
+                if (presupuesto.value.toFloat() < inCar.value) validDeathPresu(true) else validDeathPresu(false)
+            }catch (_:Exception){
+                validDeathPresu(false)
+            }
 
         }
 
@@ -136,7 +136,7 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     fun toggleCheck(productId: Int) {
         _productos.update { currentList ->
             val index = currentList.indexOfFirst { it.id == productId }
-            if (index != -1){
+            if (index != -1) {
                 val mutableList = currentList.toMutableList()
 
                 // Get the product and toggle its 'checked' state
@@ -148,7 +148,7 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
 
                 // Return the updated list
                 mutableList
-            }else currentList
+            } else currentList
 
         }
     }
@@ -164,6 +164,11 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
                 }
             }
         }
+    }
+    //-----------------------------DeathPresupuestoChanged-----------------------
+
+    fun validDeathPresu(change: Boolean) {
+        _deathPresu.value = change
     }
     //-----------------------------addPresupuesto------------------------------
 
@@ -226,6 +231,10 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
                 tipoConversion
             }
         }
+    }
+
+    fun validTasa(): Boolean {
+        return if (bcvPriceFloat.value != (-1).toFloat()) false else true
     }
 
     enum class TipoConversion { DIRECTA, DOLAR_A_BCV, DOLAR_A_BS_USDT }

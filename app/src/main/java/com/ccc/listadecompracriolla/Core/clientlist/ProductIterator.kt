@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,14 +27,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ccc.listadecompracriolla.Core.clases.Product
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
-import com.ccc.listadecompracriolla.R
 
 @Composable
 fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: ProductViewModel) {
@@ -54,6 +51,8 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
     val maxLinesName = 3
     val fontSizeName = 15.sp
     val fontSizePrice = 12.sp
+
+
 
 //------------------------------------------variables de estado-----------------------------------------
 
@@ -80,7 +79,7 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
                     product.name,
                     color = Color.Blue,
                     fontSize = fontSizeName,
-                    modifier = modifier.widthIn(max = 90.dp),
+                    modifier = modifier.widthIn(min = 90.dp, max = 90.dp),
                     maxLines = maxLinesName
                 )
             } else {
@@ -88,7 +87,7 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
                         product.name, color = Color.Blue,
                         textDecoration = TextDecoration.LineThrough,
                         fontSize = fontSizeName,
-                        modifier = modifier.widthIn(max = 90.dp),
+                        modifier = modifier.widthIn(90.dp),
                         maxLines = maxLinesName
                     )
 
@@ -99,28 +98,10 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
             //convertir en Textbutton para cambiarlo directamente
 
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = {
-                    cantidad += 1;viewModel.updateCantidad(
-                    product.id,
-                    cantidad
-                )
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "plus"
-                    )
-                }
+            Row( modifier = modifier.padding(horizontal = 5.dp)) {
+
                 Text(text = "$cantidad")
-                IconButton(onClick = {
-                    if (cantidad > 0) cantidad -= 1 else cantidad
-                    viewModel.updateCantidad(product.id, cantidad)
-                }) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_minus),
-                        contentDescription = "minus"
-                    )
-                }
+                Text(text = product.medida)
             }
 
             TextButton(onClick = { showBottomSheet = true }) {

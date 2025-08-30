@@ -33,7 +33,8 @@ import com.ccc.listadecompracriolla.ui.theme.Orange
 fun TopMenu(
     modifier: Modifier = Modifier,
     viewModel: ProductViewModel,
-    navigateToback: () -> Unit
+    navigateToback: () -> Unit,
+    onFailureApi: () -> Unit
 ) {
     var bottomSheetClient by remember { mutableStateOf(false) }
     val actualList by viewModel.actualList.collectAsState()
@@ -42,13 +43,15 @@ fun TopMenu(
         title = {
             Text(
                 text = "${actualList.name}",
-                modifier = Modifier.fillMaxWidth().clickable{bottomSheetClient = true},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { bottomSheetClient = true },
                 textAlign = TextAlign.Center
             )
 //------------------------------------------NavigationIcons-----------------------------------------
 
         }, navigationIcon = {
-            IconButton(onClick = {  }) {//BOTON PARA IR HACIA ATRAS
+            IconButton(onClick = { }) {//BOTON PARA IR HACIA ATRAS
                 Icon(
                     imageVector = Icons.Default.Menu,
                     contentDescription = "Back"
@@ -75,7 +78,13 @@ fun TopMenu(
             )
 //------------------------------------------DolarToBCV-----------------------------------------
 
-            IconButton(onClick = { viewModel.actualizarTasa(ProductViewModel.TipoConversion.DOLAR_A_BCV) }) {//BOTON PARA LAS CAMBIAR A DOLAR BCV
+            IconButton(onClick = {
+                if (viewModel.validTasa()) {
+                    onFailureApi()
+                } else {
+                    viewModel.actualizarTasa(ProductViewModel.TipoConversion.DOLAR_A_BCV)
+                }
+            }) {//BOTON PARA LAS CAMBIAR A DOLAR BCV
                 Icon(
                     painter = painterResource(id = R.drawable.ic_bcv),
                     contentDescription = "bcv"
@@ -109,8 +118,11 @@ fun TopMenu(
 
             )
     )
-    if (bottomSheetClient){
-        ModalBottomSheetClientList(viewModel = viewModel,onDismiss= { bottomSheetClient = false },onChange = {currentList -> viewModel.changeCurrentList(currentList)})
+    if (bottomSheetClient) {
+        ModalBottomSheetClientList(
+            viewModel = viewModel,
+            onDismiss = { bottomSheetClient = false },
+            onChange = { currentList -> viewModel.changeCurrentList(currentList) })
     }
 
 

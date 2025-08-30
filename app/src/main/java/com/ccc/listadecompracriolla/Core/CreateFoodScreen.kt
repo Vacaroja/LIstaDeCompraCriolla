@@ -7,6 +7,7 @@ package com.ccc.listadecompracriolla.Core
 arreglar error con el .
  */
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -38,6 +40,7 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,7 +49,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -80,13 +87,19 @@ fun CreateFoodScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
+    val focusManager = LocalFocusManager.current
+    val focusElements = remember { FocusRequester() }
+
+    //-----------------------------TextFieldParameter--------------------------
+
+    val textFieldMediumWidth = 180.dp
+    val textFieldMediumHeight = 56.dp
 
 
-
+    LaunchedEffect(Unit) { focusElements.requestFocus()}
 
     Scaffold(
 //------------------------------------------topbar-----------------------------------------
-
         topBar = {
             TopMenuCreateFood(
                 navigateToback = { navigateToback() },
@@ -129,7 +142,7 @@ fun CreateFoodScreen(
         Column(
             modifier = modifier
                 .padding(innerPadding)
-                .fillMaxSize(),
+                .fillMaxSize().clickable{focusManager.clearFocus()},
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 //------------------------------------------nombre-----------------------------------------
@@ -146,10 +159,15 @@ fun CreateFoodScreen(
                         contentDescription = "costo"
                     )
                 },
-                shape = MaterialTheme.shapes.medium
+                shape = MaterialTheme.shapes.medium,
+                modifier = modifier.focusRequester(focusElements),
+                maxLines = 3
             )
+            Row{
 //------------------------------------------Precio-----------------------------------------
             OutlinedTextField(
+                modifier = modifier.width(textFieldMediumWidth)
+                    .heightIn(min = textFieldMediumHeight),
 
                 value = precio,
                 onValueChange = { nuevoValor ->
@@ -171,6 +189,17 @@ fun CreateFoodScreen(
                 ),
                 shape = MaterialTheme.shapes.medium,  // Esquinas redondeadas
             )
+                Card(modifier = modifier.padding(5.dp)) {
+                    IconButton(onClick = {}) {
+                        Icon(painter = painterResource(R.drawable.bolivar),contentDescription = "bolivares")
+                    }
+                }
+                Card(modifier = modifier.padding(5.dp)) {
+                    IconButton(onClick = {}) {
+                        Icon(painter = painterResource(R.drawable.dolar),contentDescription = "bolivares")
+                    }
+                }
+            }
 
             //funcion para parte de peso y medida
 //------------------------------------------cantidadymedida-----------------------------------------
@@ -187,8 +216,8 @@ fun CreateFoodScreen(
                 OutlinedTextField(
                     modifier = modifier
                         .padding(horizontal = 5.dp)
-                        .width(180.dp)
-                        .heightIn(min = 56.dp),
+                        .width(textFieldMediumWidth)
+                        .heightIn(min = textFieldMediumHeight),
                     value = cantidad,
                     onValueChange = { nuevoValor ->
                         if (nuevoValor.isEmpty() || nuevoValor.matches(Regex("^\\d*\\.?\\d*$"))) {

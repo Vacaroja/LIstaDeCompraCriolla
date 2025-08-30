@@ -9,11 +9,11 @@ import androidx.room.PrimaryKey
 data class ClientListEntity(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
     var name: String,
-    var presupuesto: Float = 0f
+    var presupuesto: String = ""
 )
 
 // --- 2. Entidad para la tabla intermedia (Many-to-Many) ---
-// Esta tabla связывает clientes y productos
+// Esta tabla clientes y productos
 @Entity(
     tableName = "client_product_cross_ref",
     primaryKeys = ["clientId", "productId"], // La clave primaria es la combinación de ambos IDs
@@ -40,7 +40,14 @@ data class ClientProductCrossRef(
 )
 
 // --- 3. Entidad para la tabla de Productos ---
-@Entity(tableName = "products")
+@Entity(tableName = "products", foreignKeys = [
+    ForeignKey(
+        entity = ClientListEntity::class,
+        parentColumns = ["id"],
+        childColumns = ["client"],
+        onDelete = ForeignKey.CASCADE // Si se elimina un cliente, sus referencias en esta tabla también
+    ),
+])
 data class ProductEntity(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
     val name: String = "",
@@ -48,5 +55,6 @@ data class ProductEntity(
     var price: Float = 0f,
     var checked: Boolean = false,
     var nota: String = "",
-    var medida: String = ""
+    var medida: String = "",
+    var client: Int? = null
 )
