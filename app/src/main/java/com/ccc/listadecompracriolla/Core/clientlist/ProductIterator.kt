@@ -45,7 +45,7 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
     val focusManager = LocalFocusManager.current
     val tasa by viewModel.tasa.collectAsState()
 
-    var enableButton by remember { mutableStateOf(true) }
+
 
     //-------------------------------------textParameters-------------------------------------
     val df = DecimalFormat("#.##")
@@ -60,13 +60,12 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
 
     val namePaddingValues = 90.dp
 //------------------------------------------variables de estado-----------------------------------------
-    if (enableButton){
+
     Card(
         modifier
             .fillMaxSize()
             .padding(5.dp)
             .clickable {
-                enableButton = false
                 onChangeProduct(product.id)
             },
         border = BorderStroke(1.dp,Color.Black),
@@ -160,4 +159,3 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
         }
     }
 }
-    }

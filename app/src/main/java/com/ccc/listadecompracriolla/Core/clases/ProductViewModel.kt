@@ -183,14 +183,14 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
 
     fun actualizeProduct(productId: Int){
         if (productId == -1){
-            _actualprod.value = Product()
+            _actualprod.value = Product(0)
         }
         else {
             val actualProd = _productos.value.firstOrNull { it.id == productId }
             if (actualProd != null){
                 _actualprod.value = actualProd
             }else
-                _actualprod.value = Product()
+                _actualprod.value = Product(0)
         }
     }
 

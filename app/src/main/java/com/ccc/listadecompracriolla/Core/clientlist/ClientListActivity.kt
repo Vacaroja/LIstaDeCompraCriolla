@@ -133,8 +133,9 @@ fun ClientListScreen(
 
                     ExtendedFloatingActionButton(
 
-                        onClick = { enableButton = false
-                            navigateToCreateFood() },
+                        onClick = {
+                            navigateToCreateFood()
+                            enableButton = false},
                         icon = { Icon(Icons.Default.Add, "Agregar producto") },
                         text = { Text("AGREGAR") }, // Texto visible solo cuando no hay scroll
                         modifier = Modifier.padding(16.dp)
@@ -142,9 +143,11 @@ fun ClientListScreen(
                 }
 
                 if (!isExtended) {
-                    enableButton = false
+
                     FloatingActionButton(modifier = Modifier.padding(16.dp),
-                        onClick = { navigateToCreateFood() }
+                        onClick = {
+                            enableButton = false
+                            navigateToCreateFood() }
                     ) {
                         Icon(Icons.Default.Add, "Agregar PRODUCTO")
                     }
@@ -155,7 +158,7 @@ fun ClientListScreen(
             Box(modifier = modifier.clickable {
                 //var to hide keyboard if its show
                 focusManager.clearFocus();stateOfBalance = false
-            }) {
+            }) { if (enableButton) {
 
                 LazyColumn(
                     modifier = modifier
@@ -173,6 +176,7 @@ fun ClientListScreen(
                                 product = producto,
                                 viewModel = viewModel,
                                 onChangeProduct = {idProduct ->
+                                    enableButton = false
                                     viewModel.actualizeProduct(idProduct)
                                     navigateToCreateFood()
                                 }
@@ -193,7 +197,7 @@ fun ClientListScreen(
 
                     }
 
-            }
+            }}
 
 
         }

@@ -78,14 +78,20 @@ fun CreateFoodScreen(
 ) {
 //------------------------------------------variables de estado-----------------------------------------
     val actProduct by viewModel.actualprod.collectAsState()
+    val productos by viewModel.productos.collectAsState()
+    val tasa by viewModel.tasa.collectAsState()
+    val actual by viewModel.actualList.collectAsState()
 
     val medidaList = listOf("Und", "Lb", "Kg", "L")
-    var nombre by remember {  mutableStateOf(if (actProduct.id != 0) actProduct.name else "") }
-    var precio by remember { mutableStateOf(if (actProduct.id != 0) "${actProduct.price}" else "") }
-    var nota by remember { mutableStateOf(if (actProduct.id != 0) actProduct.nota else "") }
-    var unidad by remember { mutableStateOf(if (actProduct.id != 0) actProduct.medida else medidaList[0]) }
-    var cantidad by remember { mutableStateOf(if (actProduct.id != 0) "${actProduct.cant}" else "") }
-    var expanded by remember { mutableStateOf(if (actProduct.id != 0) actProduct.checked else false) }
+
+
+    var nombre by remember {  mutableStateOf("") }
+    var precio by remember { mutableStateOf("") }
+    var nota by remember { mutableStateOf("") }
+    var unidad by remember { mutableStateOf(medidaList[0]) }
+    var cantidad by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
+
 
 
     var isPressed by remember { mutableStateOf(false) }
@@ -101,12 +107,18 @@ fun CreateFoodScreen(
         animationSpec = tween(durationMillis = 200)
     )
 
+    if (actProduct.id != 0) {
+        nombre = actProduct.name
+        precio = actProduct.price.toString()
+        nota = actProduct.nota
+        unidad = actProduct.medida
+        cantidad = actProduct.cant.toString()}
 
 
 
-    val productos by viewModel.productos.collectAsState()
-    val tasa by viewModel.tasa.collectAsState()
-    val actual by viewModel.actualList.collectAsState()
+
+
+
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -131,6 +143,7 @@ fun CreateFoodScreen(
             TopMenuCreateFood(enableButton = enableButton,
                 navigateToback = {
                     enableButton = false
+                    viewModel.actualizeProduct(-1)
                     navigateToback() },
                 saveProduct = {
                     if (nombre.isBlank()) {
