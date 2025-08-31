@@ -2,6 +2,7 @@ package com.ccc.listadecompracriolla.Core.clientlist
 
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.heightIn
@@ -31,7 +32,8 @@ fun ModalBottomSheetClientList(
     viewModel: ProductViewModel,
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit,
-    onChange: (Int?) -> Unit
+    onChange: (Int?) -> Unit,
+    onAddNew: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = false,
@@ -44,18 +46,15 @@ fun ModalBottomSheetClientList(
         ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Button(onClick = {
-                viewModel.addClientList(
-                    ClientList(
-                        id = clientL.size + 1,
-                        name = "coco"
-                    )
-                )
+                onAddNew()
             }) { Text("CREAR NUEVA LISTA") }
-            LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 90.dp)) {
+            LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 120.dp), horizontalArrangement = Arrangement.Center) {
                 items(items = clientL) { client ->
                     Card(
                         modifier = Modifier
-                            .padding(2.dp)
+                            .padding(6.dp)
+                            .heightIn(min = 25.dp)
+                            .widthIn(min = 25.dp)
                             .clickable {
                                 onChange(client.id)
                                 onDismiss()
@@ -63,10 +62,7 @@ fun ModalBottomSheetClientList(
                         Box(contentAlignment = Alignment.Center) {
                             Text(
                                 text = "${client.name}",
-                                modifier = modifier
-                                    .heightIn(min = 25.dp)
-                                    .widthIn(min = 25.dp)
-                                    .padding(6.dp)
+                                modifier = modifier.padding(6.dp)
                             )
                         }
                     }

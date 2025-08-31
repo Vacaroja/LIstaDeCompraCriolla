@@ -42,6 +42,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -112,11 +113,15 @@ fun ClientListScreen(
                     navigateToback = { },
                     onFailureApi = {//on failure Api show snackBar to internet
                         coroutineScope.launch {
-                            snackbarHostState.showSnackbar(
+                            val result = snackbarHostState.showSnackbar(
                                 message = "Debe conectarse a internet para usar el conversor de tasas",
-                                actionLabel = "OK",
+                                actionLabel = "Ya estoy conectado",
                                 duration = SnackbarDuration.Short
                             )
+                            when(result) {
+                                SnackbarResult.Dismissed -> snackbarHostState.showSnackbar("Se usara la ultima tasa guardada, recargue para volver a intenter buscar tasa")
+                                SnackbarResult.ActionPerformed -> {viewModel.searchDolarBcv()}
+                            }
                         }
                     })
             },

@@ -103,12 +103,16 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     }
     //-----------------------------------------addClientList--------------------------------
 
-    fun addClientList(client: ClientList) {
+    fun addClientList(nameClient: String) {
+        val idClient = _clientList.value.size + 1
+        val client = ClientList(idClient, nameClient)
         viewModelScope.launch {
             _clientList.update { currentL ->
                 currentL + client
             }
         }
+        changeCurrentList(idClient)
+
     }
 
 

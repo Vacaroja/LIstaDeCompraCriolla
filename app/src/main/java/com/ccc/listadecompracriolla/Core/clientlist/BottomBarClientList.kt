@@ -33,7 +33,6 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
     val total by viewModel.total.collectAsState()
     val inCar by viewModel.inCar.collectAsState()
     val tasa by viewModel.tasa.collectAsState()
-    val presupuesto by viewModel.presupuesto.collectAsState()
     val df = DecimalFormat("#.##")
 //------------------------------------------Variables-----------------------------------------
     val fontSizeTasa = 100.dp

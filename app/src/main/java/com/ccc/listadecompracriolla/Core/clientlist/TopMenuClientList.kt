@@ -37,6 +37,7 @@ fun TopMenu(
     onFailureApi: () -> Unit
 ) {
     var bottomSheetClient by remember { mutableStateOf(false) }
+    var bottomSheetNewClient by remember { mutableStateOf(false) }
     val actualList by viewModel.actualList.collectAsState()
 
     TopAppBar(
@@ -122,7 +123,19 @@ fun TopMenu(
         ModalBottomSheetClientList(
             viewModel = viewModel,
             onDismiss = { bottomSheetClient = false },
-            onChange = { currentList -> viewModel.changeCurrentList(currentList) })
+            onChange = { currentList -> viewModel.changeCurrentList(currentList) },
+            onAddNew = {
+                bottomSheetNewClient = true
+                bottomSheetClient = false})
+    }
+    if (bottomSheetNewClient){
+        CreateClientList(
+            onSave = {
+                nameClient -> viewModel.addClientList(nameClient)
+                bottomSheetNewClient = false},
+            onDismiss = {
+                bottomSheetNewClient = false }
+        )
     }
 
 
