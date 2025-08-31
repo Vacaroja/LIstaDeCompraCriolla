@@ -3,6 +3,7 @@ package com.ccc.listadecompracriolla.Core.clientlist
 import android.icu.text.DecimalFormat
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -40,7 +41,6 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
 
     var precio by remember { mutableStateOf("") }//var price
     var cantidad by remember { mutableFloatStateOf(product.cant) }//var cant
-    var checked by remember { mutableStateOf(false) }//var of checkBox
     var showBottomSheet by remember { mutableStateOf(false) }//var of BottomScreen
     val focusManager = LocalFocusManager.current
     val tasa by viewModel.tasa.collectAsState()
@@ -54,6 +54,10 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
 
     val fontSizeCost = 90.dp
 
+
+    //-------------------------------------paddingValues-----------------------------
+
+    val namePaddingValues = 90.dp
 //------------------------------------------variables de estado-----------------------------------------
 
     Card(
@@ -74,12 +78,12 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
                 checked = product.checked
             )
 
-            if (!checked) {
+            if (!product.checked) {
                 Text(
                     product.name,
                     color = Color.Blue,
                     fontSize = fontSizeName,
-                    modifier = modifier.widthIn(min = 90.dp, max = 90.dp),
+                    modifier = modifier.widthIn(max = namePaddingValues, min = namePaddingValues),
                     maxLines = maxLinesName
                 )
             } else {
@@ -87,7 +91,7 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
                         product.name, color = Color.Blue,
                         textDecoration = TextDecoration.LineThrough,
                         fontSize = fontSizeName,
-                        modifier = modifier.widthIn(90.dp),
+                        modifier = modifier.widthIn(max = namePaddingValues, min = namePaddingValues),
                         maxLines = maxLinesName
                     )
 
@@ -100,8 +104,9 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
 
             Row( modifier = modifier.padding(horizontal = 5.dp)) {
 
-                Text(text = "$cantidad")
-                Text(text = product.medida)
+                Text(text = "$cantidad ${product.medida}",
+                    modifier= modifier.widthIn(max = 60.dp))
+
             }
 
             TextButton(onClick = { showBottomSheet = true }) {

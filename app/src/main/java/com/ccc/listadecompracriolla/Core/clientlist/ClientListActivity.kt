@@ -22,27 +22,21 @@ import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -61,7 +55,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
@@ -145,14 +138,13 @@ fun ClientListScreen(
                 }
 
                 if (!isExtended) {
-                    FloatingActionButton(modifier = modifier.offset(0.dp,(60).dp).border(border = BorderStroke(4.dp,Color.White), shape = FloatingActionButtonDefaults.shape),
+                    FloatingActionButton(modifier = Modifier.padding(16.dp),
                         onClick = { navigateToCreateFood() }
                     ) {
                         Icon(Icons.Default.Add, "Agregar PRODUCTO")
                     }
                 }
-            },
-            floatingActionButtonPosition = if (isExtended) FabPosition.End else FabPosition.Center
+            }
         ) { innerpadding ->
 //------------------------------------------iterationOfProducts-----------------------------------------
             Box(modifier = modifier.clickable {
@@ -181,7 +173,7 @@ fun ClientListScreen(
                 }
                     Row(
                         modifier = modifier
-                            .align(if (isExtended) Alignment.BottomStart else Alignment.TopStart)
+                            .align(Alignment.BottomStart)
                             .padding(innerpadding)
                         // Asegura que el botón esté por encima
                     ) {
