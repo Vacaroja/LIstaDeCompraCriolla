@@ -17,3 +17,7 @@ val greenApple = Color(0xFFb5f20a)
 val greenMinus= Color(0xFF7bf20a)
 val greenPlus = Color(0xFF7bf20a)
 val Red = Color(0xFFFC2A00)
+
+
+val unPressedColorButton = Color(0xFFB0B0BB)
+val pressedColorButton = Color(0xFF7B7B85)

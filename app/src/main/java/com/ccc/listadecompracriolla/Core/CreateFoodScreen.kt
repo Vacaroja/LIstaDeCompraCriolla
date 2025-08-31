@@ -7,20 +7,23 @@ package com.ccc.listadecompracriolla.Core
 arreglar error con el .
  */
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -52,7 +55,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -61,9 +63,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.Product
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
-
 import com.ccc.listadecompracriolla.R
 import com.ccc.listadecompracriolla.ui.theme.Orange
+import com.ccc.listadecompracriolla.ui.theme.pressedColorButton
+import com.ccc.listadecompracriolla.ui.theme.unPressedColorButton
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,6 +77,7 @@ fun CreateFoodScreen(
     navigateToback: () -> Unit
 ) {
 //------------------------------------------variables de estado-----------------------------------------
+
     val medidaList = listOf("Und", "Lb", "Kg", "L")
     var nombre by remember { mutableStateOf("") }
     var precio by remember { mutableStateOf("") }
@@ -81,10 +85,30 @@ fun CreateFoodScreen(
     var unidad by remember { mutableStateOf(medidaList[0]) }
     var cantidad by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
-    var dialogErrorAlert by remember { mutableStateOf(false) }
+
+
+    var isPressed by remember { mutableStateOf(false) }
+
+    var enableButton by remember { mutableStateOf(true) }
+
+    val animatedColorBs by animateColorAsState(
+        targetValue = if (isPressed) pressedColorButton else unPressedColorButton,
+        animationSpec = tween(durationMillis = 200)
+    )
+    val animatedColorDolar by animateColorAsState(
+        targetValue = if (!isPressed) pressedColorButton else unPressedColorButton,
+        animationSpec = tween(durationMillis = 200)
+    )
+
+
+
+
     val productos by viewModel.productos.collectAsState()
+    val tasa by viewModel.tasa.collectAsState()
     val actual by viewModel.actualList.collectAsState()
+
     val snackbarHostState = remember { SnackbarHostState() }
+
     val scope = rememberCoroutineScope()
 
     val focusManager = LocalFocusManager.current
@@ -96,13 +120,17 @@ fun CreateFoodScreen(
     val textFieldMediumHeight = 56.dp
 
 
-    LaunchedEffect(Unit) { focusElements.requestFocus()}
+
+
+    LaunchedEffect(Unit) { focusElements.requestFocus() }
 
     Scaffold(
 //------------------------------------------topbar-----------------------------------------
         topBar = {
-            TopMenuCreateFood(
-                navigateToback = { navigateToback() },
+            TopMenuCreateFood(enableButton = enableButton,
+                navigateToback = {
+                    enableButton = false
+                    navigateToback() },
                 saveProduct = {
                     if (nombre.isBlank()) {
                         scope.launch {
@@ -113,11 +141,12 @@ fun CreateFoodScreen(
                             )
                         }
                     } else {
+                        enableButton = false
                         val nuevoProducto = Product(
                             id = productos.size + 1, // O usa un UUID
                             name = nombre,
                             cant = if (cantidad.isNotEmpty() && cantidad != ".") cantidad.toFloat() else 1f,
-                            price = if (precio.isNotEmpty() && precio != ".") precio.toFloat() else 0f,
+                            price = if (precio.isNotEmpty() && precio != ".") (if (isPressed) (precio.toFloat() / tasa) else precio.toFloat()) else 0f,
                             nota = nota,
                             medida = unidad,
                             client = actual.id
@@ -134,7 +163,7 @@ fun CreateFoodScreen(
 //------------------------------------------bottombar-----------------------------------------
 
         bottomBar = { BottombarCreateFood() },
-        snackbarHost = {SnackbarHost(hostState = snackbarHostState)}//bottom bar por si quiero colocar una mariquera
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     )
 //------------------------------------------initContent-----------------------------------------
 
@@ -142,7 +171,8 @@ fun CreateFoodScreen(
         Column(
             modifier = modifier
                 .padding(innerPadding)
-                .fillMaxSize().clickable{focusManager.clearFocus()},
+                .fillMaxSize()
+                .clickable { focusManager.clearFocus() },
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 //------------------------------------------nombre-----------------------------------------
@@ -163,42 +193,81 @@ fun CreateFoodScreen(
                 modifier = modifier.focusRequester(focusElements),
                 maxLines = 3
             )
-            Row{
+            Row {
 //------------------------------------------Precio-----------------------------------------
-            OutlinedTextField(
-                modifier = modifier.width(textFieldMediumWidth)
-                    .heightIn(min = textFieldMediumHeight),
+                OutlinedTextField(
+                    modifier = modifier
+                        .width(textFieldMediumWidth)
+                        .heightIn(min = textFieldMediumHeight),
 
-                value = precio,
-                onValueChange = { nuevoValor ->
-                    if (nuevoValor.isEmpty() || nuevoValor.matches(Regex("^\\d*\\.?\\d*$"))) {
-                        precio = nuevoValor
-                    }
-                },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                label = { Text("Costo") },
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.dinero),
-                        contentDescription = "costo"
+                    value = precio,
+                    onValueChange = { nuevoValor ->
+                        if (nuevoValor.isEmpty() || nuevoValor.matches(Regex("^\\d*\\.?\\d*$"))) {
+                            precio = nuevoValor
+                        }
+                    },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                    label = { Text("Costo") },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.dinero),
+                            contentDescription = "costo"
+                        )
+                    },
+                    singleLine = true,  // Importante para campos de texto simple
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(
+                        textAlign = TextAlign.End  // Alineación derecha para valores numéricos
+                    ),
+                    shape = MaterialTheme.shapes.medium,  // Esquinas redondeadas
+                )
+
+                //----------------------------boton pa costo en bolivares--------------------------
+                Card(
+                    modifier = modifier.
+                    padding(start = 5.dp, top = 5.dp).
+                    clickable{
+                        isPressed = true
+                        viewModel.actualizarTasa(ProductViewModel.TipoConversion.DOLAR_A_BCV)
+                    },
+                    elevation = CardDefaults.cardElevation(
+                        // Cambiar la elevación para simular el hundimiento
+                        defaultElevation = if (isPressed) 2.dp else 15.dp
+                    ),
+                    colors = CardDefaults.cardColors(
+                        containerColor = animatedColorBs
                     )
-                },
-                singleLine = true,  // Importante para campos de texto simple
-                textStyle = MaterialTheme.typography.bodyLarge.copy(
-                    textAlign = TextAlign.End  // Alineación derecha para valores numéricos
-                ),
-                shape = MaterialTheme.shapes.medium,  // Esquinas redondeadas
-            )
-                Card(modifier = modifier.padding(5.dp)) {
-                    IconButton(onClick = {}) {
-                        Icon(painter = painterResource(R.drawable.bolivar),contentDescription = "bolivares")
-                    }
+                ) {
+                    Icon(
+                            painter = painterResource(R.drawable.ic_bolivar),
+                            contentDescription = "bolivares",
+                            modifier= modifier.size(50.dp)
+                        )
+
                 }
-                Card(modifier = modifier.padding(5.dp)) {
-                    IconButton(onClick = {}) {
-                        Icon(painter = painterResource(R.drawable.dolar),contentDescription = "bolivares")
-                    }
+                //----------------------------boton pa costo en dolares--------------------------
+                Card(
+                    modifier = modifier.
+                    padding(start = 5.dp, top = 5.dp).
+                    clickable{
+                        isPressed = false
+                        viewModel.actualizarTasa()
+                    },
+                    elevation = CardDefaults.cardElevation(
+                        // Cambiar la elevación para simular el hundimiento
+                        defaultElevation = if (!isPressed) 2.dp else 15.dp
+                    ),
+                    colors = CardDefaults.cardColors(
+                        containerColor = animatedColorDolar
+                    )
+                ) {
+                    Icon(
+                            painter = painterResource(R.drawable.dolar),
+                            contentDescription = "bolivares",
+                            modifier= modifier.size(50.dp)
+                        )
+
                 }
+
             }
 
             //funcion para parte de peso y medida
@@ -287,26 +356,10 @@ fun CreateFoodScreen(
 
             )
         }
-        if (dialogErrorAlert) DialogoError { dialogErrorAlert = false }
 
 
     }
 
-}
-//------------------------------------------Alertdialog-----------------------------------------
-
-@Composable
-fun DialogoError(onDismiss: () -> Unit) {
-    BasicAlertDialog(
-        onDismissRequest = onDismiss,
-        content = {
-            Text(
-                text = "Debe colocar un nombre para guardar",
-                modifier = Modifier
-                    .fillMaxSize(),
-                textAlign = TextAlign.Center,
-            )
-        })
 }
 
 //------------------------------------------bottombar-----------------------------------------
@@ -320,6 +373,7 @@ fun BottombarCreateFood() {
 
 @Composable
 fun TopMenuCreateFood(
+    enableButton: Boolean,
     navigateToback: () -> Unit,
     saveProduct: () -> Unit
 ) {
@@ -331,7 +385,7 @@ fun TopMenuCreateFood(
         },
         navigationIcon = {
 
-            IconButton(onClick = { navigateToback() }) {
+            IconButton(onClick = { navigateToback() }, enabled = enableButton) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back"
@@ -340,7 +394,7 @@ fun TopMenuCreateFood(
 
         },
         actions = {
-            IconButton(onClick = { saveProduct() }) {
+            IconButton(onClick = { saveProduct() }, enabled = enableButton) {
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = "Listo"
