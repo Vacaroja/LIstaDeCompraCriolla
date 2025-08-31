@@ -27,6 +27,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
@@ -163,7 +164,8 @@ fun ClientListScreen(
                     modifier = modifier
                         .fillMaxSize()
                         .padding(innerpadding),
-                    state = scrollState
+                    state = scrollState,
+                    contentPadding = PaddingValues(bottom = 100.dp)
                 ) {
                     //reciclerview to watch items or products
                     items(
