@@ -36,7 +36,7 @@ import com.ccc.listadecompracriolla.Core.clases.Product
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 
 @Composable
-fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: ProductViewModel) {
+fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: ProductViewModel,onChangeProduct:(Int) -> Unit) {
 //------------------------------------------variables-----------------------------------------
 
     var precio by remember { mutableStateOf("") }//var price
@@ -45,6 +45,7 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
     val focusManager = LocalFocusManager.current
     val tasa by viewModel.tasa.collectAsState()
 
+    var enableButton by remember { mutableStateOf(true) }
 
     //-------------------------------------textParameters-------------------------------------
     val df = DecimalFormat("#.##")
@@ -59,12 +60,15 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
 
     val namePaddingValues = 90.dp
 //------------------------------------------variables de estado-----------------------------------------
-
+    if (enableButton){
     Card(
         modifier
             .fillMaxSize()
             .padding(5.dp)
-            .clickable {},
+            .clickable {
+                enableButton = false
+                onChangeProduct(product.id)
+            },
         border = BorderStroke(1.dp,Color.Black),
         colors = CardDefaults.cardColors()
     ) {
@@ -156,3 +160,4 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
         }
     }
 }
+    }

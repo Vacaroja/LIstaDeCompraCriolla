@@ -31,6 +31,8 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     private val _productos = MutableStateFlow<List<Product>>(emptyList())
     val productos: StateFlow<List<Product>> = _productos.asStateFlow()
 
+    private val _actualprod = MutableStateFlow(Product())
+    val actualprod: StateFlow<Product> = _actualprod.asStateFlow()
 
     //--------------------------------presupuesto-------------------------------------
     private val _presupuesto = MutableStateFlow("")
@@ -132,6 +134,18 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
         }
     }
 
+    fun updateProduct(productId: Int, prod: Product) {
+        _productos.update { currentList ->
+            currentList.map { product ->
+                if (product.id == productId) {
+                    prod
+                } else {
+                    product
+                }
+            }
+        }
+    }
+
     // Función para togglear el check
     fun toggleCheck(productId: Int) {
         _productos.update { currentList ->
@@ -165,6 +179,21 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
             }
         }
     }
+    //------------------------------actualizeProduct---------------------------------------
+
+    fun actualizeProduct(productId: Int){
+        if (productId == -1){
+            _actualprod.value = Product()
+        }
+        else {
+            val actualProd = _productos.value.firstOrNull { it.id == productId }
+            if (actualProd != null){
+                _actualprod.value = actualProd
+            }else
+                _actualprod.value = Product()
+        }
+    }
+
     //-----------------------------DeathPresupuestoChanged-----------------------
 
     fun validDeathPresu(change: Boolean) {
@@ -234,7 +263,7 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     }
 
     fun validTasa(): Boolean {
-        return if (bcvPriceFloat.value != (-1).toFloat()) false else true
+        return bcvPriceFloat.value == (-1).toFloat()
     }
 
     enum class TipoConversion { DIRECTA, DOLAR_A_BCV, DOLAR_A_BS_USDT }

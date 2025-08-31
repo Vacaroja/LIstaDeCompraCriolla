@@ -84,6 +84,8 @@ fun ClientListScreen(
     //variable to state of balance
     var stateOfBalance by remember { mutableStateOf(false) }
 
+    var enableButton by remember { mutableStateOf(true) }
+
     //variable corrutinas
     val coroutineScope = rememberCoroutineScope()
     //snackBarState
@@ -120,7 +122,7 @@ fun ClientListScreen(
             },
             bottomBar = { BottomClientList(viewModel = viewModel) },
             snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-            floatingActionButton = {
+            floatingActionButton = { if (enableButton){
                 //animacion del floatingActionButton
                 AnimatedVisibility(
                     visible = isExtended,
@@ -130,7 +132,9 @@ fun ClientListScreen(
 //------------------------------------------FBA-----------------------------------------
 
                     ExtendedFloatingActionButton(
-                        onClick = { navigateToCreateFood() },
+
+                        onClick = { enableButton = false
+                            navigateToCreateFood() },
                         icon = { Icon(Icons.Default.Add, "Agregar producto") },
                         text = { Text("AGREGAR") }, // Texto visible solo cuando no hay scroll
                         modifier = Modifier.padding(16.dp)
@@ -138,13 +142,14 @@ fun ClientListScreen(
                 }
 
                 if (!isExtended) {
+                    enableButton = false
                     FloatingActionButton(modifier = Modifier.padding(16.dp),
                         onClick = { navigateToCreateFood() }
                     ) {
                         Icon(Icons.Default.Add, "Agregar PRODUCTO")
                     }
                 }
-            }
+            }}
         ) { innerpadding ->
 //------------------------------------------iterationOfProducts-----------------------------------------
             Box(modifier = modifier.clickable {
@@ -167,6 +172,10 @@ fun ClientListScreen(
                             ProducIterator(
                                 product = producto,
                                 viewModel = viewModel,
+                                onChangeProduct = {idProduct ->
+                                    viewModel.actualizeProduct(idProduct)
+                                    navigateToCreateFood()
+                                }
                             )
                         }
                     }

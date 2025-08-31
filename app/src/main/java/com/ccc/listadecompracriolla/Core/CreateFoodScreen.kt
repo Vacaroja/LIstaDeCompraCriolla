@@ -77,14 +77,15 @@ fun CreateFoodScreen(
     navigateToback: () -> Unit
 ) {
 //------------------------------------------variables de estado-----------------------------------------
+    val actProduct by viewModel.actualprod.collectAsState()
 
     val medidaList = listOf("Und", "Lb", "Kg", "L")
-    var nombre by remember { mutableStateOf("") }
-    var precio by remember { mutableStateOf("") }
-    var nota by remember { mutableStateOf("") }
-    var unidad by remember { mutableStateOf(medidaList[0]) }
-    var cantidad by remember { mutableStateOf("") }
-    var expanded by remember { mutableStateOf(false) }
+    var nombre by remember {  mutableStateOf(if (actProduct.id != 0) actProduct.name else "") }
+    var precio by remember { mutableStateOf(if (actProduct.id != 0) "${actProduct.price}" else "") }
+    var nota by remember { mutableStateOf(if (actProduct.id != 0) actProduct.nota else "") }
+    var unidad by remember { mutableStateOf(if (actProduct.id != 0) actProduct.medida else medidaList[0]) }
+    var cantidad by remember { mutableStateOf(if (actProduct.id != 0) "${actProduct.cant}" else "") }
+    var expanded by remember { mutableStateOf(if (actProduct.id != 0) actProduct.checked else false) }
 
 
     var isPressed by remember { mutableStateOf(false) }
@@ -142,16 +143,17 @@ fun CreateFoodScreen(
                         }
                     } else {
                         enableButton = false
-                        val nuevoProducto = Product(
-                            id = productos.size + 1, // O usa un UUID
-                            name = nombre,
-                            cant = if (cantidad.isNotEmpty() && cantidad != ".") cantidad.toFloat() else 1f,
-                            price = if (precio.isNotEmpty() && precio != ".") (if (isPressed) (precio.toFloat() / tasa) else precio.toFloat()) else 0f,
-                            nota = nota,
-                            medida = unidad,
-                            client = actual.id
-                        )
-                        viewModel.addProduct(nuevoProducto)
+                            val nuevoProducto = Product(
+                                id = if (actProduct.id != 0) actProduct.id else productos.size + 1, // O usa un UUID
+                                name = nombre,
+                                cant = if (cantidad.isNotEmpty() && cantidad != ".") cantidad.toFloat() else 1f,
+                                price = if (precio.isNotEmpty() && precio != ".") (if (isPressed) (precio.toFloat() / tasa) else precio.toFloat()) else 0f,
+                                nota = nota,
+                                medida = unidad,
+                                client = if (actProduct.id != 0) actProduct.client else actual.id
+                            )
+                            if (actProduct.id != 0) viewModel.updateProduct(actProduct.id,nuevoProducto) else viewModel.addProduct(nuevoProducto)
+                        viewModel.actualizeProduct(-1)
                         navigateToback()
                         // Opcional: regresar después de guardar
 
@@ -223,12 +225,12 @@ fun CreateFoodScreen(
 
                 //----------------------------boton pa costo en bolivares--------------------------
                 Card(
-                    modifier = modifier.
-                    padding(start = 5.dp, top = 5.dp).
-                    clickable{
-                        isPressed = true
-                        viewModel.actualizarTasa(ProductViewModel.TipoConversion.DOLAR_A_BCV)
-                    },
+                    modifier = modifier
+                        .padding(start = 5.dp, top = 5.dp)
+                        .clickable {
+                            isPressed = true
+                            viewModel.actualizarTasa(ProductViewModel.TipoConversion.DOLAR_A_BCV)
+                        },
                     elevation = CardDefaults.cardElevation(
                         // Cambiar la elevación para simular el hundimiento
                         defaultElevation = if (isPressed) 2.dp else 15.dp
@@ -246,12 +248,12 @@ fun CreateFoodScreen(
                 }
                 //----------------------------boton pa costo en dolares--------------------------
                 Card(
-                    modifier = modifier.
-                    padding(start = 5.dp, top = 5.dp).
-                    clickable{
-                        isPressed = false
-                        viewModel.actualizarTasa()
-                    },
+                    modifier = modifier
+                        .padding(start = 5.dp, top = 5.dp)
+                        .clickable {
+                            isPressed = false
+                            viewModel.actualizarTasa()
+                        },
                     elevation = CardDefaults.cardElevation(
                         // Cambiar la elevación para simular el hundimiento
                         defaultElevation = if (!isPressed) 2.dp else 15.dp
