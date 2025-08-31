@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.BottomAppBar
@@ -35,7 +36,7 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
     val presupuesto by viewModel.presupuesto.collectAsState()
     val df = DecimalFormat("#.##")
 //------------------------------------------Variables-----------------------------------------
-
+    val fontSizeTasa = 100.dp
 
     BottomAppBar(containerColor = Orange) {
 
@@ -49,7 +50,7 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
                 .size(40.dp)
                 .padding(start = 5.dp)
         )
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier.widthIn(max = fontSizeTasa)) {
             Text(
                 text = "En carrito",
                 fontWeight = FontWeight.Bold
@@ -75,7 +76,7 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier.padding(horizontal = 10.dp)
+            modifier = modifier.widthIn(max = fontSizeTasa).padding(horizontal = 10.dp)
         ) {
             Text(
                 text = "TOTAL",

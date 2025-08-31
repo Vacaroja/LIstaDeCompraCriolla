@@ -52,7 +52,7 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
     val fontSizeName = 15.sp
     val fontSizePrice = 12.sp
 
-
+    val fontSizeCost = 90.dp
 
 //------------------------------------------variables de estado-----------------------------------------
 
@@ -107,6 +107,7 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
             TextButton(onClick = { showBottomSheet = true }) {
                 Text(
                     text = if (product.price != 0f) "$: ${df.format(product.price * product.cant * tasa)}" else "$",
+                    modifier = modifier.widthIn(max= fontSizeCost,min= fontSizeCost),
                     fontWeight = FontWeight.Bold,
                     fontSize = fontSizePrice
 
