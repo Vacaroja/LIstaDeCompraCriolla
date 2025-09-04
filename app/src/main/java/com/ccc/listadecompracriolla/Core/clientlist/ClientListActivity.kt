@@ -175,7 +175,7 @@ fun ClientListScreen(
                     //reciclerview to watch items or products
                     items(
                         items = productos,
-                        key = { it.id }) { producto ->
+                        key = { it.id!! }) { producto ->
                         if (producto.client == clients.id) {
                             ProducIterator(
                                 product = producto,

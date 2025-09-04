@@ -2,6 +2,9 @@ package com.ccc.listadecompracriolla.Core.clases
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ccc.listadecompracriolla.entities.ToClientList
+
+import com.ccc.listadecompracriolla.entities.toProduct
 import com.ccc.listadecompracriolla.pydolarnetwork.ApiDolarServices
 import com.ccc.listadecompracriolla.pydolarnetwork.DolarApi
 import com.ccc.listadecompracriolla.repository.ClientRepository
@@ -75,9 +78,18 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
 
     //--------------------------------------------INIT-----------------------------------------------
     init {
+        viewModelScope.launch {
+            clientRepository.getAllProducts().collect { productEntities ->
+                _productos.value = productEntities.map { it.toProduct() }
+            }
+        }
+        viewModelScope.launch {
+            clientRepository.getAllClients().collect { clientListEntities ->
+                _clientList.value = clientListEntities.map {it.ToClientList()
+                }
+            }
+        }
 
-        _actualList.value = ClientList(id = 1, name = "Comida")
-        _clientList.value = listOf(_actualList.value)
 
 
     }
@@ -104,14 +116,20 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     //-----------------------------------------addClientList--------------------------------
 
     fun addClientList(nameClient: String) {
-        val idClient = _clientList.value.size + 1
-        val client = ClientList(idClient, nameClient)
+        val client = ClientList(null, nameClient)
         viewModelScope.launch {
+            val clientEntities = client.ToClientListEntity()
+            val newId = clientRepository.addClient(clientEntities)
+            val clienWithId = client.copy(id = newId.toInt())
             _clientList.update { currentL ->
-                currentL + client
+                currentL + clienWithId
             }
+            changeCurrentList(newId.toInt())
         }
-        changeCurrentList(idClient)
+        viewModelScope.launch {
+            clientRepository.addClient(client.ToClientListEntity())
+        }
+
 
     }
 
@@ -119,14 +137,17 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     //-----------------------------------agregarProducto----------------------------------
     fun addProduct(producto: Product) {
         viewModelScope.launch {
+            val prodEntities = producto.ProductEntity()
+            val newId = clientRepository.addProduct(prodEntities)
+            val productWithId = producto.copy(id = newId.toInt())
             _productos.update { currentList ->
-                currentList + producto
+                currentList + productWithId
             }
         }
 
     }
 
-    fun updateCantidad(productId: Int, newCant: Float) {
+    fun updateCantidad(productId: Int?, newCant: Float) {
         _productos.update { currentList ->
             currentList.map { product ->
                 if (product.id == productId) {
@@ -138,7 +159,7 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
         }
     }
 
-    fun updateProduct(productId: Int, prod: Product) {
+    fun updateProduct(productId: Int?, prod: Product) {
         _productos.update { currentList ->
             currentList.map { product ->
                 if (product.id == productId) {
@@ -151,7 +172,7 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     }
 
     // Función para togglear el check
-    fun toggleCheck(productId: Int) {
+    fun toggleCheck(productId: Int?) {
         _productos.update { currentList ->
             val index = currentList.indexOfFirst { it.id == productId }
             if (index != -1) {
@@ -172,7 +193,7 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     }
 
     // Función para actualizar el precio
-    fun updatePrecio(productId: Int, newPrice: Float) {
+    fun updatePrecio(productId: Int?, newPrice: Float) {
         _productos.update { currentList ->
             currentList.map { product ->
                 if (product.id == productId) {
@@ -185,7 +206,7 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     }
     //------------------------------actualizeProduct---------------------------------------
 
-    fun actualizeProduct(productId: Int){
+    fun actualizeProduct(productId: Int?){
         if (productId == -1){
             _actualprod.value = Product(0)
         }
@@ -211,15 +232,19 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
             currentList.map { client ->
                 if (client.id == clientId) {
                     client.copy(presupuesto = presu)
+
                 } else {
                     client
                 }
             }
         }
+        viewModelScope.launch {
+            clientRepository.updatePresuClient(clientId,presu)
+        }
     }
 
     //---------------------deleteProduct----------------------------
-    fun deleteProduct(idProd: Int) {
+    fun deleteProduct(idProd: Int?) {
         val product = _productos.value.toMutableList()
         product.removeIf { it.id == idProd }
         _productos.value = product.toList()

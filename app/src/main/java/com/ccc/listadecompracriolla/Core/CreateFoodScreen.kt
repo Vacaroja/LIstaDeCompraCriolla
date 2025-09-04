@@ -78,7 +78,6 @@ fun CreateFoodScreen(
 ) {
 //------------------------------------------variables de estado-----------------------------------------
     val actProduct by viewModel.actualprod.collectAsState()
-    val productos by viewModel.productos.collectAsState()
     val tasa by viewModel.tasa.collectAsState()
     val actual by viewModel.actualList.collectAsState()
 
@@ -157,7 +156,7 @@ fun CreateFoodScreen(
                     } else {
                         enableButton = false
                             val nuevoProducto = Product(
-                                id = if (actProduct.id != 0) actProduct.id else productos.size + 1, // O usa un UUID
+                                id = if (actProduct.id != 0) actProduct.id else null, // O usa un UUID
                                 name = nombre,
                                 cant = if (cantidad.isNotEmpty() && cantidad != ".") cantidad.toFloat() else 1f,
                                 price = if (precio.isNotEmpty() && precio != ".") (if (isPressed) (precio.toFloat() / tasa) else precio.toFloat()) else 0f,

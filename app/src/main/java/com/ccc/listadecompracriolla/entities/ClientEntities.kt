@@ -3,7 +3,10 @@ package com.ccc.listadecompracriolla.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.ccc.listadecompracriolla.Core.clases.ClientList
+import com.ccc.listadecompracriolla.Core.clases.Product
 
 @Entity(tableName = "clients")
 data class ClientListEntity(
@@ -11,6 +14,14 @@ data class ClientListEntity(
     var name: String,
     var presupuesto: String = ""
 )
+
+fun ClientListEntity.ToClientList(): ClientList{
+    return ClientList(
+        id = this.id,
+        name = this.name,
+        presupuesto = this.presupuesto
+    )
+}
 
 // --- 2. Entidad para la tabla intermedia (Many-to-Many) ---
 // Esta tabla clientes y productos
@@ -47,7 +58,7 @@ data class ClientProductCrossRef(
         childColumns = ["client"],
         onDelete = ForeignKey.CASCADE // Si se elimina un cliente, sus referencias en esta tabla también
     ),
-])
+], indices = [Index(value = ["client"])])
 data class ProductEntity(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
     val name: String = "",
@@ -58,3 +69,15 @@ data class ProductEntity(
     var medida: String = "",
     var client: Int? = null
 )
+fun ProductEntity.toProduct(): Product{
+    return Product(
+        this.id,
+        this.name,
+        this.cant,
+        this.price,
+        this.checked,
+        this.nota,
+        this.medida,
+        this.client
+    )
+}

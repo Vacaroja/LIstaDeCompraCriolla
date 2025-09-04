@@ -75,9 +75,12 @@ interface ClientDao{
     fun getClientsWithProducts(): Flow<List<ClientWithProducts>>
 
     // Obtener un cliente específico con sus productos
-    @Transaction
+
     @Query("SELECT * FROM clients WHERE id = :clientId")
-    fun getClientWithProductsById(clientId: Int): Flow<ClientWithProducts?>
+    fun getClientById(clientId: Int?): ClientListEntity
+
+    @Query("SELECT * FROM products WHERE id = :productId")
+    fun getProductById(productId: Int?): ProductEntity
 
 
 }

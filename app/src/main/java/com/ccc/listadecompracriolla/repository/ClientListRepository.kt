@@ -2,13 +2,12 @@ package com.ccc.listadecompracriolla.repository
 
 import com.ccc.listadecompracriolla.dao.ClientDao
 import com.ccc.listadecompracriolla.dao.ClientWithProducts
+import com.ccc.listadecompracriolla.entities.ClientListEntity
+import com.ccc.listadecompracriolla.entities.ClientProductCrossRef
+import com.ccc.listadecompracriolla.entities.ProductEntity
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.ccc.listadecompracriolla.entities.ClientListEntity
-import com.ccc.listadecompracriolla.entities.ProductEntity
-import com.ccc.listadecompracriolla.entities.ClientProductCrossRef
-import kotlinx.coroutines.flow.map
 
 @Singleton
 class ClientRepository @Inject constructor(private val clientDao: ClientDao) {
@@ -26,8 +25,8 @@ class ClientRepository @Inject constructor(private val clientDao: ClientDao) {
         return clientDao.getClientsWithProducts()
     }
 
-    fun getClientWithProductsById(clientId: Int): Flow<ClientWithProducts?> {
-        return clientDao.getClientWithProductsById(clientId)
+    fun getClientById(clientId: Int?): ClientListEntity {
+        return clientDao.getClientById(clientId)
     }
 
     // --- Operaciones básicas para Clientes ---
@@ -43,6 +42,12 @@ class ClientRepository @Inject constructor(private val clientDao: ClientDao) {
         clientDao.deleteClient(client)
     }
 
+    suspend fun updatePresuClient(clientId: Int?,newPresu: String) {
+        val clientToUpdate = getClientById(clientId)
+        val newClient =clientToUpdate.copy(presupuesto = newPresu)
+        clientDao.updateClient(newClient)
+    }
+
     // --- Operaciones básicas para Productos ---
     suspend fun addProduct(product: ProductEntity): Long { // Método general para añadir un producto
         return clientDao.insertProduct(product)
@@ -54,6 +59,16 @@ class ClientRepository @Inject constructor(private val clientDao: ClientDao) {
 
     suspend fun deleteProduct(product: ProductEntity) {
         clientDao.deleteProduct(product)
+    }
+
+    suspend fun getProductByID(productId: Int?): ProductEntity{
+        return clientDao.getProductById(productId)
+    }
+
+    suspend fun updateChecked(productId: Int?,check: Boolean){
+        val actProd = getProductByID(productId)
+        val checked = actProd.copy(checked = check)
+        clientDao.updateProduct(checked)
     }
 
     // --- Métodos para gestionar la relación muchos a muchos ---
@@ -68,15 +83,4 @@ class ClientRepository @Inject constructor(private val clientDao: ClientDao) {
     }
 
 
-
-    // Opcional: Obtener productos asociados a un cliente específico (si necesitas solo la lista de productos)
-    @Deprecated("Usar getClientWithProductsById para la relación completa")
-    fun getProductsForClient(clientId: Int): Flow<List<ProductEntity>> {
-        // Esta consulta sería más compleja, involucrando JOINs a través de la tabla intermedia
-        // Sin embargo, clientDao.getClientWithProductsById ya te da esto.
-        // Esto es solo si realmente necesitas *solo* los productos sin la entidad cliente.
-        return clientDao.getClientWithProductsById(clientId).map { clientWithProducts ->
-            clientWithProducts?.products ?: emptyList()
-        }
-    }
 }

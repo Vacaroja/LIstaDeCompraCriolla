@@ -3,7 +3,6 @@ package com.ccc.listadecompracriolla.Core.clientlist
 import android.icu.text.DecimalFormat
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -36,7 +35,7 @@ import com.ccc.listadecompracriolla.Core.clases.Product
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 
 @Composable
-fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: ProductViewModel,onChangeProduct:(Int) -> Unit) {
+fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: ProductViewModel,onChangeProduct:(Int?) -> Unit) {
 //------------------------------------------variables-----------------------------------------
 
     var precio by remember { mutableStateOf("") }//var price
