@@ -1,11 +1,15 @@
 package com.ccc.listadecompracriolla.repository
 
+import com.ccc.listadecompracriolla.Core.clases.ClientList
 import com.ccc.listadecompracriolla.dao.ClientDao
 import com.ccc.listadecompracriolla.dao.ClientWithProducts
 import com.ccc.listadecompracriolla.entities.ClientListEntity
 import com.ccc.listadecompracriolla.entities.ClientProductCrossRef
 import com.ccc.listadecompracriolla.entities.ProductEntity
+import com.ccc.listadecompracriolla.entities.ToClientList
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,8 +29,16 @@ class ClientRepository @Inject constructor(private val clientDao: ClientDao) {
         return clientDao.getClientsWithProducts()
     }
 
-    fun getClientById(clientId: Int?): ClientListEntity {
+    suspend fun getClientById(clientId: Int?): ClientListEntity {
         return clientDao.getClientById(clientId)
+    }
+
+    suspend fun getActualList(clientId: Int?): ClientList{
+        return withContext(Dispatchers.IO){
+            val actualList = getClientById(clientId)
+            val toList = actualList.ToClientList()
+            return@withContext toList
+        }
     }
 
     // --- Operaciones básicas para Clientes ---
@@ -43,9 +55,11 @@ class ClientRepository @Inject constructor(private val clientDao: ClientDao) {
     }
 
     suspend fun updatePresuClient(clientId: Int?,newPresu: String) {
-        val clientToUpdate = getClientById(clientId)
-        val newClient =clientToUpdate.copy(presupuesto = newPresu)
-        clientDao.updateClient(newClient)
+        withContext(Dispatchers.IO){
+            val clientToUpdate = getClientById(clientId)
+            val newClient =clientToUpdate.copy(presupuesto = newPresu)
+            clientDao.updateClient(newClient)
+        }
     }
 
     // --- Operaciones básicas para Productos ---
@@ -61,14 +75,31 @@ class ClientRepository @Inject constructor(private val clientDao: ClientDao) {
         clientDao.deleteProduct(product)
     }
 
+    suspend fun deleteProductById(productId: Int?) {
+        withContext(Dispatchers.IO){
+            val clientToUpdate = getProductByID(productId)
+            clientDao.deleteProduct(clientToUpdate)
+        }
+    }
+
     suspend fun getProductByID(productId: Int?): ProductEntity{
         return clientDao.getProductById(productId)
     }
 
-    suspend fun updateChecked(productId: Int?,check: Boolean){
-        val actProd = getProductByID(productId)
-        val checked = actProd.copy(checked = check)
-        clientDao.updateProduct(checked)
+    suspend fun updateChecked(productId: Int?){
+        withContext(Dispatchers.IO){
+            val actProd = getProductByID(productId)
+            val checked = actProd.copy(checked = !actProd.checked)
+            clientDao.updateProduct(checked)
+        }
+    }
+
+    suspend fun updatePrice(productId: Int?,newPrice: Float){
+        withContext(Dispatchers.IO){
+            val actProd = getProductByID(productId)
+            val newPriceProduct = actProd.copy(price = newPrice)
+            clientDao.updateProduct(newPriceProduct)
+        }
     }
 
     // --- Métodos para gestionar la relación muchos a muchos ---

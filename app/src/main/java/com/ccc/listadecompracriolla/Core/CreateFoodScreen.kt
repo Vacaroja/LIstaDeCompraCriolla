@@ -164,7 +164,7 @@ fun CreateFoodScreen(
                                 medida = unidad,
                                 client = if (actProduct.id != 0) actProduct.client else actual.id
                             )
-                            if (actProduct.id != 0) viewModel.updateProduct(actProduct.id,nuevoProducto) else viewModel.addProduct(nuevoProducto)
+                            if (actProduct.id != 0) viewModel.updateProduct(nuevoProducto) else viewModel.addProduct(nuevoProducto)
                         viewModel.actualizeProduct(-1)
                         navigateToback()
                         // Opcional: regresar después de guardar

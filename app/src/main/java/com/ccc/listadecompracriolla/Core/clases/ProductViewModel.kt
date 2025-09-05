@@ -89,6 +89,11 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
                 }
             }
         }
+        actualizeProduct(-1)
+        viewModelScope.launch {
+            _actualList.value = clientRepository.getActualList(1)
+        }
+
 
 
 
@@ -126,9 +131,6 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
             }
             changeCurrentList(newId.toInt())
         }
-        viewModelScope.launch {
-            clientRepository.addClient(client.ToClientListEntity())
-        }
 
 
     }
@@ -147,27 +149,19 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
 
     }
 
-    fun updateCantidad(productId: Int?, newCant: Float) {
+    fun updateProduct(prod: Product) {
         _productos.update { currentList ->
             currentList.map { product ->
-                if (product.id == productId) {
-                    product.copy(cant = newCant)
-                } else {
-                    product
-                }
-            }
-        }
-    }
-
-    fun updateProduct(productId: Int?, prod: Product) {
-        _productos.update { currentList ->
-            currentList.map { product ->
-                if (product.id == productId) {
+                if (product.id == prod.id) {
                     prod
                 } else {
                     product
                 }
             }
+        }
+        viewModelScope.launch {
+            val productEntitie = prod.ProductEntity()
+            clientRepository.updateProduct(productEntitie)
         }
     }
 
@@ -188,7 +182,9 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
                 // Return the updated list
                 mutableList
             } else currentList
-
+        }
+        viewModelScope.launch {
+            clientRepository.updateChecked(productId)
         }
     }
 
@@ -202,6 +198,9 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
                     product
                 }
             }
+        }
+        viewModelScope.launch {
+            clientRepository.updatePrice(productId,newPrice)
         }
     }
     //------------------------------actualizeProduct---------------------------------------
@@ -245,10 +244,16 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
 
     //---------------------deleteProduct----------------------------
     fun deleteProduct(idProd: Int?) {
+        //borrado en la lista local
         val product = _productos.value.toMutableList()
         product.removeIf { it.id == idProd }
         _productos.value = product.toList()
+        //delete in database
+        viewModelScope.launch {
+            clientRepository.deleteProductById(idProd)
+        }
     }
+
 
     //----------------------------------------------BCV----------------------------
     // LiveData para los datos del BCV
