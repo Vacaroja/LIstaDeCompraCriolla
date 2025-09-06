@@ -14,7 +14,7 @@ import com.ccc.listadecompracriolla.entities.ClientListEntity
 import com.ccc.listadecompracriolla.entities.ClientProductCrossRef
 import com.ccc.listadecompracriolla.entities.ProductEntity
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
+
 
 // 1. Cliente con sus productos (lista de productos para un cliente)
 data class ClientWithProducts(

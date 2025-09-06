@@ -110,16 +110,7 @@ class ClientRepository @Inject constructor(private val clientDao: ClientDao) {
         }
     }
 
-    // --- Métodos para gestionar la relación muchos a muchos ---
-    suspend fun associateProductToClient(clientId: Int, productId: Int) {
-        val crossRef = ClientProductCrossRef(clientId = clientId, productId = productId)
-        clientDao.insertClientProductCrossRef(crossRef)
-    }
 
-    suspend fun disassociateProductFromClient(clientId: Int, productId: Int) {
-        val crossRef = ClientProductCrossRef(clientId = clientId, productId = productId)
-        clientDao.deleteClientProductCrossRef(crossRef)
-    }
 
 
 }

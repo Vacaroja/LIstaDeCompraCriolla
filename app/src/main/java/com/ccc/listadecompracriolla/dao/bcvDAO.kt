@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.ccc.listadecompracriolla.entities.BcvEntity
-import kotlinx.coroutines.flow.Flow
+
 
 @Dao
 interface BcvDao {

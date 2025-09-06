@@ -97,7 +97,10 @@ class ProductViewModel @Inject constructor(
         actualizeProduct(-1)
         viewModelScope.launch {
             val actual = clientRepository.getActualList()
-            if (actual != null) _actualList.value = actual
+            if (actual != null) {
+                _actualList.value = actual
+                _presupuesto.value = actual.presupuesto
+            }
         }
         isEmptyClient()
 
@@ -124,7 +127,7 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    fun isEmptyClient(){
+    fun isEmptyClient() {
         viewModelScope.launch {
             _emptyClient.value = clientRepository.isEmptyClient()
         }
