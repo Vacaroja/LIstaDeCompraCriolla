@@ -93,7 +93,7 @@ fun CreateFoodScreen(
 
 
 
-    var isPressed by remember { mutableStateOf(false) }
+    val isPressed by viewModel.isBcv.collectAsState()
 
     var enableButton by remember { mutableStateOf(true) }
 
@@ -240,7 +240,6 @@ fun CreateFoodScreen(
                     modifier = modifier
                         .padding(start = 5.dp, top = 5.dp)
                         .clickable {
-                            isPressed = true
                             viewModel.actualizarTasa(ProductViewModel.TipoConversion.DOLAR_A_BCV)
                         },
                     elevation = CardDefaults.cardElevation(
@@ -263,7 +262,6 @@ fun CreateFoodScreen(
                     modifier = modifier
                         .padding(start = 5.dp, top = 5.dp)
                         .clickable {
-                            isPressed = false
                             viewModel.actualizarTasa()
                         },
                     elevation = CardDefaults.cardElevation(

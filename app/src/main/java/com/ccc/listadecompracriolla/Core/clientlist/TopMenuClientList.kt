@@ -45,7 +45,7 @@ fun TopMenu(
 ) {
     var bottomSheetClient by remember { mutableStateOf(false) }
     var bottomSheetNewClient by remember { mutableStateOf(false) }
-    var isPressed by remember { mutableStateOf(false) }
+    val isPressed by viewModel.isBcv.collectAsState()
 
     val actualList by viewModel.actualList.collectAsState()
     val isEmptyClient by viewModel.emptyClient.collectAsState()
@@ -108,7 +108,6 @@ fun TopMenu(
 
             Card(
                 modifier.clickable {
-                    isPressed = false
                     viewModel.actualizarTasa(ProductViewModel.TipoConversion.DIRECTA)
                 },
                 colors = CardDefaults.cardColors(
@@ -140,7 +139,6 @@ fun TopMenu(
                     if (viewModel.validTasa()) {
                         onFailureApi()
                     } else {
-                        isPressed = true
                         viewModel.actualizarTasa(ProductViewModel.TipoConversion.DOLAR_A_BCV)
                     }
                 },

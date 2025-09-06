@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -24,6 +25,9 @@ class ProductViewModel @Inject constructor(
     private val clientRepository: ClientRepository,
     private val bcvRepository: BcvRepository
 ) : ViewModel() {
+
+
+
 
     private val _emptyClient = MutableStateFlow(false)
     val emptyClient: StateFlow<Boolean> = _emptyClient.asStateFlow()
@@ -108,6 +112,7 @@ class ProductViewModel @Inject constructor(
     }
 
     //---------------------------------------------Funciones-----------------------------------------------------
+
     //---------------------------------------------chargeCurrentProducts-------------------------------------
 
 
@@ -323,6 +328,14 @@ class ProductViewModel @Inject constructor(
     //--------------------------------tasa-------------------------------------
     private val _tasa = MutableStateFlow(1f)
     val tasa: StateFlow<Float> = _tasa.asStateFlow()
+
+    val isBcv: StateFlow<Boolean> = tasa.map { currentTasa ->
+        currentTasa != 1f
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(200),
+        initialValue = _tasa.value != 1f
+    )
 
     fun actualizarTasa(
         tipoConversion: TipoConversion = TipoConversion.DIRECTA
