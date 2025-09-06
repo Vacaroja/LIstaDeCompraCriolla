@@ -118,77 +118,99 @@ fun ClientListScreen(
                                 actionLabel = "Ya estoy conectado",
                                 duration = SnackbarDuration.Short
                             )
-                            when(result) {
-                                SnackbarResult.Dismissed -> snackbarHostState.showSnackbar("Se usara la ultima tasa guardada, recargue para volver a intenter buscar tasa")
-                                SnackbarResult.ActionPerformed -> {viewModel.searchDolarBcv()}
+                            when (result) {
+                                SnackbarResult.Dismissed -> {
+                                    viewModel.chargeDolarFromDB()
+                                    if (viewModel.validTasa()) {
+                                        snackbarHostState.showSnackbar(
+                                            "Se usara la ultima tasa guardada, recargue para volver a intenter buscar la tasa",
+                                            actionLabel = "OK"
+                                        )
+                                    } else {
+                                        snackbarHostState.showSnackbar(
+                                            "No se encuentra ninguna tasa guardada para usar, conectese a internet si quiere usar el convertidor de tasas",
+                                            actionLabel = "OK"
+                                        )
+                                    }
+                                }
+
+                                SnackbarResult.ActionPerformed -> {
+                                    viewModel.searchDolarBcv()
+                                }
                             }
                         }
                     })
             },
             bottomBar = { BottomClientList(viewModel = viewModel) },
             snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-            floatingActionButton = { if (enableButton){
-                //animacion del floatingActionButton
-                AnimatedVisibility(
-                    visible = isExtended,
-                    enter = fadeIn() + expandHorizontally(),
-                    exit = fadeOut() + shrinkHorizontally()
-                ) {
+            floatingActionButton = {
+                if (enableButton) {
+                    //animacion del floatingActionButton
+                    AnimatedVisibility(
+                        visible = isExtended,
+                        enter = fadeIn() + expandHorizontally(),
+                        exit = fadeOut() + shrinkHorizontally()
+                    ) {
 //------------------------------------------FBA-----------------------------------------
 
-                    ExtendedFloatingActionButton(
+                        ExtendedFloatingActionButton(
 
-                        onClick = {
-                            navigateToCreateFood()
-                            enableButton = false},
-                        icon = { Icon(Icons.Default.Add, "Agregar producto") },
-                        text = { Text("AGREGAR") }, // Texto visible solo cuando no hay scroll
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
+                            onClick = {
+                                navigateToCreateFood()
+                                enableButton = false
+                            },
+                            icon = { Icon(Icons.Default.Add, "Agregar producto") },
+                            text = { Text("AGREGAR") }, // Texto visible solo cuando no hay scroll
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
 
-                if (!isExtended) {
+                    if (!isExtended) {
 
-                    FloatingActionButton(modifier = Modifier.padding(16.dp),
-                        onClick = {
-                            enableButton = false
-                            navigateToCreateFood() }
-                    ) {
-                        Icon(Icons.Default.Add, "Agregar PRODUCTO")
+                        FloatingActionButton(
+                            modifier = Modifier.padding(16.dp),
+                            onClick = {
+                                enableButton = false
+                                navigateToCreateFood()
+                            }
+                        ) {
+                            Icon(Icons.Default.Add, "Agregar PRODUCTO")
+                        }
                     }
                 }
-            }}
+            }
         ) { innerpadding ->
 //------------------------------------------iterationOfProducts-----------------------------------------
             Box(modifier = modifier.clickable {
                 //var to hide keyboard if its show
                 focusManager.clearFocus();stateOfBalance = false
-            }) { if (enableButton) {
+            }) {
+                if (enableButton) {
 
-                LazyColumn(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(innerpadding),
-                    state = scrollState,
-                    contentPadding = PaddingValues(bottom = 100.dp)
-                ) {
-                    //reciclerview to watch items or products
-                    items(
-                        items = productos,
-                        key = { it.id!! }) { producto ->
-                        if (producto.client == clients.id) {
-                            ProducIterator(
-                                product = producto,
-                                viewModel = viewModel,
-                                onChangeProduct = {idProduct ->
-                                    enableButton = false
-                                    viewModel.actualizeProduct(idProduct)
-                                    navigateToCreateFood()
-                                }
-                            )
+                    LazyColumn(
+                        modifier = modifier
+                            .fillMaxSize()
+                            .padding(innerpadding),
+                        state = scrollState,
+                        contentPadding = PaddingValues(bottom = 100.dp)
+                    ) {
+                        //reciclerview to watch items or products
+                        items(
+                            items = productos,
+                            key = { it.id!! }) { producto ->
+                            if (producto.client == clients.id) {
+                                ProducIterator(
+                                    product = producto,
+                                    viewModel = viewModel,
+                                    onChangeProduct = { idProduct ->
+                                        enableButton = false
+                                        viewModel.actualizeProduct(idProduct)
+                                        navigateToCreateFood()
+                                    }
+                                )
+                            }
                         }
                     }
-                }
                     Row(
                         modifier = modifier
                             .align(Alignment.BottomStart)
@@ -202,7 +224,8 @@ fun ClientListScreen(
 
                     }
 
-            }}
+                }
+            }
 
 
         }

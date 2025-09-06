@@ -2,10 +2,11 @@ package com.ccc.listadecompracriolla.repository
 
 import com.ccc.listadecompracriolla.dao.BcvDao
 import com.ccc.listadecompracriolla.entities.BcvEntity
+import com.ccc.listadecompracriolla.entities.toApiDolarServices
 import com.ccc.listadecompracriolla.entities.toBcvEntity
+import com.ccc.listadecompracriolla.pydolarnetwork.ApiDolarServices
 import com.ccc.listadecompracriolla.pydolarnetwork.DolarApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -20,8 +21,17 @@ class BcvRepository @Inject constructor(
      * Obtiene la única entrada de BcvEntity desde la base de datos como un Flow.
      * Esto te permite observar los cambios en tiempo real.
      */
-    fun getBcvData(): Flow<BcvEntity?> {
-        return bcvDao.getBcv()
+    suspend fun getBcvData(): ApiDolarServices? {
+        return withContext(Dispatchers.IO){
+            val bcvEnt = bcvDao.getBcv()
+            if (bcvEnt != null) {
+                val bcv = bcvEnt.toApiDolarServices()
+                return@withContext bcv
+            } else {
+                return@withContext null
+            }
+        }
+
     }
 
     /**
@@ -39,15 +49,17 @@ class BcvRepository @Inject constructor(
      * Esta función dependerá de tu configuración de red.
      */
 
-    suspend fun fetchAndSaveBcvFromApi() {
-        withContext(Dispatchers.IO) {
+    suspend fun fetchAndSaveBcvFromApi(): ApiDolarServices? {
+        return withContext(Dispatchers.IO) {
             try {
                 val bcvFromApi = DolarApi.retrofitService.getData() // Llama a tu servicio de API
-                val bcvEntity = bcvFromApi.toBcvEntity()// Convierte el modelo de API a la entidad de DB
+                val bcvEntity =
+                    bcvFromApi.toBcvEntity()// Convierte el modelo de API a la entidad de DB
                 bcvDao.insertBcv(bcvEntity) // Guarda en la DB
-            } catch (e: Exception) {
+                return@withContext bcvFromApi
+            } catch (_: Exception) {
                 // Maneja el error, ej. loguea el error o propaga una excepción más específica
-                throw RuntimeException("Error al obtener y guardar la tasa BCV desde la API", e)
+                return@withContext null
             }
         }
     }

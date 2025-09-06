@@ -21,7 +21,7 @@ interface BcvDao {
     // Flow<BcvEntity?>: Retorna un Flow, lo que permite observar los cambios en la BD en tiempo real.
     // Es nullable (BcvEntity?) porque la tabla podría estar vacía.
     @Query("SELECT * FROM bcv_data WHERE id = 1 LIMIT 1")
-    fun getBcv(): Flow<BcvEntity?> // Usamos Flow para observar cambios en la DB
+    fun getBcv(): BcvEntity? // Usamos Flow para observar cambios en la DB
 
     // Opcional: Eliminar todos los datos del BCV
     @Query("DELETE FROM bcv_data WHERE id = 1")

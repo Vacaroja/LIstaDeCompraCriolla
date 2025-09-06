@@ -2,7 +2,6 @@ package com.ccc.listadecompracriolla.repository
 
 import com.ccc.listadecompracriolla.Core.clases.ClientList
 import com.ccc.listadecompracriolla.dao.ClientDao
-import com.ccc.listadecompracriolla.dao.ClientWithProducts
 import com.ccc.listadecompracriolla.entities.ClientListEntity
 import com.ccc.listadecompracriolla.entities.ClientProductCrossRef
 import com.ccc.listadecompracriolla.entities.ProductEntity
@@ -24,12 +23,8 @@ class ClientRepository @Inject constructor(private val clientDao: ClientDao) {
     fun getAllClients(): Flow<List<ClientListEntity>> {
         return clientDao.getAllClients()
     }
-    // --- Obtener clientes con sus productos ---
-    fun getAllClientsWithProducts(): Flow<List<ClientWithProducts>> {
-        return clientDao.getClientsWithProducts()
-    }
 
-    suspend fun getClientById(clientId: Int?): ClientListEntity {
+    fun getClientById(clientId: Int?): ClientListEntity {
         return clientDao.getClientById(clientId)
     }
 
@@ -53,12 +48,18 @@ class ClientRepository @Inject constructor(private val clientDao: ClientDao) {
     suspend fun deleteClient(client: ClientListEntity) {
         clientDao.deleteClient(client)
     }
+    suspend fun deleteClientById(idClient:Int) {
+        withContext(Dispatchers.IO){
+            val delClient = getClientById(idClient)
+            deleteClient(delClient)
+        }
+    }
 
     suspend fun updatePresuClient(clientId: Int?,newPresu: String) {
         withContext(Dispatchers.IO){
             val clientToUpdate = getClientById(clientId)
             val newClient =clientToUpdate.copy(presupuesto = newPresu)
-            clientDao.updateClient(newClient)
+            updateClient(newClient)
         }
     }
 
@@ -78,11 +79,11 @@ class ClientRepository @Inject constructor(private val clientDao: ClientDao) {
     suspend fun deleteProductById(productId: Int?) {
         withContext(Dispatchers.IO){
             val clientToUpdate = getProductByID(productId)
-            clientDao.deleteProduct(clientToUpdate)
+            deleteProduct(clientToUpdate)
         }
     }
 
-    suspend fun getProductByID(productId: Int?): ProductEntity{
+    fun getProductByID(productId: Int?): ProductEntity{
         return clientDao.getProductById(productId)
     }
 

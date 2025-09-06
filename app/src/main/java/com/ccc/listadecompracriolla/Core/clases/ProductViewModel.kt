@@ -3,10 +3,9 @@ package com.ccc.listadecompracriolla.Core.clases
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ccc.listadecompracriolla.entities.ToClientList
-
 import com.ccc.listadecompracriolla.entities.toProduct
 import com.ccc.listadecompracriolla.pydolarnetwork.ApiDolarServices
-import com.ccc.listadecompracriolla.pydolarnetwork.DolarApi
+import com.ccc.listadecompracriolla.repository.BcvRepository
 import com.ccc.listadecompracriolla.repository.ClientRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,11 +18,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 import javax.inject.Inject
-import kotlin.text.toFloat
 
 @HiltViewModel
-class ProductViewModel @Inject constructor(private val clientRepository: ClientRepository) :
-    ViewModel() {
+class ProductViewModel @Inject constructor(
+    private val clientRepository: ClientRepository,
+    private val bcvRepository: BcvRepository
+) : ViewModel() {
 
     private val _clientList = MutableStateFlow<List<ClientList>>(emptyList())
     val clientList: StateFlow<List<ClientList>> = _clientList.asStateFlow()
@@ -40,6 +40,7 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     //--------------------------------presupuesto-------------------------------------
     private val _presupuesto = MutableStateFlow("")
     val presupuesto: StateFlow<String> = _presupuesto.asStateFlow()
+
     //--------------------variable para verificar presupuesto excedito
     private val _deathPresu = MutableStateFlow(false)
     val deathPresu: StateFlow<Boolean> = _deathPresu.asStateFlow()
@@ -85,7 +86,8 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
         }
         viewModelScope.launch {
             clientRepository.getAllClients().collect { clientListEntities ->
-                _clientList.value = clientListEntities.map {it.ToClientList()
+                _clientList.value = clientListEntities.map {
+                    it.ToClientList()
                 }
             }
         }
@@ -93,8 +95,6 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
         viewModelScope.launch {
             _actualList.value = clientRepository.getActualList(1)
         }
-
-
 
 
     }
@@ -110,14 +110,46 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
             _actualList.value = currentList
             _presupuesto.value = currentList.presupuesto
             try {
-                if (presupuesto.value.toFloat() < inCar.value) validDeathPresu(true) else validDeathPresu(false)
-            }catch (_:Exception){
+                if (presupuesto.value.toFloat() < inCar.value) validDeathPresu(true) else validDeathPresu(
+                    false
+                )
+            } catch (_: Exception) {
                 validDeathPresu(false)
             }
 
         }
 
     }
+
+    //---------------------------------------deleteClientList-------------------------------
+
+    fun deleteClient(idClient: Int){
+        //primero convierte las dos listas en listas mutables para iterarlas mejor
+        val clientList = _clientList.value.toMutableList()
+        val product = _productos.value.toMutableList()
+        //luego las borra donde encuentren la Id del cliente
+        clientList.removeIf { it.id == idClient }
+        product.removeIf { it.client == idClient }
+        //luego las convierten nuevamente en listas para actualizar la lista actual
+        _clientList.value = clientList.toList()
+        _productos.value = product.toList()
+        //por ultimo lo borra en la base de datos
+        viewModelScope.launch {
+            clientRepository.deleteProductById(idClient)
+        }
+    }
+
+    fun changeBeforeDeleteList(idClientList: Int): Boolean{
+        val clientList = _clientList.value
+        val changeList = clientList.firstOrNull { it.id != null && it.id != idClientList  }
+        if (changeList != null) {
+            changeCurrentList(changeList.id)
+            return true
+        }else {
+            return false
+        }
+    }
+
     //-----------------------------------------addClientList--------------------------------
 
     fun addClientList(nameClient: String) {
@@ -200,20 +232,19 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
             }
         }
         viewModelScope.launch {
-            clientRepository.updatePrice(productId,newPrice)
+            clientRepository.updatePrice(productId, newPrice)
         }
     }
     //------------------------------actualizeProduct---------------------------------------
 
-    fun actualizeProduct(productId: Int?){
-        if (productId == -1){
+    fun actualizeProduct(productId: Int?) {
+        if (productId == -1) {
             _actualprod.value = Product(0)
-        }
-        else {
+        } else {
             val actualProd = _productos.value.firstOrNull { it.id == productId }
-            if (actualProd != null){
+            if (actualProd != null) {
                 _actualprod.value = actualProd
-            }else
+            } else
                 _actualprod.value = Product(0)
         }
     }
@@ -238,7 +269,7 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
             }
         }
         viewModelScope.launch {
-            clientRepository.updatePresuClient(clientId,presu)
+            clientRepository.updatePresuClient(clientId, presu)
         }
     }
 
@@ -266,10 +297,6 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    // 3. StateFlow para mensajes de error
-    // Se inicializa con null, sin error al inicio.
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
     // 4. StateFlow para el precio como Float
     // Se inicializa con null.
@@ -287,7 +314,7 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
             try {
                 _tasa.value = when (tipoConversion) {
                     TipoConversion.DIRECTA -> 1f
-                    TipoConversion.DOLAR_A_BCV -> bcvPriceFloat.value ?: 2.0f
+                    TipoConversion.DOLAR_A_BCV -> bcvPriceFloat.value ?: 1f
                     TipoConversion.DOLAR_A_BS_USDT -> 129f
                 }
             } catch (_: NumberFormatException) {
@@ -297,37 +324,46 @@ class ProductViewModel @Inject constructor(private val clientRepository: ClientR
     }
 
     fun validTasa(): Boolean {
-        return bcvPriceFloat.value == (-1).toFloat()
+        return bcvPriceFloat.value == -1f || bcvPriceFloat.value == -2f
     }
 
     enum class TipoConversion { DIRECTA, DOLAR_A_BCV, DOLAR_A_BS_USDT }
 
-    // La 'query' en searchDolarRate ya no es necesaria si el endpoint no la usa.
-    // Si la API v2/dollar no necesita un parámetro en la URL, puedes eliminarlo.
-    // He quitado el parámetro 'query' ya que la URL es fija para BCV.
     fun searchDolarBcv() {
         _isLoading.value = true // Indica que la carga ha comenzado
-        _errorMessage.value = null // Limpia cualquier error previo
 
         viewModelScope.launch {
             try {
                 // Realiza la llamada a la API
-                val response = DolarApi.retrofitService.getData()
+                val response = bcvRepository.fetchAndSaveBcvFromApi()
                 val df = DecimalFormat("#.##")
 
-                // Verifica la respuesta de la API
-                // La API de Pydolarve usa un "status": "success" dentro del JSON
-                // además del código HTTP 200.
-
-                _bcvData.value = response
-
-                _bcvPriceFloat.value = df.format(response.promedio).toFloat()
+                if (response != null) {
+                    _bcvData.value = response
+                    _bcvPriceFloat.value = df.format(response.promedio).toFloat()
+                } else {
+                    _bcvPriceFloat.value = -1f
+                }
 
             } catch (_: Exception) {
                 // Manejo de fallos de red o excepciones de parseo
                 _bcvPriceFloat.value = -1f
             } finally {
                 _isLoading.value = false // Indica que la carga ha terminado
+            }
+        }
+    }
+
+    fun chargeDolarFromDB(){
+        viewModelScope.launch {
+            val responseFromDB = bcvRepository.getBcvData()
+            if (responseFromDB != null){
+                val bcvPrice = responseFromDB.promedio
+                _bcvData.value = responseFromDB
+                _bcvPriceFloat.value = bcvPrice
+            }
+            else {
+                _bcvPriceFloat.value = -2f
             }
         }
     }
