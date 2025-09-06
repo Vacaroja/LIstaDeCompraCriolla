@@ -53,15 +53,13 @@ fun ModalBottomSheetClientList(
                 onAddNew()
             }) { Text("CREAR NUEVA LISTA") }
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 120.dp),
+                columns = GridCells.Adaptive(minSize = 150.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
                 items(items = clientL) { client ->
                     Card(
                         modifier = Modifier
                             .padding(6.dp)
-                            .heightIn(min = 25.dp)
-                            .widthIn(min = 25.dp, max = 50.dp)
                             .clickable {
                                 onChange(client.id)
                                 onDismiss()

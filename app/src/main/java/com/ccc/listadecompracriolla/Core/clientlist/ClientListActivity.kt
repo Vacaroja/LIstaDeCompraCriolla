@@ -18,6 +18,8 @@ volver clickeable las cards y textbutton
                         )) */
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -59,6 +61,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
+import com.ccc.listadecompracriolla.ui.theme.pressedColorButton
+import com.ccc.listadecompracriolla.ui.theme.unPressedColorButton
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
@@ -94,6 +98,8 @@ fun ClientListScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     //variables para enfocar
     val focusManager = LocalFocusManager.current
+
+
 
 
     PullToRefreshBox(state = refreshState, isRefreshing = loading, onRefresh = {

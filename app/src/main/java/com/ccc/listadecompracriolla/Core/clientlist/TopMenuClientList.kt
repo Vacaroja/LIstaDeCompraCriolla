@@ -1,12 +1,16 @@
 package com.ccc.listadecompracriolla.Core.clientlist
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,6 +32,8 @@ import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.R
 import com.ccc.listadecompracriolla.ui.theme.Orange
+import com.ccc.listadecompracriolla.ui.theme.OrangeBlack
+import com.ccc.listadecompracriolla.ui.theme.pressedColorButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,48 +45,49 @@ fun TopMenu(
 ) {
     var bottomSheetClient by remember { mutableStateOf(false) }
     var bottomSheetNewClient by remember { mutableStateOf(false) }
+    var isPressed by remember { mutableStateOf(false) }
+
     val actualList by viewModel.actualList.collectAsState()
     val isEmptyClient by viewModel.emptyClient.collectAsState()
+
+    val animatedColorBs by animateColorAsState(
+        targetValue = if (isPressed) OrangeBlack else Orange,
+        animationSpec = tween(durationMillis = 200)
+    )
+    val animatedColorDolar by animateColorAsState(
+        targetValue = if (!isPressed) OrangeBlack else Orange,
+        animationSpec = tween(durationMillis = 200)
+    )
 
     TopAppBar(
         title = {
             viewModel.isEmptyClient()
-            if (isEmptyClient){
+            if (isEmptyClient) {
                 Text(
-                    text ="AÑADIR LISTA",
+                    text = "AÑADIR LISTA",
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { bottomSheetNewClient = true },
                     textAlign = TextAlign.Center
                 )
-                Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = "AÑADIR LISTA"
-                )
-            }else {
-                if (actualList.id == 0){
+
+            } else {
+                if (actualList.id == 0) {
                     Text(
-                        text ="CAMBIAR LISTA",
+                        text = "CAMBIAR LISTA",
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { bottomSheetClient = true },
                         textAlign = TextAlign.Center
                     )
-                    Icon(
-                        imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = "CAMBIAR LISTA"
-                    )
-                } else{
+
+                } else {
                     Text(
-                        text ="${actualList.name}",
+                        text = "${actualList.name}",
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { bottomSheetClient = true },
                         textAlign = TextAlign.Center
-                    )
-                    Icon(
-                        imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = "CAMBIAR LISTA"
                     )
                 }
             }
@@ -99,10 +106,19 @@ fun TopMenu(
         }, actions = {
 //------------------------------------------DolarToDolar-----------------------------------------
 
-            IconButton(onClick = { viewModel.actualizarTasa(ProductViewModel.TipoConversion.DIRECTA) }) {//BOTON PARA LAS CAMBIAR A DOLAR
+            Card(
+                modifier.clickable {
+                    isPressed = false
+                    viewModel.actualizarTasa(ProductViewModel.TipoConversion.DIRECTA)
+                },
+                colors = CardDefaults.cardColors(
+                    containerColor = animatedColorDolar
+                )
+            ) {//BOTON PARA LAS CAMBIAR A DOLAR
                 Icon(
                     painter = painterResource(id = R.drawable.dolar),
-                    contentDescription = "Settings"
+                    contentDescription = "Settings",
+                    modifier = modifier.size(45.dp)
                 )
             }
 //------------------------------------------VerticalDivider-----------------------------------------
@@ -110,23 +126,32 @@ fun TopMenu(
             VerticalDivider(
                 color = Color.Black, thickness = 2.dp,
                 modifier = modifier.padding(
-                    vertical = 7.dp
+                    vertical = 7.dp,
+                    horizontal = 4.dp
                 )
             )
 //------------------------------------------DolarToBCV-----------------------------------------
 
-            IconButton(onClick = {
-                if (viewModel.validTasa()) {
-                    onFailureApi()
-                } else {
-                    viewModel.actualizarTasa(ProductViewModel.TipoConversion.DOLAR_A_BCV)
-                }
-            }) {//BOTON PARA LAS CAMBIAR A DOLAR BCV
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_bcv),
-                    contentDescription = "bcv"
+            Card(
+                modifier.clickable {
+
+                    if (viewModel.validTasa()) {
+                        onFailureApi()
+                    } else {
+                        isPressed = true
+                        viewModel.actualizarTasa(ProductViewModel.TipoConversion.DOLAR_A_BCV)
+                    }
+                },
+                colors = CardDefaults.cardColors(
+                    containerColor = animatedColorBs
                 )
-            }
+            ) {//BOTON PARA LAS CAMBIAR A DOLAR BCV
+            Icon(
+                painter = painterResource(id = R.drawable.ic_bcv),
+                contentDescription = "bcv",
+                modifier = modifier.size(45.dp)
+            )
+        }
 
 //------------------------------------------ButtonMore-----------------------------------------
 
@@ -153,23 +178,25 @@ fun TopMenu(
             onChange = { currentList -> viewModel.changeCurrentList(currentList) },
             onAddNew = {
                 bottomSheetNewClient = true
-                bottomSheetClient = false},
-            onDelete = {clientToDelete ->
+                bottomSheetClient = false
+            },
+            onDelete = { clientToDelete ->
                 viewModel.changeBeforeDeleteList(clientToDelete)
                 viewModel.deleteClient(clientToDelete)
 
             })
     }
-    if (bottomSheetNewClient){
+    if (bottomSheetNewClient) {
         CreateClientList(
-            onSave = {
-                nameClient -> viewModel.addClientList(nameClient)
-                bottomSheetNewClient = false},
+            onSave = { nameClient ->
+                viewModel.addClientList(nameClient)
+                bottomSheetNewClient = false
+            },
             onDismiss = {
-                bottomSheetNewClient = false }
+                bottomSheetNewClient = false
+            }
         )
     }
-
 
 
 }
