@@ -126,8 +126,10 @@ fun TopMenu(
             VerticalDivider(
                 color = Color.Black, thickness = 2.dp,
                 modifier = modifier.padding(
-                    vertical = 7.dp,
-                    horizontal = 4.dp
+                    top = 3.dp,
+                    bottom = 4.dp,
+                    start = 4.dp,
+                    end = 2.dp
                 )
             )
 //------------------------------------------DolarToBCV-----------------------------------------
@@ -147,9 +149,9 @@ fun TopMenu(
                 )
             ) {//BOTON PARA LAS CAMBIAR A DOLAR BCV
             Icon(
-                painter = painterResource(id = R.drawable.ic_bcv),
+                painter = painterResource(id = R.drawable.bcv_icon),
                 contentDescription = "bcv",
-                modifier = modifier.size(45.dp)
+                modifier = modifier.size(50.dp)
             )
         }
 
