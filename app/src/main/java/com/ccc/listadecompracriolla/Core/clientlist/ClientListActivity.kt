@@ -85,6 +85,7 @@ fun ClientListScreen(
     //variable to state of balance
     var stateOfBalance by remember { mutableStateOf(false) }
 
+    val isEmptyClient by viewModel.emptyClient.collectAsState()
     var enableButton by remember { mutableStateOf(true) }
 
     //variable corrutinas
@@ -144,7 +145,8 @@ fun ClientListScreen(
             bottomBar = { BottomClientList(viewModel = viewModel) },
             snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
             floatingActionButton = {
-                if (enableButton) {
+                viewModel.isEmptyClient()
+                if (enableButton && !isEmptyClient) {
                     //animacion del floatingActionButton
                     AnimatedVisibility(
                         visible = isExtended,
@@ -185,7 +187,8 @@ fun ClientListScreen(
                 //var to hide keyboard if its show
                 focusManager.clearFocus();stateOfBalance = false
             }) {
-                if (enableButton) {
+                viewModel.isEmptyClient()
+                if (enableButton && !isEmptyClient) {
 
                     LazyColumn(
                         modifier = modifier

@@ -28,10 +28,17 @@ class ClientRepository @Inject constructor(private val clientDao: ClientDao) {
         return clientDao.getClientById(clientId)
     }
 
-    suspend fun getActualList(clientId: Int?): ClientList{
+    suspend fun isEmptyClient(): Boolean{
         return withContext(Dispatchers.IO){
-            val actualList = getClientById(clientId)
-            val toList = actualList.ToClientList()
+            val isEmpty = clientDao.getClientCount()
+            return@withContext isEmpty == 0
+        }
+    }
+
+    suspend fun getActualList(): ClientList?{
+        return withContext(Dispatchers.IO){
+            val actualList = clientDao.getFirstId()
+            val toList = actualList?.ToClientList()
             return@withContext toList
         }
     }
@@ -48,7 +55,7 @@ class ClientRepository @Inject constructor(private val clientDao: ClientDao) {
     suspend fun deleteClient(client: ClientListEntity) {
         clientDao.deleteClient(client)
     }
-    suspend fun deleteClientById(idClient:Int) {
+    suspend fun deleteClientById(idClient:Int?) {
         withContext(Dispatchers.IO){
             val delClient = getClientById(idClient)
             deleteClient(delClient)

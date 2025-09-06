@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,16 +40,51 @@ fun TopMenu(
     var bottomSheetClient by remember { mutableStateOf(false) }
     var bottomSheetNewClient by remember { mutableStateOf(false) }
     val actualList by viewModel.actualList.collectAsState()
+    val isEmptyClient by viewModel.emptyClient.collectAsState()
 
     TopAppBar(
         title = {
-            Text(
-                text = "${actualList.name}",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { bottomSheetClient = true },
-                textAlign = TextAlign.Center
-            )
+            viewModel.isEmptyClient()
+            if (isEmptyClient){
+                Text(
+                    text ="AÑADIR LISTA",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { bottomSheetNewClient = true },
+                    textAlign = TextAlign.Center
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = "AÑADIR LISTA"
+                )
+            }else {
+                if (actualList.id == 0){
+                    Text(
+                        text ="CAMBIAR LISTA",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { bottomSheetClient = true },
+                        textAlign = TextAlign.Center
+                    )
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = "CAMBIAR LISTA"
+                    )
+                } else{
+                    Text(
+                        text ="${actualList.name}",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { bottomSheetClient = true },
+                        textAlign = TextAlign.Center
+                    )
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = "CAMBIAR LISTA"
+                    )
+                }
+            }
+
 //------------------------------------------NavigationIcons-----------------------------------------
 
         }, navigationIcon = {
@@ -91,16 +127,7 @@ fun TopMenu(
                     contentDescription = "bcv"
                 )
             }
-//------------------------------------------DolarToUSDT-----------------------------------------
-            /*
-                        IconButton(onClick = {viewModel.actualizarTasa(ProductViewModel.TipoConversion.DOLAR_A_BS_USDT)}) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_bolivar),
-                                contentDescription = " cambio a bolivares"
-                            )
-                        }
 
-             */
 //------------------------------------------ButtonMore-----------------------------------------
 
             IconButton(onClick = {}) {//BOTON PARA LAS OPCIONES
@@ -126,7 +153,12 @@ fun TopMenu(
             onChange = { currentList -> viewModel.changeCurrentList(currentList) },
             onAddNew = {
                 bottomSheetNewClient = true
-                bottomSheetClient = false})
+                bottomSheetClient = false},
+            onDelete = {clientToDelete ->
+                viewModel.changeBeforeDeleteList(clientToDelete)
+                viewModel.deleteClient(clientToDelete)
+
+            })
     }
     if (bottomSheetNewClient){
         CreateClientList(
@@ -139,4 +171,6 @@ fun TopMenu(
     }
 
 
+
 }
+
