@@ -2,20 +2,8 @@
 
 package com.ccc.listadecompracriolla.Core.clientlist
 /*
-Terminar boton presupuesto
-retornar producto de CreateFoodScreen
-Colocar Scroll
-colocar animaciones
 orden alfabetico
-filtrar por orden  y colocar las ya seleccionadas abajo
-volver clickeable las cards y textbutton
- viewModel.addProduct(
-                        producto = Product(
-                            1,
-                            "Leche",
-                            1f,
-                            5.5f
-                        )) */
+filtrar por orden  y colocar las ya seleccionadas abajo*/
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
@@ -59,11 +47,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
-import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -74,7 +60,7 @@ fun ClientListScreen(
 ) {
 //------------------------------------------Variables-----------------------------------------
     //var for pull to refresh
-    var loading by remember { mutableStateOf(false) }
+    val loading by viewModel.isLoading.collectAsState()
     val refreshState = rememberPullToRefreshState()
 
     val scrollState = rememberLazyListState()
@@ -100,10 +86,8 @@ fun ClientListScreen(
 
     PullToRefreshBox(state = refreshState, isRefreshing = loading, onRefresh = {
         coroutineScope.launch {
-            loading = true
             viewModel.searchDolarBcv()
-            delay(2.seconds)
-            loading = false
+
         }
     }) {
         //------------------------------------------Variables-----------------------------------------

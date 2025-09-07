@@ -8,6 +8,7 @@ import com.ccc.listadecompracriolla.pydolarnetwork.ApiDolarServices
 import com.ccc.listadecompracriolla.repository.BcvRepository
 import com.ccc.listadecompracriolla.repository.ClientRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -26,18 +27,50 @@ class ProductViewModel @Inject constructor(
     private val bcvRepository: BcvRepository
 ) : ViewModel() {
 
+    //--------------------------StateFlow para el estado de carga-------------------------
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    //----------------------------------TASA------------------------------------------------------
+    // LiveData para los datos del BCV
+    private val _bcvData = MutableStateFlow<ApiDolarServices?>(null)
+    val bcvData: StateFlow<ApiDolarServices?> = _bcvData.asStateFlow()
+
+    //StateFlow para el precio como Float
+    private val _bcvPriceFloat = MutableStateFlow<Float?>(null)
+    val bcvPriceFloat: StateFlow<Float?> = _bcvPriceFloat.asStateFlow()
+
+    private val _tasa = MutableStateFlow(1f)
+    val tasa: StateFlow<Float> = _tasa.asStateFlow()
+
+    val isBcv: StateFlow<Boolean> = tasa.map { currentTasa ->
+        currentTasa != 1f
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(200),
+        initialValue = _tasa.value != 1f
+    )
+
+    //--------------------------------------EMPTYCLIENT------------------------------------------
+    //variable para validar si no existen clientes en el sitio
     private val _emptyClient = MutableStateFlow(false)
     val emptyClient: StateFlow<Boolean> = _emptyClient.asStateFlow()
 
+    //-----------------------------------CLIENT LIST------------------------------------
+    //--------------------------stateFlow para todas los clientes-------------------------
     private val _clientList = MutableStateFlow<List<ClientList>>(emptyList())
     val clientList: StateFlow<List<ClientList>> = _clientList.asStateFlow()
 
+    //--------------------------stateFlow para el cliente actual-------------------------
     private val _actualList = MutableStateFlow(ClientList())
     val actualList: StateFlow<ClientList> = _actualList.asStateFlow()
 
+    //---------------------------------PRODUCTOS---------------------------------------------------
+    //-----------------------------all products-------------------------------
     private val _productos = MutableStateFlow<List<Product>>(emptyList())
     val productos: StateFlow<List<Product>> = _productos.asStateFlow()
 
+    //-----------------------------actual product for actualize it
     private val _actualprod = MutableStateFlow(Product())
     val actualprod: StateFlow<Product> = _actualprod.asStateFlow()
 
@@ -45,7 +78,7 @@ class ProductViewModel @Inject constructor(
     private val _presupuesto = MutableStateFlow("")
     val presupuesto: StateFlow<String> = _presupuesto.asStateFlow()
 
-    //--------------------variable para verificar presupuesto excedito
+    //--------------------variable para verificar presupuesto excedido-------------------------------
     private val _deathPresu = MutableStateFlow(false)
     val deathPresu: StateFlow<Boolean> = _deathPresu.asStateFlow()
 
@@ -78,9 +111,6 @@ class ProductViewModel @Inject constructor(
             initialValue = 0f
         )
 
-    //------------------------------------DATABASES-------------------------------------
-
-
     //--------------------------------------------INIT-----------------------------------------------
     init {
         viewModelScope.launch {
@@ -108,89 +138,8 @@ class ProductViewModel @Inject constructor(
 
 
     //------------------------------changeCurrentList-----------------------------------------------
-    fun changeCurrentList(clientId: Int?) {
-        val currentList = _clientList.value.firstOrNull { it.id == clientId }
-        if (currentList != null) {
-            saveActualList(clientId)
-            _actualList.value = currentList
-            _presupuesto.value = currentList.presupuesto
-            try {
-                if (presupuesto.value.toFloat() < inCar.value) validDeathPresu(true) else validDeathPresu(
-                    false
-                )
-            } catch (_: Exception) {
-                validDeathPresu(false)
-            }
-        }
-    }
-
-    fun isEmptyClient() {
-        viewModelScope.launch {
-            _emptyClient.value = clientRepository.isEmptyClient()
-        }
-    }
-
-    //---------------------------------------deleteClientList-------------------------------
-
-    fun deleteClient(idClient: Int?) {
-        //primero convierte las dos listas en listas mutables para iterarlas mejor
-        val clientList = _clientList.value.toMutableList()
-        val product = _productos.value.toMutableList()
-        //luego las borra donde encuentren la Id del cliente
-        product.removeIf { it.client == idClient }
-        clientList.removeIf { it.id == idClient }
-        //luego las convierten nuevamente en listas para actualizar la lista actual
-        _clientList.value = clientList.toList()
-        _productos.value = product.toList()
-        //por ultimo lo borra en la base de datos
-        viewModelScope.launch {
-            clientRepository.deleteClientById(idClient)
-        }
-    }
-
-    fun saveActualList(idClientList: Int?) {
-        viewModelScope.launch {
-            clientRepository.saveLastClientId(idClientList!!)
-        }
-    }
-
-    fun loadActualList() {
-        viewModelScope.launch {
-            //primero busca el ultimo valor de lista guardado
-            val lastClient = clientRepository.getLastClientId()
-            //verifica si existe alguno
-            val actualList =
-                if (lastClient != -1) {
-                    clientRepository.getLastList(lastClient)
-                }
-                else {
-                    clientRepository.getActualList()
-                }
-            actualList?.let {
-                _actualList.value = it
-                _presupuesto.value = it.presupuesto
-            }
-        }
-    }
-
-
-    fun changeBeforeDeleteList(idClientList: Int?) {
-        //primero obtengo el valor de client list
-        val clientList = _clientList.value
-
-        //luego busco un elemento de la lista que no sea el que se va a borrar
-        val changeList = clientList.firstOrNull { it.id != null && it.id != idClientList }
-
-        //si encuentra alguno y la lista actual es igual a la que se quiere borrar se cambia sino eso quiere decir que es la unica lista y la lista actual vuelve a 0
-        if (changeList != null && _actualList.value.id == idClientList) {
-            changeCurrentList(changeList.id)
-        }
-
-    }
 
     //-----------------------------------------addClientList--------------------------------
-
-
     fun addClientList(nameClient: String) {
         val client = ClientList(null, nameClient)
         viewModelScope.launch {
@@ -202,10 +151,7 @@ class ProductViewModel @Inject constructor(
             }
             changeCurrentList(newId.toInt())
         }
-
-
     }
-
 
     //-----------------------------------agregarProducto----------------------------------
     fun addProduct(producto: Product) {
@@ -217,7 +163,41 @@ class ProductViewModel @Inject constructor(
                 currentList + productWithId
             }
         }
+    }
+    fun addPresu(clientId: Int?, presu: String) {
+        _presupuesto.value = presu
+        _clientList.update { currentList ->
+            currentList.map { client ->
+                if (client.id == clientId) client.copy(presupuesto = presu)
+                else client
+            }
+        }
+        viewModelScope.launch {
+            clientRepository.updatePresuClient(clientId, presu)
+        }
+    }
 
+
+
+    fun saveActualList(idClientList: Int?) {
+        viewModelScope.launch {
+            clientRepository.saveLastClientId(idClientList!!)
+        }
+    }
+
+    fun changeCurrentList(clientId: Int?) {
+        val currentList = _clientList.value.firstOrNull { it.id == clientId }
+        if (currentList != null) {
+            saveActualList(clientId)
+            _actualList.value = currentList
+            _presupuesto.value = currentList.presupuesto
+            try {
+                if (presupuesto.value.toFloat() < inCar.value) validDeathPresu(true)
+                else validDeathPresu(change = false)
+            } catch (_: Exception) {
+                validDeathPresu(false)
+            }
+        }
     }
 
     fun updateProduct(prod: Product) {
@@ -236,7 +216,22 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    // Función para togglear el check
+    // Función para actualizar el precio
+    fun updatePrecio(productId: Int?, newPrice: Float) {
+        _productos.update { currentList ->
+            currentList.map { product ->
+                if (product.id == productId) {
+                    product.copy(price = newPrice)
+                } else {
+                    product
+                }
+            }
+        }
+        viewModelScope.launch {
+            clientRepository.updatePrice(productId, newPrice)
+        }
+    }
+
     fun toggleCheck(productId: Int?) {
         _productos.update { currentList ->
             val index = currentList.indexOfFirst { it.id == productId }
@@ -258,22 +253,6 @@ class ProductViewModel @Inject constructor(
             clientRepository.updateChecked(productId)
         }
     }
-
-    // Función para actualizar el precio
-    fun updatePrecio(productId: Int?, newPrice: Float) {
-        _productos.update { currentList ->
-            currentList.map { product ->
-                if (product.id == productId) {
-                    product.copy(price = newPrice)
-                } else {
-                    product
-                }
-            }
-        }
-        viewModelScope.launch {
-            clientRepository.updatePrice(productId, newPrice)
-        }
-    }
     //------------------------------actualizeProduct---------------------------------------
 
     fun actualizeProduct(productId: Int?) {
@@ -288,72 +267,62 @@ class ProductViewModel @Inject constructor(
         }
     }
 
+    fun changeBeforeDeleteList(idClientList: Int?) {
+        //primero obtengo el valor de client list
+        val clientList = _clientList.value
+
+        //luego busco un elemento de la lista que no sea el que se va a borrar
+        val changeList = clientList.firstOrNull { it.id != null && it.id != idClientList }
+
+        //si encuentra alguno y la lista actual es igual a la que se quiere borrar se cambia sino eso quiere decir que es la unica lista y la lista actual vuelve a 0
+        if (changeList != null && _actualList.value.id == idClientList) {
+            changeCurrentList(changeList.id)
+        }
+    }
+
     //-----------------------------DeathPresupuestoChanged-----------------------
 
     fun validDeathPresu(change: Boolean) {
         _deathPresu.value = change
     }
-    //-----------------------------addPresupuesto------------------------------
+    fun isEmptyClient() {
+        viewModelScope.launch {
+            _emptyClient.value = clientRepository.isEmptyClient()
+        }
+    }
 
-    fun addPresu(clientId: Int?, presu: String) {
-        _presupuesto.value = presu
-        _clientList.update { currentList ->
-            currentList.map { client ->
-                if (client.id == clientId) {
-                    client.copy(presupuesto = presu)
-
+    fun loadActualList() {
+        viewModelScope.launch {
+            //primero busca el ultimo valor de lista guardado
+            val lastClient = clientRepository.getLastClientId()
+            //verifica si existe alguno
+            val actualList =
+                if (lastClient != -1) {
+                    clientRepository.getLastList(lastClient)
                 } else {
-                    client
+                    clientRepository.getActualList()
                 }
+            actualList?.let {
+                _actualList.value = it
+                _presupuesto.value = it.presupuesto
             }
         }
+    }
+    //--------------------------------------------Tasa--------------------------------------------
+    //------------------------------------cargar valor de la database en BCV-------------------
+    fun chargeDolarFromDB() {
         viewModelScope.launch {
-            clientRepository.updatePresuClient(clientId, presu)
+            val responseFromDB = bcvRepository.getBcvData()
+            if (responseFromDB != null) {
+                val bcvPrice = responseFromDB.promedio
+                _bcvData.value = responseFromDB
+                _bcvPriceFloat.value = bcvPrice
+            } else {
+                _bcvPriceFloat.value = -2f
+            }
         }
     }
-
-    //---------------------deleteProduct----------------------------
-    fun deleteProduct(idProd: Int?) {
-        //borrado en la lista local
-        val product = _productos.value.toMutableList()
-        product.removeIf { it.id == idProd }
-        _productos.value = product.toList()
-        //delete in database
-        viewModelScope.launch {
-            clientRepository.deleteProductById(idProd)
-        }
-    }
-
-
-    //----------------------------------------------BCV----------------------------
-    // LiveData para los datos del BCV
-    private val _bcvData = MutableStateFlow<ApiDolarServices?>(null)
-    val bcvData: StateFlow<ApiDolarServices?> =
-        _bcvData.asStateFlow() // Exponemos como StateFlow inmutable
-
-    // 2. StateFlow para el estado de carga
-    // Se inicializa en 'false' porque no estamos cargando al inicio.
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
-
-    // 4. StateFlow para el precio como Float
-    // Se inicializa con null.
-    private val _bcvPriceFloat = MutableStateFlow<Float?>(null)
-    val bcvPriceFloat: StateFlow<Float?> = _bcvPriceFloat.asStateFlow()
-
-    //--------------------------------tasa-------------------------------------
-    private val _tasa = MutableStateFlow(1f)
-    val tasa: StateFlow<Float> = _tasa.asStateFlow()
-
-    val isBcv: StateFlow<Boolean> = tasa.map { currentTasa ->
-        currentTasa != 1f
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(200),
-        initialValue = _tasa.value != 1f
-    )
-
+        //--------------------------------actualizar tasa-------------------------------------
     fun actualizarTasa(
         tipoConversion: TipoConversion = TipoConversion.DIRECTA
     ) {
@@ -370,12 +339,12 @@ class ProductViewModel @Inject constructor(
         }
     }
 
+    enum class TipoConversion { DIRECTA, DOLAR_A_BCV, DOLAR_A_BS_USDT }
+//------------------------------------------validar tasa-----------------------------------
     fun validTasa(): Boolean {
         return bcvPriceFloat.value == -1f || bcvPriceFloat.value == -2f
     }
-
-    enum class TipoConversion { DIRECTA, DOLAR_A_BCV, DOLAR_A_BS_USDT }
-
+//------------------------------buscar la tasa---------------------------------------------
     fun searchDolarBcv() {
         _isLoading.value = true // Indica que la carga ha comenzado
 
@@ -391,27 +360,50 @@ class ProductViewModel @Inject constructor(
                 } else {
                     _bcvPriceFloat.value = -1f
                 }
-
             } catch (_: Exception) {
                 // Manejo de fallos de red o excepciones de parseo
                 _bcvPriceFloat.value = -1f
             } finally {
+                delay(1500)
                 _isLoading.value = false // Indica que la carga ha terminado
             }
         }
     }
 
-    fun chargeDolarFromDB() {
+
+    //---------------------deleteProduct----------------------------
+    fun deleteProduct(idProd: Int?) {
+        //borrado en la lista local
+        val product = _productos.value.toMutableList()
+        product.removeIf { it.id == idProd }
+        _productos.value = product.toList()
+        //delete in database
         viewModelScope.launch {
-            val responseFromDB = bcvRepository.getBcvData()
-            if (responseFromDB != null) {
-                val bcvPrice = responseFromDB.promedio
-                _bcvData.value = responseFromDB
-                _bcvPriceFloat.value = bcvPrice
-            } else {
-                _bcvPriceFloat.value = -2f
-            }
+            clientRepository.deleteProductById(idProd)
         }
     }
+
+    fun deleteClient(idClient: Int?) {
+        //primero convierte las dos listas en listas mutables para iterarlas mejor
+        val clientList = _clientList.value.toMutableList()
+        val product = _productos.value.toMutableList()
+        //luego las borra donde encuentren la Id del cliente
+        product.removeIf { it.client == idClient }
+        clientList.removeIf { it.id == idClient }
+        //luego las convierten nuevamente en listas para actualizar la lista actual
+        _clientList.value = clientList.toList()
+        _productos.value = product.toList()
+        //por ultimo lo borra en la base de datos
+        viewModelScope.launch {
+            clientRepository.deleteClientById(idClient)
+        }
+    }
+
+
+
+
+
+
+
 }
 
