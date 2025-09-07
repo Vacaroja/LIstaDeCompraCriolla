@@ -6,6 +6,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -70,11 +71,12 @@ fun ModalBottomSheetClientList(
 
                     ) {
                         Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-
+                            Spacer(modifier.weight(1f))
                             Text(
                                 text = "${client.name}",
                                 modifier = modifier.padding(6.dp)
                             )
+
                             IconButton(onClick = { onDelete(client.id) }) {
                                 Icon(
                                     imageVector = Icons.Default.Delete,

@@ -206,17 +206,18 @@ class ProductViewModel @Inject constructor(
     fun updateClient(idClient: Int?,newName: String){
         val currentClient= getClient(idClient)
         if (currentClient != null){
+            val newClientName = currentClient.copy(name = newName)
             _clientList.update { currentList ->
                 currentList.map { client ->
                     if (client.id == idClient){
-                        currentClient
+                        newClientName
                     }else
                         client
                 }
             }
             viewModelScope.launch {
-                val newClientName = currentClient.ToClientListEntity()
-                clientRepository.updateClient(newClientName)
+                val newName = newClientName.ToClientListEntity()
+                clientRepository.updateClient(newName)
             }
         }
     }
