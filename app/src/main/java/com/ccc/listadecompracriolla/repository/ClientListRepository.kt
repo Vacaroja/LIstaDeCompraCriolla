@@ -82,7 +82,7 @@ class ClientRepository @Inject constructor(
         return clientDao.insertClient(client)
     }
 
-    suspend fun addProduct(product: ProductEntity): Long { //Método general para añadir un producto
+    suspend fun addProduct(product: ProductEntity): Long { //Metodo general para añadir un producto
         return clientDao.insertProduct(product)
     }
 
