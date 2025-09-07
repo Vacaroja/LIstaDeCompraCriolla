@@ -31,15 +31,19 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateClientList(
+    lastName : String?,
     modifier:Modifier = Modifier,
     onSave: (String) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onChangeName: (String) -> Unit,
 ){
     val focusElements = remember { FocusRequester() }
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = false,
     )
     var nameClientList by remember { mutableStateOf("") }
+
+
     ModalBottomSheet(
         modifier = Modifier.fillMaxHeight(),
         sheetState = sheetState,
@@ -51,7 +55,7 @@ fun CreateClientList(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Coloque el nombre de la nueva lista", fontSize = 20.sp)
+            Text(text = "Coloque el nombre de la lista", fontSize = 20.sp)
             Row {
                 OutlinedTextField(
                     modifier = modifier
@@ -62,13 +66,16 @@ fun CreateClientList(
                     onValueChange = {
                         nameClientList = it
                     },
+                    placeholder = {if (lastName != null) Text(lastName)},
                     singleLine = true,
                     label = { Text("Lista") },
                     keyboardOptions = KeyboardOptions.Default.copy(
                         imeAction = ImeAction.Done
                     ),
                     keyboardActions = KeyboardActions(onDone = {
-                        if (nameClientList.isNotEmpty()) onSave(nameClientList)
+                        if (nameClientList.isNotEmpty()) {
+                            if (lastName != null) {onChangeName(nameClientList)}
+                            else onSave(nameClientList)}
                     })
                 )
                 LaunchedEffect(Unit) { focusElements.requestFocus() }

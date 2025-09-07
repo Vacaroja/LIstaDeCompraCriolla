@@ -196,11 +196,11 @@ fun CreateFoodScreen(
                 value = nombre,
                 onValueChange = { nombre = it },
                 label = { Text("NOMBRE") },
-                placeholder = { Text("COLOQUE EL NOMBRE DEL PRODUCTO") },
+                placeholder = { Text("Coloque el nombre") },
                 leadingIcon = {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_edit),
-                        contentDescription = "costo"
+                        contentDescription = "Nombre"
                     )
                 },
                 shape = MaterialTheme.shapes.medium,
@@ -225,7 +225,7 @@ fun CreateFoodScreen(
                     leadingIcon = {
                         Icon(
                             painter = painterResource(id = R.drawable.dinero),
-                            contentDescription = "costo"
+                            contentDescription = "Precio"
                         )
                     },
                     singleLine = true,  // Importante para campos de texto simple

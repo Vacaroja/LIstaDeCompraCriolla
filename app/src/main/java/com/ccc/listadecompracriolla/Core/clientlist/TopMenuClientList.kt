@@ -47,6 +47,9 @@ fun TopMenu(
     var bottomSheetNewClient by remember { mutableStateOf(false) }
     val isPressed by viewModel.isBcv.collectAsState()
 
+    var changedClientName: String? by remember { mutableStateOf(null) }
+    var changedClientId: Int? by remember { mutableStateOf(null) }
+
     val actualList by viewModel.actualList.collectAsState()
     val isEmptyClient by viewModel.emptyClient.collectAsState()
 
@@ -184,15 +187,29 @@ fun TopMenu(
                 viewModel.changeBeforeDeleteList(clientToDelete)
                 viewModel.deleteClient(clientToDelete)
 
+            },
+            onChangeName = {nameClient,idClient ->
+                changedClientName = nameClient
+                changedClientId = idClient
+                bottomSheetNewClient = true
+                bottomSheetClient = false
             })
     }
     if (bottomSheetNewClient) {
         CreateClientList(
+            lastName = changedClientName,
             onSave = { nameClient ->
                 viewModel.addClientList(nameClient)
                 bottomSheetNewClient = false
             },
             onDismiss = {
+                bottomSheetNewClient = false
+            },
+            onChangeName = {newName ->
+                viewModel.updateClient(changedClientId,newName)
+                viewModel.changeCurrentList(changedClientId)
+                changedClientName = null
+                changedClientId = null
                 bottomSheetNewClient = false
             }
         )

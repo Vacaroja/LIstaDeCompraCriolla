@@ -177,6 +177,9 @@ class ProductViewModel @Inject constructor(
         }
     }
 
+    fun getClient(idClient: Int?): ClientList?{
+        return _clientList.value.firstOrNull { it.id == idClient }
+    }
 
 
     fun saveActualList(idClientList: Int?) {
@@ -186,7 +189,7 @@ class ProductViewModel @Inject constructor(
     }
 
     fun changeCurrentList(clientId: Int?) {
-        val currentList = _clientList.value.firstOrNull { it.id == clientId }
+        val currentList = getClient(clientId)
         if (currentList != null) {
             saveActualList(clientId)
             _actualList.value = currentList
@@ -196,6 +199,24 @@ class ProductViewModel @Inject constructor(
                 else validDeathPresu(change = false)
             } catch (_: Exception) {
                 validDeathPresu(false)
+            }
+        }
+    }
+
+    fun updateClient(idClient: Int?,newName: String){
+        val currentClient= getClient(idClient)
+        if (currentClient != null){
+            _clientList.update { currentList ->
+                currentList.map { client ->
+                    if (client.id == idClient){
+                        currentClient
+                    }else
+                        client
+                }
+            }
+            viewModelScope.launch {
+                val newClientName = currentClient.ToClientListEntity()
+                clientRepository.updateClient(newClientName)
             }
         }
     }
