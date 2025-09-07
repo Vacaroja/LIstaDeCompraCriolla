@@ -26,9 +26,6 @@ class ProductViewModel @Inject constructor(
     private val bcvRepository: BcvRepository
 ) : ViewModel() {
 
-
-
-
     private val _emptyClient = MutableStateFlow(false)
     val emptyClient: StateFlow<Boolean> = _emptyClient.asStateFlow()
 
@@ -98,14 +95,10 @@ class ProductViewModel @Inject constructor(
                 }
             }
         }
-        actualizeProduct(-1)
         viewModelScope.launch {
-            val actual = clientRepository.getActualList()
-            if (actual != null) {
-                _actualList.value = actual
-                _presupuesto.value = actual.presupuesto
-            }
+            actualizeProduct(-1)
         }
+        loadActualList()
         isEmptyClient()
 
 
@@ -113,13 +106,12 @@ class ProductViewModel @Inject constructor(
 
     //---------------------------------------------Funciones-----------------------------------------------------
 
-    //---------------------------------------------chargeCurrentProducts-------------------------------------
-
 
     //------------------------------changeCurrentList-----------------------------------------------
     fun changeCurrentList(clientId: Int?) {
         val currentList = _clientList.value.firstOrNull { it.id == clientId }
         if (currentList != null) {
+            saveActualList(clientId)
             _actualList.value = currentList
             _presupuesto.value = currentList.presupuesto
             try {
@@ -153,6 +145,31 @@ class ProductViewModel @Inject constructor(
         //por ultimo lo borra en la base de datos
         viewModelScope.launch {
             clientRepository.deleteClientById(idClient)
+        }
+    }
+
+    fun saveActualList(idClientList: Int?) {
+        viewModelScope.launch {
+            clientRepository.saveLastClientId(idClientList!!)
+        }
+    }
+
+    fun loadActualList() {
+        viewModelScope.launch {
+            //primero busca el ultimo valor de lista guardado
+            val lastClient = clientRepository.getLastClientId()
+            //verifica si existe alguno
+            val actualList =
+                if (lastClient != -1) {
+                    clientRepository.getLastList(lastClient)
+                }
+                else {
+                    clientRepository.getActualList()
+                }
+            actualList?.let {
+                _actualList.value = it
+                _presupuesto.value = it.presupuesto
+            }
         }
     }
 

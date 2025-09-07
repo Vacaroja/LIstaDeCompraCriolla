@@ -1,9 +1,9 @@
 package com.ccc.listadecompracriolla.repository
 
+import android.content.SharedPreferences
 import com.ccc.listadecompracriolla.Core.clases.ClientList
 import com.ccc.listadecompracriolla.dao.ClientDao
 import com.ccc.listadecompracriolla.entities.ClientListEntity
-import com.ccc.listadecompracriolla.entities.ClientProductCrossRef
 import com.ccc.listadecompracriolla.entities.ProductEntity
 import com.ccc.listadecompracriolla.entities.ToClientList
 import kotlinx.coroutines.Dispatchers
@@ -11,72 +11,131 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import androidx.core.content.edit
 
 @Singleton
-class ClientRepository @Inject constructor(private val clientDao: ClientDao) {
+class ClientRepository @Inject constructor(
+    private val clientDao: ClientDao,
+    private val sharedPreferences: SharedPreferences
+) {
 
-    // Opcional: Obtener todos los productos en general
-    fun getAllProducts(): Flow<List<ProductEntity>> {
-        return clientDao.getAllProducts()
-    }
-    // Opcional: Obtener todos los productos en general
-    fun getAllClients(): Flow<List<ClientListEntity>> {
-        return clientDao.getAllClients()
-    }
+    //---------------------------------------SHARED PREFERENCES-----------------------------
 
-    fun getClientById(clientId: Int?): ClientListEntity {
-        return clientDao.getClientById(clientId)
+    companion object {
+        const val KEY_LAST_CLIENT_ID = "last_client_id"
     }
 
-    suspend fun isEmptyClient(): Boolean{
-        return withContext(Dispatchers.IO){
+    fun saveLastClientId(id: Int) {
+        sharedPreferences.edit { putInt(KEY_LAST_CLIENT_ID, id) }
+    }
+
+    fun getLastClientId(): Int {
+        // -1 es el valor por defecto si la clave no se encuentra
+        return sharedPreferences.getInt(KEY_LAST_CLIENT_ID, -1)
+    }
+
+    //------------------------------------------CRUD-------------------------------------------
+    suspend fun isEmptyClient(): Boolean {
+        return withContext(Dispatchers.IO) {
             val isEmpty = clientDao.getClientCount()
             return@withContext isEmpty == 0
         }
     }
 
-    suspend fun getActualList(): ClientList?{
+    fun getAllProducts(): Flow<List<ProductEntity>> {
+        return clientDao.getAllProducts()
+    }
+
+    // Opcional: Obtener todos los productos en general
+    fun getAllClients(): Flow<List<ClientListEntity>> {
+        return clientDao.getAllClients()
+    }
+
+    fun getClientById(clientId: Int?): ClientListEntity? {
+        return clientDao.getClientById(clientId)
+    }
+
+    fun getProductByID(productId: Int?): ProductEntity {
+        return clientDao.getProductById(productId)
+    }
+
+    suspend fun getLastList(idClient: Int?): ClientList? {
         return withContext(Dispatchers.IO){
+            val lastClientEntities = getClientById(idClient)
+            val lastClient = lastClientEntities?.ToClientList()
+            return@withContext lastClient
+        }
+    }
+
+    suspend fun getActualList(): ClientList? {
+        return withContext(Dispatchers.IO) {
             val actualList = clientDao.getFirstId()
             val toList = actualList?.ToClientList()
             return@withContext toList
         }
     }
 
-    // --- Operaciones básicas para Clientes ---
+    //------------------------------------------CRUD-------------------------------------------
+
+    //--------------------------------------ADD--------------------------------------------
     suspend fun addClient(client: ClientListEntity): Long {
         return clientDao.insertClient(client)
     }
 
+    suspend fun addProduct(product: ProductEntity): Long { //Método general para añadir un producto
+        return clientDao.insertProduct(product)
+    }
+
+    //------------------------------------UPDATE-----------------------------------------
     suspend fun updateClient(client: ClientListEntity) {
         clientDao.updateClient(client)
     }
 
-    suspend fun deleteClient(client: ClientListEntity) {
-        clientDao.deleteClient(client)
-    }
-    suspend fun deleteClientById(idClient:Int?) {
-        withContext(Dispatchers.IO){
-            val delClient = getClientById(idClient)
-            deleteClient(delClient)
-        }
-    }
 
-    suspend fun updatePresuClient(clientId: Int?,newPresu: String) {
-        withContext(Dispatchers.IO){
+    suspend fun updatePresuClient(clientId: Int?, newPresu: String) {
+        withContext(Dispatchers.IO) {
             val clientToUpdate = getClientById(clientId)
-            val newClient =clientToUpdate.copy(presupuesto = newPresu)
-            updateClient(newClient)
+            if (clientToUpdate != null){
+                val newClient = clientToUpdate.copy(presupuesto = newPresu)
+                updateClient(newClient)
+            }
         }
-    }
-
-    // --- Operaciones básicas para Productos ---
-    suspend fun addProduct(product: ProductEntity): Long { // Método general para añadir un producto
-        return clientDao.insertProduct(product)
     }
 
     suspend fun updateProduct(product: ProductEntity) {
         clientDao.updateProduct(product)
+    }
+
+
+    suspend fun updateChecked(productId: Int?) {
+        withContext(Dispatchers.IO) {
+            val actProd = getProductByID(productId)
+            val checked = actProd.copy(checked = !actProd.checked)
+            clientDao.updateProduct(checked)
+        }
+    }
+
+    suspend fun updatePrice(productId: Int?, newPrice: Float) {
+        withContext(Dispatchers.IO) {
+            val actProd = getProductByID(productId)
+            val newPriceProduct = actProd.copy(price = newPrice)
+            clientDao.updateProduct(newPriceProduct)
+        }
+    }
+
+    //------------------------------------DELETE-----------------------------------------
+
+    suspend fun deleteClient(client: ClientListEntity) {
+        clientDao.deleteClient(client)
+    }
+
+    suspend fun deleteClientById(idClient: Int?) {
+        withContext(Dispatchers.IO) {
+            val delClient = getClientById(idClient)
+            if (delClient != null){
+                deleteClient(delClient)
+            }
+        }
     }
 
     suspend fun deleteProduct(product: ProductEntity) {
@@ -84,33 +143,11 @@ class ClientRepository @Inject constructor(private val clientDao: ClientDao) {
     }
 
     suspend fun deleteProductById(productId: Int?) {
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             val clientToUpdate = getProductByID(productId)
             deleteProduct(clientToUpdate)
         }
     }
-
-    fun getProductByID(productId: Int?): ProductEntity{
-        return clientDao.getProductById(productId)
-    }
-
-    suspend fun updateChecked(productId: Int?){
-        withContext(Dispatchers.IO){
-            val actProd = getProductByID(productId)
-            val checked = actProd.copy(checked = !actProd.checked)
-            clientDao.updateProduct(checked)
-        }
-    }
-
-    suspend fun updatePrice(productId: Int?,newPrice: Float){
-        withContext(Dispatchers.IO){
-            val actProd = getProductByID(productId)
-            val newPriceProduct = actProd.copy(price = newPrice)
-            clientDao.updateProduct(newPriceProduct)
-        }
-    }
-
-
 
 
 }
