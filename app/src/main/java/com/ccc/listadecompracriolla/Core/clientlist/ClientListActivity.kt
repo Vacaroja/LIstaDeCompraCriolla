@@ -5,27 +5,39 @@ package com.ccc.listadecompracriolla.Core.clientlist
 orden alfabetico
 filtrar por orden  y colocar las ya seleccionadas abajo*/
 
+import android.app.Activity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -34,6 +46,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -44,9 +57,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
+import com.ccc.listadecompracriolla.adds.AdBanner
+import com.ccc.listadecompracriolla.adds.loadInterstitialAd
+import com.ccc.listadecompracriolla.adds.showInterstitialAd
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -80,147 +98,208 @@ fun ClientListScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     //variables para enfocar
     val focusManager = LocalFocusManager.current
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
+    val context = LocalContext.current
+    val activity = context as? Activity
 
-
-
-    PullToRefreshBox(state = refreshState, isRefreshing = loading, onRefresh = {
-        coroutineScope.launch {
-            viewModel.searchDolarBcv()
-
-        }
-    }) {
-        //------------------------------------------Variables-----------------------------------------
-
-
-        Scaffold(
-            topBar = {
-                TopMenu(
-                    viewModel = viewModel,
-                    navigateToback = { },
-                    onFailureApi = {//on failure Api show snackBar to internet
-                        coroutineScope.launch {
-                            val result = snackbarHostState.showSnackbar(
-                                message = "Debe conectarse a internet para usar el conversor de tasas",
-                                actionLabel = "Ya estoy conectado",
-                                duration = SnackbarDuration.Short
-                            )
-                            when (result) {
-                                SnackbarResult.Dismissed -> {
-                                    viewModel.chargeDolarFromDB()
-                                    if (viewModel.validTasa()) {
-                                        snackbarHostState.showSnackbar(
-                                            "Se usara la ultima tasa guardada, recargue para volver a intenter buscar la tasa",
-                                            actionLabel = "OK"
-                                        )
-                                    } else {
-                                        snackbarHostState.showSnackbar(
-                                            "No se encuentra ninguna tasa guardada para usar, conectese a internet si quiere usar el convertidor de tasas",
-                                            actionLabel = "OK"
-                                        )
-                                    }
-                                }
-
-                                SnackbarResult.ActionPerformed -> {
-                                    viewModel.searchDolarBcv()
-                                }
-                            }
-                        }
-                    })
-            },
-            bottomBar = { BottomClientList(viewModel = viewModel) },
-            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-            floatingActionButton = {
-                viewModel.isEmptyClient()
-                if (enableButton && !isEmptyClient) {
-                    //animacion del floatingActionButton
-                    AnimatedVisibility(
-                        visible = isExtended,
-                        enter = fadeIn() + expandHorizontally(),
-                        exit = fadeOut() + shrinkHorizontally()
-                    ) {
-//------------------------------------------FBA-----------------------------------------
-
-                        ExtendedFloatingActionButton(
-
-                            onClick = {
-                                navigateToCreateFood()
-                                enableButton = false
-                            },
-                            icon = { Icon(Icons.Default.Add, "Agregar producto") },
-                            text = { Text("AGREGAR") }, // Texto visible solo cuando no hay scroll
-                            modifier = Modifier.padding(16.dp)
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            Spacer(Modifier.height(12.dp))
+            ModalDrawerSheet {
+                NavigationDrawerItem(
+                    label = {
+                        Text(
+                            text = "Lista de Compra Criolla",
+                            fontSize = 20.sp
+                        )
+                    },
+                    selected = false,
+                    onClick = { /* Handle click */ },
+                    badge = {
+                        Image(
+                            Icons.Default.Info,
+                            contentDescription = "",
+                            modifier.size(30.dp)
                         )
                     }
+                )
 
-                    if (!isExtended) {
+                HorizontalDivider()
+                NavigationDrawerItem(//pantalla de ajustes
+                    label = { Text("Apoyanos") },
+                    selected = false,
+                    onClick = { /* Handle click */ },
+                    icon = { Icon(imageVector = Icons.Default.Settings, "ajustes") }
+                )
+                NavigationDrawerItem(//pantalla de acerca de la aplicacion
+                    label = { Text("Premiun") },
+                    selected = false,
+                    onClick = { /* Handle click */ },
+                    icon = { Icon(imageVector = Icons.Default.Info, "Acerca de") }
+                )
 
-                        FloatingActionButton(
-                            modifier = Modifier.padding(16.dp),
-                            onClick = {
-                                enableButton = false
-                                navigateToCreateFood()
-                            }
-                        ) {
-                            Icon(Icons.Default.Add, "Agregar PRODUCTO")
-                        }
-                    }
-                }
             }
-        ) { innerpadding ->
-//------------------------------------------iterationOfProducts-----------------------------------------
-            Box(modifier = modifier.clickable {
-                //var to hide keyboard if its show
-                focusManager.clearFocus();stateOfBalance = false
-            }) {
-                viewModel.isEmptyClient()
-                if (enableButton && !isEmptyClient) {
 
-                    LazyColumn(
-                        modifier = modifier
-                            .fillMaxSize()
-                            .padding(innerpadding),
-                        state = scrollState,
-                        contentPadding = PaddingValues(bottom = 100.dp)
-                    ) {
-                        //reciclerview to watch items or products
-                        items(
-                            items = productos,
-                            key = { it.id!! }) { producto ->
-                            if (producto.client == clients.id) {
-                                ProducIterator(
-                                    product = producto,
-                                    viewModel = viewModel,
-                                    onChangeProduct = { idProduct ->
-                                        enableButton = false
-                                        viewModel.actualizeProduct(idProduct)
-                                        navigateToCreateFood()
-                                    }
+        },
+    ) {
+
+        PullToRefreshBox(state = refreshState, isRefreshing = loading, onRefresh = {
+            coroutineScope.launch {
+                viewModel.searchDolarBcv()
+
+            }
+        }) {
+            //------------------------------------------Variables-----------------------------------------
+
+
+            Scaffold(
+                topBar = {
+                    TopMenu(
+                        viewModel = viewModel,
+                        navigateToback = { },
+                        onOpenDrawer = {
+                            coroutineScope.launch {
+                                drawerState.apply {
+                                    if (isClosed) open() else close()
+                                }
+                            }
+                        },
+                        onFailureApi = {//on failure Api show snackBar to internet
+                            coroutineScope.launch {
+                                val result = snackbarHostState.showSnackbar(
+                                    message = "Debe conectarse a internet para usar el conversor de tasas",
+                                    actionLabel = "Ya estoy conectado",
+                                    duration = SnackbarDuration.Short
                                 )
+                                when (result) {
+                                    SnackbarResult.Dismissed -> {
+                                        viewModel.chargeDolarFromDB()
+                                        if (viewModel.validTasa()) {
+                                            snackbarHostState.showSnackbar(
+                                                "Se usara la ultima tasa guardada, recargue para volver a intenter buscar la tasa",
+                                                actionLabel = "OK"
+                                            )
+                                        } else {
+                                            snackbarHostState.showSnackbar(
+                                                "No se encuentra ninguna tasa guardada para usar, conectese a internet si quiere usar el convertidor de tasas",
+                                                actionLabel = "OK"
+                                            )
+                                        }
+                                    }
+
+                                    SnackbarResult.ActionPerformed -> {
+                                        viewModel.searchDolarBcv()
+                                    }
+                                }
+                            }
+                        },
+                    )
+                },
+                bottomBar = { BottomClientList(viewModel = viewModel) },
+                snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+                floatingActionButton = {
+                    viewModel.isEmptyClient()
+                    if (enableButton && !isEmptyClient) {
+                        //animacion del floatingActionButton
+                        AnimatedVisibility(
+                            visible = isExtended,
+                            enter = fadeIn() + expandHorizontally(),
+                            exit = fadeOut() + shrinkHorizontally()
+                        ) {
+//------------------------------------------FBA-----------------------------------------
+
+                            ExtendedFloatingActionButton(
+
+                                onClick = {
+                                    navigateToCreateFood()
+                                    enableButton = false
+                                },
+                                icon = { Icon(Icons.Default.Add, "Agregar producto") },
+                                text = { Text("AGREGAR") }, // Texto visible solo cuando no hay scroll
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
+
+                        if (!isExtended) {
+
+                            FloatingActionButton(
+                                modifier = Modifier.padding(16.dp),
+                                onClick = {
+                                    enableButton = false
+                                    navigateToCreateFood()
+                                }
+                            ) {
+                                Icon(Icons.Default.Add, "Agregar PRODUCTO")
                             }
                         }
                     }
-                    Row(
-                        modifier = modifier
-                            .align(Alignment.BottomStart)
-                            .padding(innerpadding)
-                        // Asegura que el botón esté por encima
-                    ) {
-                        ClientBalance(viewModel, stateOfBalance = stateOfBalance) {
-                            stateOfBalance = !stateOfBalance
-                        }
-
-
+                }
+            ) { innerpadding ->
+//------------------------------------------iterationOfProducts-----------------------------------------
+                Box(modifier = modifier.clickable {
+                    //var to hide keyboard if its show
+                    focusManager.clearFocus()
+                    stateOfBalance = false
+                    if (activity != null) {
+                        showInterstitialAd(activity)
+                        loadInterstitialAd(context)
                     }
 
+                }) {
+
+                    viewModel.isEmptyClient()
+                    if (enableButton && !isEmptyClient) {
+
+                        LazyColumn(
+                            modifier = modifier
+                                .fillMaxSize()
+                                .padding(innerpadding),
+                            state = scrollState,
+                            contentPadding = PaddingValues(bottom = 100.dp)
+                        ) {
+                            //reciclerview to watch items or products
+                            items(
+                                items = productos,
+                                key = { it.id!! }) { producto ->
+                                if (producto.client == clients.id) {
+                                    ProducIterator(
+                                        product = producto,
+                                        viewModel = viewModel,
+                                        onChangeProduct = { idProduct ->
+                                            enableButton = false
+                                            viewModel.actualizeProduct(idProduct)
+                                            navigateToCreateFood()
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                        Row(
+                            modifier = modifier
+                                .align(Alignment.BottomStart)
+                                .padding(innerpadding)
+                            // Asegura que el botón esté por encima
+                        ) {
+                            ClientBalance(viewModel, stateOfBalance = stateOfBalance) {
+                                stateOfBalance = !stateOfBalance
+                            }
+
+
+                        }
+
+                    }
                 }
+
+
             }
+
 
 
         }
-
-
     }
+
 }
 
 

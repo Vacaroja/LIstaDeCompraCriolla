@@ -9,11 +9,12 @@ plugins {
 
 android {
     namespace = "com.ccc.listadecompracriolla"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.ccc.listadecompracriolla"
         minSdk = 24
+        //noinspection OldTargetApi
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -51,6 +52,8 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.animation)
 
+    //ADMOB
+    implementation(libs.play.services.ads)
     ksp(libs.hilt.compiler)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.navigation.compose)

@@ -115,7 +115,8 @@ fun BottomBarHome() {
 //------------------------------------------TopBar-----------------------------------------
 
 @Composable
-fun TopBarHome(modifier: Modifier = Modifier) {
+fun TopBarHome(modifier: Modifier = Modifier,
+               ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 //------------------------------------------HorizontalSheet-----------------------------------------
@@ -128,15 +129,14 @@ fun TopBarHome(modifier: Modifier = Modifier) {
                 NavigationDrawerItem(
                     label = {
                         Text(
-                            text = "CoalChillChicken",
+                            text = "Lista de Compra Criolla",
                             fontSize = 20.sp
                         )
                     },
                     selected = false,
                     onClick = { /* Handle click */ },
                     badge = {
-                        Image(
-                            painterResource(R.drawable.bcv),
+                        Image(Icons.Default.Info,
                             contentDescription = "",
                             modifier.size(30.dp)
                         )
@@ -145,13 +145,13 @@ fun TopBarHome(modifier: Modifier = Modifier) {
 
                 HorizontalDivider()
                 NavigationDrawerItem(//pantalla de ajustes
-                    label = { Text("Ajustes") },
+                    label = { Text("Apoyanos") },
                     selected = false,
                     onClick = { /* Handle click */ },
                     icon = { Icon(imageVector = Icons.Default.Settings, "ajustes") }
                 )
                 NavigationDrawerItem(//pantalla de acerca de la aplicacion
-                    label = { Text("Conoce Mas") },
+                    label = { Text("Premiun") },
                     selected = false,
                     onClick = { /* Handle click */ },
                     icon = { Icon(imageVector = Icons.Default.Info, "Acerca de") }

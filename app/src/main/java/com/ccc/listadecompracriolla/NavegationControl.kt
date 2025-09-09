@@ -8,7 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.ccc.listadecompracriolla.Core.ClientList
 import com.ccc.listadecompracriolla.Core.CreateFood
 import com.ccc.listadecompracriolla.Core.clientlist.ClientListScreen
-import com.ccc.listadecompracriolla.Core.CreateFoodScreen
+import com.ccc.listadecompracriolla.Core.createfood.CreateFoodScreen
 import com.ccc.listadecompracriolla.Core.Home
 import com.ccc.listadecompracriolla.Core.HomeScreen
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel

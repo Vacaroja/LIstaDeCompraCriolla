@@ -41,7 +41,8 @@ fun TopMenu(
     modifier: Modifier = Modifier,
     viewModel: ProductViewModel,
     navigateToback: () -> Unit,
-    onFailureApi: () -> Unit
+    onFailureApi: () -> Unit,
+    onOpenDrawer: () -> Unit,
 ) {
     var bottomSheetClient by remember { mutableStateOf(false) }
     var bottomSheetNewClient by remember { mutableStateOf(false) }
@@ -61,7 +62,6 @@ fun TopMenu(
         targetValue = if (!isPressed) OrangeBlack else Orange,
         animationSpec = tween(durationMillis = 200)
     )
-
     TopAppBar(
         title = {
             viewModel.isEmptyClient()
@@ -98,7 +98,7 @@ fun TopMenu(
 //------------------------------------------NavigationIcons-----------------------------------------
 
         }, navigationIcon = {
-            IconButton(onClick = { }) {//BOTON PARA IR HACIA ATRAS
+            IconButton(onClick = { onOpenDrawer()}) {//BOTON PARA DRAWER
                 Icon(
                     imageVector = Icons.Default.Menu,
                     contentDescription = "Back"
@@ -149,12 +149,12 @@ fun TopMenu(
                     containerColor = animatedColorBs
                 )
             ) {//BOTON PARA LAS CAMBIAR A DOLAR BCV
-            Icon(
-                painter = painterResource(id = R.drawable.bcv_icon),
-                contentDescription = "bcv",
-                modifier = modifier.size(50.dp)
-            )
-        }
+                Icon(
+                    painter = painterResource(id = R.drawable.bcv_icon),
+                    contentDescription = "bcv",
+                    modifier = modifier.size(50.dp)
+                )
+            }
 
 //------------------------------------------ButtonMore-----------------------------------------
 
@@ -188,7 +188,7 @@ fun TopMenu(
                 viewModel.deleteClient(clientToDelete)
 
             },
-            onChangeName = {nameClient,idClient ->
+            onChangeName = { nameClient, idClient ->
                 changedClientName = nameClient
                 changedClientId = idClient
                 bottomSheetNewClient = true
@@ -205,8 +205,8 @@ fun TopMenu(
             onDismiss = {
                 bottomSheetNewClient = false
             },
-            onChangeName = {newName ->
-                viewModel.updateClient(changedClientId,newName)
+            onChangeName = { newName ->
+                viewModel.updateClient(changedClientId, newName)
                 viewModel.changeCurrentList(changedClientId)
                 changedClientName = null
                 changedClientId = null

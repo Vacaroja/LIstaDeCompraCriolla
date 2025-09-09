@@ -17,6 +17,7 @@ lifecycleViewmodelComposeVersion = "2.6.1"
 navigationCompose = "2.9.0"
 navigationComposeJvmstubs = "2.9.0"
 foundationLayoutAndroid = "1.7.2"
+playServicesAds = "24.5.0"
 retrofit = "2.9.0"
 androidx-room = "2.6.1"
 ksp = "2.0.21-1.0.27"
@@ -49,6 +50,7 @@ androidx-navigation-compose-jvmstubs = { group = "androidx.navigation", name = "
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 androidx-foundation-layout-android = { group = "androidx.compose.foundation", name = "foundation-layout-android", version.ref = "foundationLayoutAndroid" }
+play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidx-room" }
