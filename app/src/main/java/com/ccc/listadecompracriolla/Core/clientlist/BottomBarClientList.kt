@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.R
-import com.ccc.listadecompracriolla.adds.AdBanner
 import com.ccc.listadecompracriolla.ui.theme.Orange
 
 @Composable

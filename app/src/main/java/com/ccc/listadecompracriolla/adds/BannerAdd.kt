@@ -11,8 +11,6 @@ import com.google.android.gms.ads.AdView
 
 @Composable
 fun AdBanner( modifier: Modifier = Modifier) {
-    val localContx = LocalContext.current
-    val adWidth = 360
     AndroidView( factory = { context ->
         val adView = AdView(context)
         adView.setAdSize(AdSize.LARGE_BANNER)
