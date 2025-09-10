@@ -112,8 +112,8 @@ class ProductViewModel @Inject constructor(
         )
 
     val completedActualList: StateFlow<Boolean> =
-        combine(inCar, total) { inCar, inTotal ->
-            inCar == inTotal
+        combine(_productos, _actualList) { products, actList ->
+            products.filter { it.client == actList.id }.all { it.checked }
         }
             .stateIn(
                 scope = viewModelScope,
