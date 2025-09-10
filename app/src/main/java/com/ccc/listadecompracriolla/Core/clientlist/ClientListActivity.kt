@@ -87,6 +87,7 @@ fun ClientListScreen(
     //variables from viewmodels
     val productos by viewModel.productos.collectAsState()
     val clients by viewModel.actualList.collectAsState()
+    val isCompleted by viewModel.completedActualList.collectAsState()
     //variable to state of balance
     var stateOfBalance by remember { mutableStateOf(false) }
 
@@ -103,6 +104,7 @@ fun ClientListScreen(
 
     val context = LocalContext.current
     val activity = context as? Activity
+
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -149,7 +151,6 @@ fun ClientListScreen(
 
         },
     ) {
-
         PullToRefreshBox(state = refreshState, isRefreshing = loading, onRefresh = {
             coroutineScope.launch {
                 viewModel.searchDolarBcv()
@@ -247,11 +248,6 @@ fun ClientListScreen(
                     //var to hide keyboard if its show
                     focusManager.clearFocus()
                     stateOfBalance = false
-                    if (activity != null) {
-                        showInterstitialAd(activity)
-                        loadInterstitialAd(context)
-                    }
-
                 }) {
 
                     viewModel.isEmptyClient()
@@ -301,6 +297,12 @@ fun ClientListScreen(
             }
 
 
+        }
+    }
+    if (isCompleted) {
+        if (activity != null) {
+            showInterstitialAd(activity)
+            loadInterstitialAd(context)
         }
     }
 

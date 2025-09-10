@@ -24,7 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductViewModel @Inject constructor(
     private val clientRepository: ClientRepository,
-    private val bcvRepository: BcvRepository
+    private val bcvRepository: BcvRepository,
 ) : ViewModel() {
 
     //--------------------------StateFlow para el estado de carga-------------------------
@@ -111,6 +111,17 @@ class ProductViewModel @Inject constructor(
             initialValue = 0f
         )
 
+    val completedActualList: StateFlow<Boolean> =
+        combine(inCar, total) { inCar, inTotal ->
+            inCar == inTotal
+        }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(200),
+                initialValue = false
+            )
+
+
     //--------------------------------------------INIT-----------------------------------------------
     init {
         viewModelScope.launch {
@@ -164,6 +175,7 @@ class ProductViewModel @Inject constructor(
             }
         }
     }
+
     fun addPresu(clientId: Int?, presu: String) {
         _presupuesto.value = presu
         _clientList.update { currentList ->
@@ -177,7 +189,7 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    fun getClient(idClient: Int?): ClientList?{
+    fun getClient(idClient: Int?): ClientList? {
         return _clientList.value.firstOrNull { it.id == idClient }
     }
 
@@ -203,15 +215,15 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    fun updateClient(idClient: Int?,newName: String){
-        val currentClient= getClient(idClient)
-        if (currentClient != null){
+    fun updateClient(idClient: Int?, newName: String) {
+        val currentClient = getClient(idClient)
+        if (currentClient != null) {
             val newClientName = currentClient.copy(name = newName)
             _clientList.update { currentList ->
                 currentList.map { client ->
-                    if (client.id == idClient){
+                    if (client.id == idClient) {
                         newClientName
-                    }else
+                    } else
                         client
                 }
             }
@@ -307,6 +319,7 @@ class ProductViewModel @Inject constructor(
     fun validDeathPresu(change: Boolean) {
         _deathPresu.value = change
     }
+
     fun isEmptyClient() {
         viewModelScope.launch {
             _emptyClient.value = clientRepository.isEmptyClient()
@@ -330,6 +343,7 @@ class ProductViewModel @Inject constructor(
             }
         }
     }
+
     //--------------------------------------------Tasa--------------------------------------------
     //------------------------------------cargar valor de la database en BCV-------------------
     fun chargeDolarFromDB() {
@@ -344,9 +358,10 @@ class ProductViewModel @Inject constructor(
             }
         }
     }
-        //--------------------------------actualizar tasa-------------------------------------
+
+    //--------------------------------actualizar tasa-------------------------------------
     fun actualizarTasa(
-        tipoConversion: TipoConversion = TipoConversion.DIRECTA
+        tipoConversion: TipoConversion = TipoConversion.DIRECTA,
     ) {
         viewModelScope.launch {
             try {
@@ -362,11 +377,13 @@ class ProductViewModel @Inject constructor(
     }
 
     enum class TipoConversion { DIRECTA, DOLAR_A_BCV, DOLAR_A_BS_USDT }
-//------------------------------------------validar tasa-----------------------------------
+
+    //------------------------------------------validar tasa-----------------------------------
     fun validTasa(): Boolean {
         return bcvPriceFloat.value == -1f || bcvPriceFloat.value == -2f
     }
-//------------------------------buscar la tasa---------------------------------------------
+
+    //------------------------------buscar la tasa---------------------------------------------
     fun searchDolarBcv() {
         _isLoading.value = true // Indica que la carga ha comenzado
 
@@ -420,11 +437,6 @@ class ProductViewModel @Inject constructor(
             clientRepository.deleteClientById(idClient)
         }
     }
-
-
-
-
-
 
 
 }
