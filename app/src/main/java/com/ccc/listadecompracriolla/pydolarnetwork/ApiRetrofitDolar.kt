@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object DolarApi {
     /*private const val BASE_URL = "https://pydolarve.org/"
     caida Pydolar*/
-    private const val BASE_URL = "https://ve.dolarapi.com/"
+    private const val BASE_URL = "https://api.dolarvzla.com/"
     private val retrofitInstance by lazy {
         Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create())
             .build()

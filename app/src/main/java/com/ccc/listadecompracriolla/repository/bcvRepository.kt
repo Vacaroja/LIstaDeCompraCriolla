@@ -52,11 +52,11 @@ class BcvRepository @Inject constructor(
     suspend fun fetchAndSaveBcvFromApi(): ApiDolarServices? {
         return withContext(Dispatchers.IO) {
             try {
-                val bcvFromApi = DolarApi.retrofitService.getData() // Llama a tu servicio de API
-                val bcvEntity =
-                    bcvFromApi.toBcvEntity()// Convierte el modelo de API a la entidad de DB
-                bcvDao.insertBcv(bcvEntity) // Guarda en la DB
-                return@withContext bcvFromApi
+                val bcvFromApi = DolarApi.retrofitService.getData()
+                val bcvData = bcvFromApi.current// Llama a tu servicio de API
+                val bcvEntity = bcvData.toBcvEntity()// Convierte el modelo de API a la entidad de DB
+                saveBcvData(bcvEntity) // Guarda en la DB
+                return@withContext bcvData
             } catch (_: Exception) {
                 // Maneja el error, ej. loguea el error o propaga una excepción más específica
                 return@withContext null

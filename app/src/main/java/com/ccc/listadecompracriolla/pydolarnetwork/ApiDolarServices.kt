@@ -1,9 +1,7 @@
 package com.ccc.listadecompracriolla.pydolarnetwork
 
-import com.ccc.listadecompracriolla.entities.BcvEntity
 
-
-class ApiDolarServices(
+/*class ApiDolarServices(
     val fuente: String?,
     val nombre: String?,
     val compra: Float?,
@@ -21,4 +19,21 @@ fun BcvEntity.ToApiDolarServices(): ApiDolarServices? {
         promedio = this.promedio,
         fechaActualizacion = this.fechaActualizacion
     )
-}
+}*/
+
+// 1. Data class para los valores de las monedas (current y previous)
+
+data class ApiDolarServices(
+    val usd: Double?,
+    val eur: Double?,
+    val date: String?
+)
+data class ChangePercentage(
+    val usd: Double?,
+    val eur: Double?
+)
+data class DolarBcvResponse(
+    val current: ApiDolarServices,
+    val previous: ApiDolarServices,
+    val changePercentage: ChangePercentage
+)

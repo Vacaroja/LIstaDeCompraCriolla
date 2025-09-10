@@ -336,9 +336,9 @@ class ProductViewModel @Inject constructor(
         viewModelScope.launch {
             val responseFromDB = bcvRepository.getBcvData()
             if (responseFromDB != null) {
-                val bcvPrice = responseFromDB.promedio
+                val bcvPrice = responseFromDB.usd
                 _bcvData.value = responseFromDB
-                _bcvPriceFloat.value = bcvPrice
+                _bcvPriceFloat.value = bcvPrice?.toFloat()
             } else {
                 _bcvPriceFloat.value = -2f
             }
@@ -378,7 +378,7 @@ class ProductViewModel @Inject constructor(
 
                 if (response != null) {
                     _bcvData.value = response
-                    _bcvPriceFloat.value = df.format(response.promedio).toFloat()
+                    _bcvPriceFloat.value = df.format(response.usd).toFloat()
                 } else {
                     _bcvPriceFloat.value = -1f
                 }
