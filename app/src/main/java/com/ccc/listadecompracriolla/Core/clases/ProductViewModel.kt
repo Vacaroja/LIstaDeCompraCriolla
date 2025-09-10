@@ -85,11 +85,11 @@ class ProductViewModel @Inject constructor(
 
     //--------------------------------total-------------------------------------
     val total: StateFlow<Float> =
-        combine(_productos, _actualList) { products, actList ->//funcion que evalua los 2 stateFlows
+        combine(_productos, _actualList,_tasa) { products, actList,tasa ->//funcion que evalua los 2 stateFlows
             products.filter { it.client == actList.id }//filtro para actualList y Product
                 .fold(0f) { acc, product ->//suma
                     acc + (product.price * product.cant)
-                }
+                } * tasa
         }
             .stateIn(
                 scope = viewModelScope,
@@ -99,11 +99,11 @@ class ProductViewModel @Inject constructor(
 
 
     //------------------------------------Total en carrito (productos marcados)------------------
-    val inCar: StateFlow<Float> = combine(_productos, _actualList) { products, actList ->
+    val inCar: StateFlow<Float> = combine(_productos, _actualList,_tasa) { products, actList, tasa ->
         products.filter { it.checked && it.client == actList.id }
             .fold(0f) { acc, product ->
                 acc + (product.price * product.cant)
-            }
+            } * tasa
     }
         .stateIn(
             scope = viewModelScope,
@@ -252,17 +252,18 @@ class ProductViewModel @Inject constructor(
 
     // Función para actualizar el precio
     fun updatePrecio(productId: Int?, newPrice: Float) {
+        val newPriceXtasa = newPrice / _tasa.value
         _productos.update { currentList ->
             currentList.map { product ->
                 if (product.id == productId) {
-                    product.copy(price = newPrice)
+                    product.copy(price = newPriceXtasa)
                 } else {
                     product
                 }
             }
         }
         viewModelScope.launch {
-            clientRepository.updatePrice(productId, newPrice)
+            clientRepository.updatePrice(productId, newPriceXtasa)
         }
     }
 

@@ -110,7 +110,11 @@ fun ProducIterator(
 
             TextButton(onClick = { showBottomSheet = true }) {
                 Text(
-                    text = if (product.price != 0f) "$: ${df.format(product.price * product.cant * tasa)}" else "$",
+                    text = if (product.price != 0f) "$: ${
+                        formatNumber(
+                            df.format(product.price * product.cant * tasa).toFloat()
+                        )
+                    }" else "$",
                     modifier = modifier.widthIn(max = fontSizeCost, min = fontSizeCost),
                     fontWeight = FontWeight.Bold,
                     fontSize = fontSizePrice

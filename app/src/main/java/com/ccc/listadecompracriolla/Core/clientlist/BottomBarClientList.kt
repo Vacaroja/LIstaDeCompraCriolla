@@ -31,8 +31,8 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
 
     val total by viewModel.total.collectAsState()
     val inCar by viewModel.inCar.collectAsState()
-    val tasa by viewModel.tasa.collectAsState()
     val df = DecimalFormat("#.##")
+
 //------------------------------------------Variables-----------------------------------------
     val fontSizeTasa = 120.dp
 
@@ -49,14 +49,14 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier.widthIn(min = fontSizeTasa,max = fontSizeTasa)
+            modifier = modifier.widthIn(min = fontSizeTasa, max = fontSizeTasa)
         ) {
             Text(
                 text = "En carrito",
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "${df.format(inCar * tasa)}",
+                text = formatNumber(df.format(inCar).toFloat()),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -77,20 +77,22 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
         Icon(
             painter = painterResource(id = R.drawable.dinero),
             contentDescription = "",
-            modifier.size(40.dp)
+            modifier
+                .size(40.dp)
+                .padding(start = 5.dp)
         )
         Column(
-
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
-                .widthIn(min = fontSizeTasa,max = fontSizeTasa)
-                .padding(horizontal = 10.dp)
+                .widthIn(min = fontSizeTasa, max = fontSizeTasa)
+
         ) {
             Text(
                 text = "TOTAL",
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "${df.format(total * tasa)}",
+                text = formatNumber(df.format(total).toFloat()),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
