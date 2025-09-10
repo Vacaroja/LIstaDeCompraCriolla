@@ -12,7 +12,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,14 +28,18 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
@@ -115,24 +118,20 @@ fun ClientListScreen(
                     .requiredWidth(250.dp)
                     .fillMaxHeight()
             ) {
-                NavigationDrawerItem(
-                    label = {
-                        Text(
-                            text = "Lista de Compra Criolla",
-                            fontSize = 20.sp
-                        )
-                    },
-                    selected = false,
-                    onClick = { /* Handle click */ },
-                    badge = {
-                        Image(
+                Row {
+                    Text(
+                        text = "Lista de Compra Criolla",
+                        fontSize = 20.sp,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    IconButton(onClick = {}) {
+                        Icon(
                             Icons.Default.Info,
                             contentDescription = "",
                             modifier.size(30.dp)
                         )
                     }
-                )
-
+                }
                 HorizontalDivider()
                 NavigationDrawerItem(//pantalla de ajustes
                     label = { Text("Apoyanos") },
@@ -144,7 +143,13 @@ fun ClientListScreen(
                     label = { Text("Premiun") },
                     selected = false,
                     onClick = { /* Handle click */ },
-                    icon = { Icon(imageVector = Icons.Default.Info, "Acerca de") }
+                    icon = { Icon(imageVector = Icons.Default.Star, "Premiun") }
+                )
+                NavigationDrawerItem(//pantalla de acerca de la aplicacion
+                    label = { Text("Apoyanos ") },
+                    selected = false,
+                    onClick = { /* Handle click */ },
+                    icon = { Icon(imageVector = Icons.Default.Favorite, "Apoyanos") }
                 )
 
             }
