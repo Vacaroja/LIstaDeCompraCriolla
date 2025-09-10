@@ -2,7 +2,6 @@ package com.ccc.listadecompracriolla.Core.clientlist
 
 import android.icu.text.DecimalFormat
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -35,10 +34,9 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
     val tasa by viewModel.tasa.collectAsState()
     val df = DecimalFormat("#.##")
 //------------------------------------------Variables-----------------------------------------
-    val fontSizeTasa = 100.dp
+    val fontSizeTasa = 120.dp
 
     BottomAppBar(containerColor = Orange) {
-
 
 
 //------------------------------------------BottomInCarPrice-----------------------------------------
@@ -49,33 +47,43 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
                 .size(40.dp)
                 .padding(start = 5.dp)
         )
-        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier.widthIn(max = fontSizeTasa)) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier.widthIn(min = fontSizeTasa,max = fontSizeTasa)
+        ) {
             Text(
                 text = "En carrito",
                 fontWeight = FontWeight.Bold
             )
-            Text(text = "${df.format(inCar * tasa)}", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text(
+                text = "${df.format(inCar * tasa)}",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
 
         }
 
-        Spacer(modifier.weight(1f))
+
 
         VerticalDivider(
             color = Color.Black, thickness = 2.dp,
             modifier = modifier.padding(
-                vertical = 7.dp, horizontal = 5.dp
+                vertical = 7.dp, horizontal = 20.dp
             )
         )
 //------------------------------------------BottomTotalPrice-----------------------------------------
-        Spacer(modifier.weight(1f))
+
+
         Icon(
             painter = painterResource(id = R.drawable.dinero),
             contentDescription = "",
             modifier.size(40.dp)
         )
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier.widthIn(max = fontSizeTasa).padding(horizontal = 10.dp)
+
+            modifier = modifier
+                .widthIn(min = fontSizeTasa,max = fontSizeTasa)
+                .padding(horizontal = 10.dp)
         ) {
             Text(
                 text = "TOTAL",
@@ -88,6 +96,7 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
             )
 
         }
+
 
     }
 }

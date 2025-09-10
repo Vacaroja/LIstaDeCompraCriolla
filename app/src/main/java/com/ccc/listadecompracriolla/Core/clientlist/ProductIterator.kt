@@ -35,7 +35,12 @@ import com.ccc.listadecompracriolla.Core.clases.Product
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 
 @Composable
-fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: ProductViewModel,onChangeProduct:(Int?) -> Unit) {
+fun ProducIterator(
+    product: Product,
+    modifier: Modifier = Modifier,
+    viewModel: ProductViewModel,
+    onChangeProduct: (Int?) -> Unit,
+) {
 //------------------------------------------variables-----------------------------------------
 
     var precio by remember { mutableStateOf("") }//var price
@@ -43,7 +48,6 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
     var showBottomSheet by remember { mutableStateOf(false) }//var of BottomScreen
     val focusManager = LocalFocusManager.current
     val tasa by viewModel.tasa.collectAsState()
-
 
 
     //-------------------------------------textParameters-------------------------------------
@@ -67,7 +71,7 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
             .clickable {
                 onChangeProduct(product.id)
             },
-        border = BorderStroke(1.dp,Color.Black),
+        border = BorderStroke(1.dp, Color.Black),
         colors = CardDefaults.cardColors()
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -80,41 +84,34 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
                 checked = product.checked
             )
 
-            if (!product.checked) {
-                Text(
-                    product.name,
-                    color = Color.Blue,
-                    fontSize = fontSizeName,
-                    modifier = modifier.widthIn(max = namePaddingValues, min = namePaddingValues),
-                    maxLines = maxLinesName
-                )
-            } else {
-                    Text(
-                        product.name, color = Color.Blue,
-                        textDecoration = TextDecoration.LineThrough,
-                        fontSize = fontSizeName,
-                        modifier = modifier.widthIn(max = namePaddingValues, min = namePaddingValues),
-                        maxLines = maxLinesName
-                    )
 
-            }
+            Text(
+                product.name, color = Color.Blue,
+                textDecoration = if (product.checked) TextDecoration.LineThrough else TextDecoration.None,
+                fontSize = fontSizeName,
+                modifier = modifier.widthIn(max = namePaddingValues, min = namePaddingValues),
+                maxLines = maxLinesName
+            )
+
 
 //------------------------------------------añadir y disminuir cantidad-----------------------------------------
 
             //convertir en Textbutton para cambiarlo directamente
 
 
-            Row( modifier = modifier.padding(horizontal = 5.dp)) {
+            Row(modifier = modifier.padding(horizontal = 5.dp)) {
 
-                Text(text = "$cantidad ${product.medida}",
-                    modifier= modifier.widthIn(max = 60.dp))
+                Text(
+                    text = "$cantidad ${product.medida}",
+                    modifier = modifier.widthIn(max = 60.dp)
+                )
 
             }
 
             TextButton(onClick = { showBottomSheet = true }) {
                 Text(
                     text = if (product.price != 0f) "$: ${df.format(product.price * product.cant * tasa)}" else "$",
-                    modifier = modifier.widthIn(max= fontSizeCost,min= fontSizeCost),
+                    modifier = modifier.widthIn(max = fontSizeCost, min = fontSizeCost),
                     fontWeight = FontWeight.Bold,
                     fontSize = fontSizePrice
 
@@ -141,7 +138,7 @@ fun ProducIterator(product: Product, modifier: Modifier = Modifier, viewModel: P
                         showBottomSheet = false
                         try {
                             viewModel.updatePrecio(product.id, precio.toFloat())
-                        }catch (_: Exception){
+                        } catch (_: Exception) {
                             viewModel.updatePrecio(product.id, 0f)
                         }
                         precio = ""
