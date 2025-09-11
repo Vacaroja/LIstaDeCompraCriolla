@@ -13,6 +13,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -118,23 +119,24 @@ fun ClientListScreen(
                     .requiredWidth(250.dp)
                     .fillMaxHeight()
             ) {
-                Row {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(
                         text = "Lista de Compra Criolla",
                         fontSize = 20.sp,
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier= modifier.padding(start = 5.dp)
                     )
                     IconButton(onClick = {}) {
                         Icon(
                             Icons.Default.Info,
                             contentDescription = "",
-                            modifier.size(30.dp)
+                            modifier.size(25.dp).padding(start = 5.dp)
                         )
                     }
                 }
                 HorizontalDivider()
                 NavigationDrawerItem(//pantalla de ajustes
-                    label = { Text("Apoyanos") },
+                    label = { Text("Ajustes") },
                     selected = false,
                     onClick = { /* Handle click */ },
                     icon = { Icon(imageVector = Icons.Default.Settings, "ajustes") }

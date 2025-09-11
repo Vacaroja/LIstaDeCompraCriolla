@@ -1,5 +1,6 @@
 package com.ccc.listadecompracriolla.repository
 
+import com.ccc.listadecompracriolla.Core.formatterdata.dateFormattert
 import com.ccc.listadecompracriolla.dao.BcvDao
 import com.ccc.listadecompracriolla.entities.BcvEntity
 import com.ccc.listadecompracriolla.entities.toApiDolarServices
@@ -52,8 +53,11 @@ class BcvRepository @Inject constructor(
     suspend fun fetchAndSaveBcvFromApi(): ApiDolarServices? {
         return withContext(Dispatchers.IO) {
             try {
+                val actualDate = dateFormattert()
                 val bcvFromApi = DolarApi.retrofitService.getData()
-                val bcvData = bcvFromApi.current// Llama a tu servicio de API
+                val dateFromApi = bcvFromApi.current.date
+
+                val bcvData = if (dateFromApi == actualDate) bcvFromApi.current else bcvFromApi.previous// Llama a tu servicio de API
                 val bcvEntity = bcvData.toBcvEntity()// Convierte el modelo de API a la entidad de DB
                 saveBcvData(bcvEntity) // Guarda en la DB
                 return@withContext bcvData
