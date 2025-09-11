@@ -139,10 +139,11 @@ fun CreateFoodScreen(
                             medida = unidad,
                             client = if (actProduct.id != 0) actProduct.client else actual.id
                         )
-                        if (actProduct.id != 0) viewModel.updateProduct(nuevoProducto)
-                        else {
-                            viewModel.addProduct(nuevoProducto)
+                        if (actProduct.id != 0) {
+                            viewModel.updateProduct(nuevoProducto)
                             viewModel.actualizeProduct(-1)
+                        } else {
+                            viewModel.addProduct(nuevoProducto)
                         }
                         navigateToback()
 
@@ -255,12 +256,11 @@ fun CreateFoodScreen(
                 shape = MaterialTheme.shapes.medium
 
             )
-            Box(modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter){
+            Box(modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
                 AdBanner()
             }
 
         }
-
 
 
     }

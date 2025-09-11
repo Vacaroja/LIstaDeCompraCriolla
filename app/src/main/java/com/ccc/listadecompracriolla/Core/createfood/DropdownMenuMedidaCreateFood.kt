@@ -27,7 +27,7 @@ fun DropdownMenuCreateFood(
     ) {
     ExposedDropdownMenuBox(//menu desplegable para medida
         expanded = expanded,
-        onExpandedChange = { onExpandex }
+        onExpandedChange = { onExpandex() }
     ) {
         OutlinedTextField(
 
