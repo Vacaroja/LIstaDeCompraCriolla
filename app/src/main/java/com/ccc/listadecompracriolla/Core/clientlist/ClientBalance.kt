@@ -1,6 +1,8 @@
 package com.ccc.listadecompracriolla.Core.clientlist
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -20,9 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-
 import androidx.compose.runtime.remember
-
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -51,6 +51,10 @@ fun ClientBalance(
     val tasa by viewModel.tasa.collectAsState()
     val focusElements = remember { FocusRequester() }
     val deathPresu by viewModel.deathPresu.collectAsState()
+    val animatedColorpresu by animateColorAsState(
+        targetValue = if (deathPresu) Red else greenApple,
+        animationSpec = tween(durationMillis = 200)
+    )
     AnimatedContent(
         targetState = stateOfBalance,
         modifier = modifier.padding(all = 5.dp)
@@ -93,38 +97,27 @@ fun ClientBalance(
                 LaunchedEffect(Unit) { focusElements.requestFocus() }
             }
         } else {
-            Card(colors = CardDefaults.cardColors(if (deathPresu) Red else greenApple)) {
+            Card(colors = CardDefaults.cardColors(animatedColorpresu)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(
                         onClick = { onDimiss() }
 
                     ) {
-                        if (presupuesto.isEmpty()) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.addcard),
-                                contentDescription = "Presupuesto",
-                                modifier = Modifier.size(30.dp)
-                            )
-                        } else {
-                            if (deathPresu) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.offcard),
-                                    contentDescription = "Presupuesto",
-                                    modifier = Modifier.size(30.dp)
-                                )
+
+                        Icon(
+                            painter = if (presupuesto.isEmpty()) {
+                                painterResource(id = R.drawable.addcard)
                             } else {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.okcard),
-                                    contentDescription = "Presupuesto",
-                                    modifier = Modifier.size(30.dp)
-                                )
-                            }
-                        }
+                                if (deathPresu) painterResource(id = R.drawable.offcard)
+                                else painterResource(id = R.drawable.okcard)
+                            },
+                            contentDescription = "Presupuesto",
+                            modifier = Modifier.size(30.dp)
+                        )
 
 
                     }
                     if (presupuesto.isNotEmpty() && presupuesto != ".") {
-                        if (presupuesto.toFloat() < inCar) viewModel.validDeathPresu(true) else viewModel.validDeathPresu(false)
                         TextButton(onClick = { onDimiss() }) {
                             Text(
                                 text = (formatNumber((presupuesto.toFloat() * tasa) - (inCar * tasa))),
