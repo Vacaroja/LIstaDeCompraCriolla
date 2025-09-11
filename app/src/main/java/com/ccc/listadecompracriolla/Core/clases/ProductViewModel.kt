@@ -78,11 +78,6 @@ class ProductViewModel @Inject constructor(
     private val _presupuesto = MutableStateFlow("")
     val presupuesto: StateFlow<String> = _presupuesto.asStateFlow()
 
-    //--------------------variable para verificar presupuesto excedido-------------------------------
-    private val _deathPresu = MutableStateFlow(false)
-    val deathPresu: StateFlow<Boolean> = _deathPresu.asStateFlow()
-
-
     //--------------------------------total-------------------------------------
     val total: StateFlow<Float> =
         combine(_productos, _actualList,_tasa) { products, actList,tasa ->//funcion que evalua los 2 stateFlows
@@ -110,6 +105,21 @@ class ProductViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(200),
             initialValue = 0f
         )
+    //--------------------variable para verificar presupuesto excedido-------------------------------
+
+    val deathPresu: StateFlow<Boolean> =
+        combine(_presupuesto,inCar) { presu, incar ->//funcion que evalua los 2 stateFlows
+            try {
+                presu.toFloat() < incar
+            }catch (_:Exception){
+                false
+            }
+        }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(200),
+                initialValue = false
+            )
 
     val completedActualList: StateFlow<Boolean> =
         combine(_productos, _actualList) { products, actList ->
@@ -206,12 +216,6 @@ class ProductViewModel @Inject constructor(
             saveActualList(clientId)
             _actualList.value = currentList
             _presupuesto.value = currentList.presupuesto
-            try {
-                if (presupuesto.value.toFloat() < inCar.value) validDeathPresu(true)
-                else validDeathPresu(change = false)
-            } catch (_: Exception) {
-                validDeathPresu(false)
-            }
         }
     }
 
@@ -317,9 +321,7 @@ class ProductViewModel @Inject constructor(
 
     //-----------------------------DeathPresupuestoChanged-----------------------
 
-    fun validDeathPresu(change: Boolean) {
-        _deathPresu.value = change
-    }
+
 
     fun isEmptyClient() {
         viewModelScope.launch {
