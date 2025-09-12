@@ -52,9 +52,7 @@ class ProductViewModel @Inject constructor(
     )
 
     //--------------------------------------EMPTYCLIENT------------------------------------------
-    //variable para validar si no existen clientes en el sitio
-    private val _emptyClient = MutableStateFlow(false)
-    val emptyClient: StateFlow<Boolean> = _emptyClient.asStateFlow()
+
 
     //-----------------------------------CLIENT LIST------------------------------------
     //--------------------------stateFlow para todas los clientes-------------------------
@@ -78,9 +76,21 @@ class ProductViewModel @Inject constructor(
     private val _presupuesto = MutableStateFlow("")
     val presupuesto: StateFlow<String> = _presupuesto.asStateFlow()
 
+    enum class SortType {
+        NONE, ALPHABETICAL, REVERSE_ALPHABETICAL
+    }
+
+    private val _sortType = MutableStateFlow(SortType.NONE)
+    val sortType = _sortType.asStateFlow()
+
+
     //--------------------------------total-------------------------------------
     val total: StateFlow<Float> =
-        combine(_productos, _actualList,_tasa) { products, actList,tasa ->//funcion que evalua los 2 stateFlows
+        combine(
+            _productos,
+            _actualList,
+            _tasa
+        ) { products, actList, tasa ->//funcion que evalua los 2 stateFlows
             products.filter { it.client == actList.id }//filtro para actualList y Product
                 .fold(0f) { acc, product ->//suma
                     acc + (product.price * product.cant)
@@ -94,24 +104,25 @@ class ProductViewModel @Inject constructor(
 
 
     //------------------------------------Total en carrito (productos marcados)------------------
-    val inCar: StateFlow<Float> = combine(_productos, _actualList,_tasa) { products, actList, tasa ->
-        products.filter { it.checked && it.client == actList.id }
-            .fold(0f) { acc, product ->
-                acc + (product.price * product.cant)
-            } * tasa
-    }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(200),
-            initialValue = 0f
-        )
+    val inCar: StateFlow<Float> =
+        combine(_productos, _actualList, _tasa) { products, actList, tasa ->
+            products.filter { it.checked && it.client == actList.id }
+                .fold(0f) { acc, product ->
+                    acc + (product.price * product.cant)
+                } * tasa
+        }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(200),
+                initialValue = 0f
+            )
     //--------------------variable para verificar presupuesto excedido-------------------------------
 
     val deathPresu: StateFlow<Boolean> =
-        combine(_presupuesto,inCar) { presu, incar ->//funcion que evalua los 2 stateFlows
+        combine(_presupuesto, inCar) { presu, incar ->//funcion que evalua los 2 stateFlows
             try {
                 presu.toFloat() < incar
-            }catch (_:Exception){
+            } catch (_: Exception) {
                 false
             }
         }
@@ -131,7 +142,35 @@ class ProductViewModel @Inject constructor(
                 started = SharingStarted.WhileSubscribed(200),
                 initialValue = false
             )
+    val emptyClient: StateFlow<Boolean> = combine(_clientList) { client ->
+        client.isEmpty()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(200),
+        initialValue = false
+    )
+    val dividerCheckedItems: StateFlow<Boolean> = combine(_actualList, _productos) { client, prod ->
+        prod.any { it.checked && it.client == client.id } && !prod.all { it.checked && it.client == client.id }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(200),
+        initialValue = false
+    )
 
+    val actualDobleProductList: StateFlow<Pair<List<Product>, List<Product>>> =
+        combine(_productos, _actualList, _sortType) { prod, actList, currentSort ->
+            val sortedList = when(currentSort) {
+                SortType.NONE -> prod
+                SortType.ALPHABETICAL -> prod.sortedBy { it.name  }
+                SortType.REVERSE_ALPHABETICAL -> prod.sortedByDescending { it.name }
+            }
+            val filterList = sortedList.filter { it.client == actList.id }
+            filterList.partition { !it.checked }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(200),
+            initialValue = Pair(emptyList(), emptyList())
+        )
 
     //--------------------------------------------INIT-----------------------------------------------
     init {
@@ -151,8 +190,6 @@ class ProductViewModel @Inject constructor(
             actualizeProduct(-1)
         }
         loadActualList()
-        isEmptyClient()
-
 
 
     }
@@ -209,6 +246,16 @@ class ProductViewModel @Inject constructor(
     fun saveActualList(idClientList: Int?) {
         viewModelScope.launch {
             clientRepository.saveLastClientId(idClientList!!)
+        }
+    }
+
+    fun cycleSortType() {
+        _sortType.update { current ->
+            when (current) {
+                SortType.NONE -> SortType.ALPHABETICAL
+                SortType.ALPHABETICAL -> SortType.REVERSE_ALPHABETICAL
+                SortType.REVERSE_ALPHABETICAL -> SortType.NONE
+            }
         }
     }
 
@@ -327,13 +374,6 @@ class ProductViewModel @Inject constructor(
 
     //-----------------------------DeathPresupuestoChanged-----------------------
 
-
-
-    fun isEmptyClient() {
-        viewModelScope.launch {
-            _emptyClient.value = clientRepository.isEmptyClient()
-        }
-    }
 
     fun loadActualList() {
         viewModelScope.launch {

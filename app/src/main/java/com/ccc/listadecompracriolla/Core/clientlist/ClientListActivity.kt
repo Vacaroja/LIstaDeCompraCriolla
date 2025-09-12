@@ -8,43 +8,23 @@ filtrar por orden  y colocar las ya seleccionadas abajo*/
 import android.app.Activity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidth
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -64,20 +44,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
+import com.ccc.listadecompracriolla.Core.clientlist.drawer.NavigationDrawerClientList
+import com.ccc.listadecompracriolla.Core.clientlist.principal.LazyListClient
+import com.ccc.listadecompracriolla.Core.clientlist.top.TopMenu
 import com.ccc.listadecompracriolla.adds.loadInterstitialAd
 import com.ccc.listadecompracriolla.adds.showInterstitialAd
-import com.ccc.listadecompracriolla.ui.theme.Blue
-import com.ccc.listadecompracriolla.ui.theme.Red
-import com.ccc.listadecompracriolla.ui.theme.amarillo
-import com.ccc.listadecompracriolla.ui.theme.black
-import com.ccc.listadecompracriolla.ui.theme.oro
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -95,17 +70,11 @@ fun ClientListScreen(
     val scrollState = rememberLazyListState()
     val isExtended by remember { derivedStateOf { scrollState.firstVisibleItemIndex == 0 } }//var for state of the FAB
     //variables from viewmodels
-    val productos by viewModel.productos.collectAsState()
-    val clients by viewModel.actualList.collectAsState()
+
     val isCompleted by viewModel.completedActualList.collectAsState()
 
 
-    val (uncheckedItems, checkedItems) = remember(productos) {
-        productos.partition { !it.checked }
-    }
-    val dividerCheckedItems = remember(productos) {
-        productos.any { it.checked && it.client == clients.id }
-    }
+
     //variable to state of balance
     var stateOfBalance by remember { mutableStateOf(false) }
 
@@ -123,56 +92,13 @@ fun ClientListScreen(
     val context = LocalContext.current
     val activity = context as? Activity
 
-    val titleDrawerBrush = Brush.horizontalGradient(listOf(amarillo, Blue, Red))
-    val titleDrawerPaddingValues =
-        PaddingValues(start = 15.dp, top = 30.dp, end = 5.dp, bottom = 5.dp)
+
 
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            Spacer(Modifier.height(12.dp))
-            ModalDrawerSheet(
-                modifier = modifier
-                    .requiredWidth(250.dp)
-                    .fillMaxHeight()
-            ) {
-
-                Text(
-                    text = "Lista de Compra Criolla",
-                    fontSize = 20.sp,
-                    style = MaterialTheme.typography.titleLarge.copy(brush = titleDrawerBrush),
-                    modifier = modifier.padding(titleDrawerPaddingValues),
-                    fontWeight = FontWeight.ExtraBold,
-
-                    )
-
-                HorizontalDivider()
-                NavigationDrawerItem(//pantalla de ajustes
-                    label = { Text("Ajustes") },
-                    selected = false,
-                    onClick = { /* Handle click */ },
-                    icon = { Icon(imageVector = Icons.Default.Settings, "ajustes") }
-                )
-                NavigationDrawerItem(//pantalla de acerca de la aplicacion
-                    label = { Text("Premiun", color = oro) },
-                    selected = false,
-                    onClick = { /* Handle click */ },
-                    icon = { Icon(imageVector = Icons.Default.Star, "Premiun",tint = oro) }
-                )
-                NavigationDrawerItem(//pantalla de acerca de la aplicacion
-                    label = { Text("Apoyanos ", color = Red) },
-                    selected = false,
-                    onClick = { /* Handle click */ },
-                    icon = { Icon(imageVector = Icons.Default.Favorite, "Apoyanos",tint = Red) }
-                )
-                NavigationDrawerItem(//pantalla de acerca de la aplicacion
-                    label = { Text("Info de app ") },
-                    selected = false,
-                    onClick = { /* Handle click */ },
-                    icon = { Icon(imageVector = Icons.Default.Info, "info") }
-                )
-            }
+            NavigationDrawerClientList()
         },
     ) {
         PullToRefreshBox(state = refreshState, isRefreshing = loading, onRefresh = {
@@ -186,7 +112,6 @@ fun ClientListScreen(
                 topBar = {
                     TopMenu(
                         viewModel = viewModel,
-                        navigateToback = { },
                         onOpenDrawer = {
                             coroutineScope.launch {
                                 drawerState.apply {
@@ -228,7 +153,6 @@ fun ClientListScreen(
                 bottomBar = { BottomClientList(viewModel = viewModel) },
                 snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                 floatingActionButton = {
-                    viewModel.isEmptyClient()
                     if (enableButton && !isEmptyClient) {
                         //animacion del floatingActionButton
                         AnimatedVisibility(
@@ -270,83 +194,16 @@ fun ClientListScreen(
                     stateOfBalance = false
                 }) {
 
-                    viewModel.isEmptyClient()
                     if (enableButton && !isEmptyClient) {
-                        LazyColumn(
-                            modifier = modifier
-                                .fillMaxSize()
-                                .padding(innerpadding),
-                            state = scrollState,
-                            contentPadding = PaddingValues(bottom = 100.dp)
-                        ) {
-                            //reciclerview to watch items or products
-                            items(
-                                items = uncheckedItems.filter { it.client == clients.id },
-                                key = { it.id!! }) { producto ->
-                                AnimatedVisibility(
-                                    visible = true,
-                                    enter = fadeIn() + expandVertically(),
-                                    exit = fadeOut() + shrinkVertically()
-                                ) {
-                                    ProducIterator(
-                                        product = producto,
-                                        viewModel = viewModel,
-                                        onChangeProduct = { idProduct ->
-                                            enableButton = false
-                                            viewModel.actualizeProduct(idProduct)
-                                            navigateToCreateFood()
-                                        },
-                                    )
-                                }
+                        LazyListClient(
+                            innerpadding = innerpadding,
+                            viewModel = viewModel,
+                            scrollState = scrollState,
+                            onNavigateToCreateFood = {
+                                enableButton = false
+                                navigateToCreateFood()
                             }
-                            if (dividerCheckedItems) {
-                                item {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        HorizontalDivider(
-                                            modifier
-                                                .weight(1f)
-                                                .padding(start = 8.dp),
-                                            thickness = 2.dp,
-                                            color = black
-                                        )
-                                        Text(
-                                            "Listos",
-                                            style = MaterialTheme.typography.titleSmall,
-                                            modifier = Modifier.padding(horizontal = 8.dp)
-                                        )
-                                        HorizontalDivider(
-                                            modifier
-                                                .weight(1f)
-                                                .padding(end = 8.dp),
-                                            thickness = 2.dp,
-                                            color = black
-                                        )
-                                    }
-                                }
-                            }
-                            items(
-                                items = checkedItems,
-                                key = { it.id!! }) { producto ->
-                                if (producto.client == clients.id) {
-                                    AnimatedVisibility(
-                                        visible = true,
-                                        enter = fadeIn() + slideInVertically(),
-                                        exit = fadeOut() + slideOutVertically()
-
-                                    ) {
-                                        ProducIterator(
-                                            product = producto,
-                                            viewModel = viewModel,
-                                            onChangeProduct = { idProduct ->
-                                                enableButton = false
-                                                viewModel.actualizeProduct(idProduct)
-                                                navigateToCreateFood()
-                                            }
-                                        )
-                                    }
-                                }
-                            }
-                        }
+                        )
                         Row(
                             modifier = modifier
                                 .align(Alignment.BottomStart)
