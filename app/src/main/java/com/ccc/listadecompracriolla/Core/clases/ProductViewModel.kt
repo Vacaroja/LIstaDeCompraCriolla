@@ -120,6 +120,7 @@ class ProductViewModel @Inject constructor(
                 started = SharingStarted.WhileSubscribed(200),
                 initialValue = false
             )
+    //--------------------variable para verificar si la lista esta completa para el anuncio-------------------------------
 
     val completedActualList: StateFlow<Boolean> =
         combine(_productos, _actualList) { products, actList ->
@@ -151,6 +152,7 @@ class ProductViewModel @Inject constructor(
         }
         loadActualList()
         isEmptyClient()
+
 
 
     }
@@ -284,6 +286,7 @@ class ProductViewModel @Inject constructor(
                 // Replace the old product with the updated one
                 mutableList[index] = updatedProduct
 
+
                 // Return the updated list
                 mutableList
             } else currentList
@@ -292,6 +295,9 @@ class ProductViewModel @Inject constructor(
             clientRepository.updateChecked(productId)
         }
     }
+    //------------------------------Organizar productos al inicio---------------------------------------
+
+
     //------------------------------actualizeProduct---------------------------------------
 
     fun actualizeProduct(productId: Int?) {

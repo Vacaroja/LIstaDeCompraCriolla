@@ -22,3 +22,5 @@ val Red = Color(0xFFFC2A00)
 
 val unPressedColorButton = Color(0xFFB0B0BB)
 val pressedColorButton = Color(0xFF7B7B85)
+
+val black = Color(0xFF171616)

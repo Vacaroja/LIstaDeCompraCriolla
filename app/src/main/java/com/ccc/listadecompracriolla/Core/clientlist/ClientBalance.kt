@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
+import com.ccc.listadecompracriolla.Core.formatterdata.formatNumber
 import com.ccc.listadecompracriolla.R
 import com.ccc.listadecompracriolla.ui.theme.Red
 import com.ccc.listadecompracriolla.ui.theme.greenApple
@@ -120,7 +121,7 @@ fun ClientBalance(
                     if (presupuesto.isNotEmpty() && presupuesto != ".") {
                         TextButton(onClick = { onDimiss() }) {
                             Text(
-                                text = (formatNumber((presupuesto.toFloat() * tasa) - (inCar * tasa))),
+                                text = (formatNumber((presupuesto.toFloat() * tasa) - (inCar))),
                                 fontSize = 16.sp,
                                 maxLines = 1
                             )

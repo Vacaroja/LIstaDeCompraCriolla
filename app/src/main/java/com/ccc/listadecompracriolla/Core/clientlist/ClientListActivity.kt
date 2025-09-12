@@ -8,9 +8,13 @@ filtrar por orden  y colocar las ya seleccionadas abajo*/
 import android.app.Activity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -70,9 +74,8 @@ import androidx.compose.ui.unit.sp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.adds.loadInterstitialAd
 import com.ccc.listadecompracriolla.adds.showInterstitialAd
+import com.ccc.listadecompracriolla.ui.theme.black
 import kotlinx.coroutines.launch
-import java.text.NumberFormat
-import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -92,6 +95,14 @@ fun ClientListScreen(
     val productos by viewModel.productos.collectAsState()
     val clients by viewModel.actualList.collectAsState()
     val isCompleted by viewModel.completedActualList.collectAsState()
+
+
+    val (uncheckedItems, checkedItems) = remember(productos) {
+        productos.partition { !it.checked }
+    }
+    val dividerCheckedItems = remember(productos) {
+        productos.any { it.checked && it.client == clients.id }
+    }
     //variable to state of balance
     var stateOfBalance by remember { mutableStateOf(false) }
 
@@ -130,7 +141,9 @@ fun ClientListScreen(
                         Icon(
                             Icons.Default.Info,
                             contentDescription = "",
-                            modifier.size(25.dp).padding(start = 5.dp)
+                            modifier
+                                .size(25.dp)
+                                .padding(start = 5.dp)
                         )
                     }
                 }
@@ -269,18 +282,56 @@ fun ClientListScreen(
                         ) {
                             //reciclerview to watch items or products
                             items(
-                                items = productos,
+                                items = uncheckedItems.filter{ it.client == clients.id },
+                                key = { it.id!! }) { producto ->
+                                    AnimatedVisibility(
+                                        visible = true,
+                                        enter = fadeIn() + expandVertically(),
+                                        exit = fadeOut() + shrinkVertically()
+                                    ) {
+                                        ProducIterator(
+                                            product = producto,
+                                            viewModel = viewModel,
+                                            onChangeProduct = { idProduct ->
+                                                enableButton = false
+                                                viewModel.actualizeProduct(idProduct)
+                                                navigateToCreateFood()
+                                            },
+
+                                            )
+                                    }
+
+                                
+                            }
+                            if (dividerCheckedItems){
+                                item {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        HorizontalDivider(modifier.weight(1f).padding(start = 8.dp), thickness = 2.dp, color = black)
+                                        Text("Listos", style = MaterialTheme.typography.titleSmall,modifier = Modifier.padding(horizontal = 8.dp))
+                                        HorizontalDivider(modifier.weight(1f).padding(end = 8.dp), thickness = 2.dp, color = black)
+                                    }
+                                }
+                            }
+                            items(
+                                items = checkedItems,
                                 key = { it.id!! }) { producto ->
                                 if (producto.client == clients.id) {
-                                    ProducIterator(
-                                        product = producto,
-                                        viewModel = viewModel,
-                                        onChangeProduct = { idProduct ->
-                                            enableButton = false
-                                            viewModel.actualizeProduct(idProduct)
-                                            navigateToCreateFood()
-                                        }
-                                    )
+                                    AnimatedVisibility(
+                                        visible = true,
+                                        enter = fadeIn() + slideInVertically(),
+                                        exit = fadeOut() + slideOutVertically()
+
+                                    ){
+                                        ProducIterator(
+                                            product = producto,
+                                            viewModel = viewModel,
+                                            onChangeProduct = { idProduct ->
+                                                enableButton = false
+                                                viewModel.actualizeProduct(idProduct)
+                                                navigateToCreateFood()
+                                            }
+                                        )
+                                    }
                                 }
                             }
                         }
