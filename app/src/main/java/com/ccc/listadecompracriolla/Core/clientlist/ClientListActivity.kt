@@ -17,7 +17,6 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -27,7 +26,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -43,7 +41,6 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -67,14 +64,20 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.adds.loadInterstitialAd
 import com.ccc.listadecompracriolla.adds.showInterstitialAd
+import com.ccc.listadecompracriolla.ui.theme.Blue
+import com.ccc.listadecompracriolla.ui.theme.Red
+import com.ccc.listadecompracriolla.ui.theme.amarillo
 import com.ccc.listadecompracriolla.ui.theme.black
+import com.ccc.listadecompracriolla.ui.theme.oro
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -120,6 +123,10 @@ fun ClientListScreen(
     val context = LocalContext.current
     val activity = context as? Activity
 
+    val titleDrawerBrush = Brush.horizontalGradient(listOf(amarillo, Blue, Red))
+    val titleDrawerPaddingValues =
+        PaddingValues(start = 15.dp, top = 30.dp, end = 5.dp, bottom = 5.dp)
+
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -130,23 +137,16 @@ fun ClientListScreen(
                     .requiredWidth(250.dp)
                     .fillMaxHeight()
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(
-                        text = "Lista de Compra Criolla",
-                        fontSize = 20.sp,
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier= modifier.padding(start = 5.dp)
+
+                Text(
+                    text = "Lista de Compra Criolla",
+                    fontSize = 20.sp,
+                    style = MaterialTheme.typography.titleLarge.copy(brush = titleDrawerBrush),
+                    modifier = modifier.padding(titleDrawerPaddingValues),
+                    fontWeight = FontWeight.ExtraBold,
+
                     )
-                    IconButton(onClick = {}) {
-                        Icon(
-                            Icons.Default.Info,
-                            contentDescription = "",
-                            modifier
-                                .size(25.dp)
-                                .padding(start = 5.dp)
-                        )
-                    }
-                }
+
                 HorizontalDivider()
                 NavigationDrawerItem(//pantalla de ajustes
                     label = { Text("Ajustes") },
@@ -155,30 +155,32 @@ fun ClientListScreen(
                     icon = { Icon(imageVector = Icons.Default.Settings, "ajustes") }
                 )
                 NavigationDrawerItem(//pantalla de acerca de la aplicacion
-                    label = { Text("Premiun") },
+                    label = { Text("Premiun", color = oro) },
                     selected = false,
                     onClick = { /* Handle click */ },
-                    icon = { Icon(imageVector = Icons.Default.Star, "Premiun") }
+                    icon = { Icon(imageVector = Icons.Default.Star, "Premiun",tint = oro) }
                 )
                 NavigationDrawerItem(//pantalla de acerca de la aplicacion
-                    label = { Text("Apoyanos ") },
+                    label = { Text("Apoyanos ", color = Red) },
                     selected = false,
                     onClick = { /* Handle click */ },
-                    icon = { Icon(imageVector = Icons.Default.Favorite, "Apoyanos") }
+                    icon = { Icon(imageVector = Icons.Default.Favorite, "Apoyanos",tint = Red) }
                 )
-
+                NavigationDrawerItem(//pantalla de acerca de la aplicacion
+                    label = { Text("Info de app ") },
+                    selected = false,
+                    onClick = { /* Handle click */ },
+                    icon = { Icon(imageVector = Icons.Default.Info, "info") }
+                )
             }
-
         },
     ) {
         PullToRefreshBox(state = refreshState, isRefreshing = loading, onRefresh = {
             coroutineScope.launch {
                 viewModel.searchDolarBcv()
-
             }
         }) {
             //------------------------------------------Variables-----------------------------------------
-
 
             Scaffold(
                 topBar = {
@@ -235,7 +237,6 @@ fun ClientListScreen(
                             exit = fadeOut() + shrinkHorizontally()
                         ) {
 //------------------------------------------FBA-----------------------------------------
-
                             ExtendedFloatingActionButton(
 
                                 onClick = {
@@ -247,7 +248,6 @@ fun ClientListScreen(
                                 modifier = Modifier.padding(16.dp)
                             )
                         }
-
                         if (!isExtended) {
 
                             FloatingActionButton(
@@ -272,7 +272,6 @@ fun ClientListScreen(
 
                     viewModel.isEmptyClient()
                     if (enableButton && !isEmptyClient) {
-
                         LazyColumn(
                             modifier = modifier
                                 .fillMaxSize()
@@ -282,33 +281,46 @@ fun ClientListScreen(
                         ) {
                             //reciclerview to watch items or products
                             items(
-                                items = uncheckedItems.filter{ it.client == clients.id },
+                                items = uncheckedItems.filter { it.client == clients.id },
                                 key = { it.id!! }) { producto ->
-                                    AnimatedVisibility(
-                                        visible = true,
-                                        enter = fadeIn() + expandVertically(),
-                                        exit = fadeOut() + shrinkVertically()
-                                    ) {
-                                        ProducIterator(
-                                            product = producto,
-                                            viewModel = viewModel,
-                                            onChangeProduct = { idProduct ->
-                                                enableButton = false
-                                                viewModel.actualizeProduct(idProduct)
-                                                navigateToCreateFood()
-                                            },
-
-                                            )
-                                    }
-
-                                
+                                AnimatedVisibility(
+                                    visible = true,
+                                    enter = fadeIn() + expandVertically(),
+                                    exit = fadeOut() + shrinkVertically()
+                                ) {
+                                    ProducIterator(
+                                        product = producto,
+                                        viewModel = viewModel,
+                                        onChangeProduct = { idProduct ->
+                                            enableButton = false
+                                            viewModel.actualizeProduct(idProduct)
+                                            navigateToCreateFood()
+                                        },
+                                    )
+                                }
                             }
-                            if (dividerCheckedItems){
+                            if (dividerCheckedItems) {
                                 item {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        HorizontalDivider(modifier.weight(1f).padding(start = 8.dp), thickness = 2.dp, color = black)
-                                        Text("Listos", style = MaterialTheme.typography.titleSmall,modifier = Modifier.padding(horizontal = 8.dp))
-                                        HorizontalDivider(modifier.weight(1f).padding(end = 8.dp), thickness = 2.dp, color = black)
+                                        HorizontalDivider(
+                                            modifier
+                                                .weight(1f)
+                                                .padding(start = 8.dp),
+                                            thickness = 2.dp,
+                                            color = black
+                                        )
+                                        Text(
+                                            "Listos",
+                                            style = MaterialTheme.typography.titleSmall,
+                                            modifier = Modifier.padding(horizontal = 8.dp)
+                                        )
+                                        HorizontalDivider(
+                                            modifier
+                                                .weight(1f)
+                                                .padding(end = 8.dp),
+                                            thickness = 2.dp,
+                                            color = black
+                                        )
                                     }
                                 }
                             }
@@ -321,7 +333,7 @@ fun ClientListScreen(
                                         enter = fadeIn() + slideInVertically(),
                                         exit = fadeOut() + slideOutVertically()
 
-                                    ){
+                                    ) {
                                         ProducIterator(
                                             product = producto,
                                             viewModel = viewModel,
