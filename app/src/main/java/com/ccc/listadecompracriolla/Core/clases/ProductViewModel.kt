@@ -249,14 +249,10 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    fun cycleSortType() {
-        _sortType.update { current ->
-            when (current) {
-                SortType.NONE -> SortType.ALPHABETICAL
-                SortType.ALPHABETICAL -> SortType.REVERSE_ALPHABETICAL
-                SortType.REVERSE_ALPHABETICAL -> SortType.NONE
-            }
-        }
+    fun changeSortType(
+        sort: SortType = SortType.NONE
+    ) {
+        _sortType.value = sort
     }
 
     fun changeCurrentList(clientId: Int?) {

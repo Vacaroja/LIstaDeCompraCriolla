@@ -46,6 +46,9 @@ fun TopMenu(
 ) {
     var bottomSheetClient by remember { mutableStateOf(false) }
     var bottomSheetNewClient by remember { mutableStateOf(false) }
+    var isExpandedMenu by remember { mutableStateOf(false) }
+
+
     val isPressed by viewModel.isBcv.collectAsState()
 
     var changedClientName: String? by remember { mutableStateOf(null) }
@@ -157,12 +160,17 @@ fun TopMenu(
 
 //------------------------------------------ButtonMore-----------------------------------------
 
-            IconButton(onClick = {}) {//BOTON PARA LAS OPCIONES
+            IconButton(onClick = {isExpandedMenu = true}) {//BOTON PARA LAS OPCIONES
                 Icon(
                     imageVector = Icons.Default.MoreVert,
                     contentDescription = "More"
                 )
             }
+            DropDownMenuTop(
+                expanded = isExpandedMenu,
+                viewModel = viewModel,
+                onExpandex = {isExpandedMenu = false}
+            )
         },
 //------------------------------------------colores-----------------------------------------
         colors = TopAppBarDefaults.topAppBarColors(
