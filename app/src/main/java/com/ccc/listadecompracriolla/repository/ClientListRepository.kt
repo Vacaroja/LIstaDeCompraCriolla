@@ -35,12 +35,6 @@ class ClientRepository @Inject constructor(
     }
 
     //------------------------------------------CRUD-------------------------------------------
-    suspend fun isEmptyClient(): Boolean {
-        return withContext(Dispatchers.IO) {
-            val isEmpty = clientDao.getClientCount()
-            return@withContext isEmpty == 0
-        }
-    }
 
     fun getAllProducts(): Flow<List<ProductEntity>> {
         return clientDao.getAllProducts()

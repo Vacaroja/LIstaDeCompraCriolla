@@ -34,8 +34,7 @@ data class ClientWithProducts(
 @Dao
 interface ClientDao{
 
-    @Query("SELECT COUNT(*) FROM clients")
-    suspend fun getClientCount(): Int
+
 
     @Query("SELECT * FROM clients ORDER BY id ASC LIMIT 1")
     suspend fun getFirstId(): ClientListEntity?

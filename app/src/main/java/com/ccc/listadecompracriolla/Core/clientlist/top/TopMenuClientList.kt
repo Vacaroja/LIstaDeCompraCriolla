@@ -1,4 +1,4 @@
-package com.ccc.listadecompracriolla.Core.clientlist
+package com.ccc.listadecompracriolla.Core.clientlist.top
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -40,9 +40,9 @@ import com.ccc.listadecompracriolla.ui.theme.OrangeBlack
 fun TopMenu(
     modifier: Modifier = Modifier,
     viewModel: ProductViewModel,
-    navigateToback: () -> Unit,
     onFailureApi: () -> Unit,
     onOpenDrawer: () -> Unit,
+
 ) {
     var bottomSheetClient by remember { mutableStateOf(false) }
     var bottomSheetNewClient by remember { mutableStateOf(false) }
@@ -64,7 +64,6 @@ fun TopMenu(
     )
     TopAppBar(
         title = {
-            viewModel.isEmptyClient()
             if (isEmptyClient) {
                 Text(
                     text = "AÑADIR LISTA",
@@ -184,8 +183,10 @@ fun TopMenu(
                 bottomSheetClient = false
             },
             onDelete = { clientToDelete ->
-                viewModel.changeBeforeDeleteList(clientToDelete)
-                viewModel.deleteClient(clientToDelete)
+                if (clientToDelete != null){
+                    viewModel.changeBeforeDeleteList(clientToDelete)
+                    viewModel.deleteClient(clientToDelete)
+                }
 
             },
             onChangeName = { nameClient, idClient ->
