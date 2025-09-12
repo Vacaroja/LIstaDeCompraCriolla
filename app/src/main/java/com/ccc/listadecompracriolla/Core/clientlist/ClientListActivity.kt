@@ -1,9 +1,7 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
 package com.ccc.listadecompracriolla.Core.clientlist
-/*
-orden alfabetico
-filtrar por orden  y colocar las ya seleccionadas abajo*/
+
 
 import android.app.Activity
 import androidx.compose.animation.AnimatedVisibility
