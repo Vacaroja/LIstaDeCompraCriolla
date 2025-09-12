@@ -9,6 +9,7 @@ import com.ccc.listadecompracriolla.pydolarnetwork.ApiDolarServices
 import com.ccc.listadecompracriolla.pydolarnetwork.DolarApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -53,14 +54,19 @@ class BcvRepository @Inject constructor(
     suspend fun fetchAndSaveBcvFromApi(): ApiDolarServices? {
         return withContext(Dispatchers.IO) {
             try {
-                val actualDate = dateFormattert()
                 val bcvFromApi = DolarApi.retrofitService.getData()
                 val dateFromApi = bcvFromApi.current.date
-
-                val bcvData = if (dateFromApi == actualDate) bcvFromApi.current else bcvFromApi.previous// Llama a tu servicio de API
-                val bcvEntity = bcvData.toBcvEntity()// Convierte el modelo de API a la entidad de DB
-                saveBcvData(bcvEntity) // Guarda en la DB
-                return@withContext bcvData
+                val formatDateFromApi = dateFormattert(dateFromApi)
+                if (formatDateFromApi != null) {
+                    val actualDate = LocalDate.now()
+                    val bcvData = if (formatDateFromApi.isEqual(actualDate)) bcvFromApi.current else bcvFromApi.previous
+                    // Llama a tu servicio de API
+                    val bcvEntity = bcvData.toBcvEntity()// Convierte el modelo de API a la entidad de DB
+                    saveBcvData(bcvEntity) // Guarda en la DB
+                    return@withContext bcvData
+                }else{
+                    return@withContext null
+                }
             } catch (_: Exception) {
                 // Maneja el error, ej. loguea el error o propaga una excepción más específica
                 return@withContext null
