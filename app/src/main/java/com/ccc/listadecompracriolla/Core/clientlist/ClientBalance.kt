@@ -118,7 +118,7 @@ fun ClientBalance(
 
 
                     }
-                    if (presupuesto.isNotEmpty() && presupuesto != ".") {
+                    if (presupuesto.isNotEmpty() && presupuesto != "0") {
                         TextButton(onClick = { onDimiss() }) {
                             Text(
                                 text = (formatNumber((presupuesto.toFloat() * tasa) - (inCar))),

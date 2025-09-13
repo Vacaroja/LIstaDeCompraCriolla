@@ -169,7 +169,7 @@ fun TopMenu(
             DropDownMenuTop(
                 expanded = isExpandedMenu,
                 viewModel = viewModel,
-                onExpandex = {isExpandedMenu = false}
+                onExpandex = {isExpandedMenu = !isExpandedMenu}
             )
         },
 //------------------------------------------colores-----------------------------------------

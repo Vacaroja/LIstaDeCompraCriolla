@@ -77,7 +77,7 @@ class ProductViewModel @Inject constructor(
     val presupuesto: StateFlow<String> = _presupuesto.asStateFlow()
 
     enum class SortType {
-        NONE, ALPHABETICAL, REVERSE_ALPHABETICAL
+        NONE, ALPHABETICAL, REVERSE_ALPHABETICAL, PRICE, REVERSE_PRICE
     }
 
     private val _sortType = MutableStateFlow(SortType.NONE)
@@ -159,10 +159,12 @@ class ProductViewModel @Inject constructor(
 
     val actualDobleProductList: StateFlow<Pair<List<Product>, List<Product>>> =
         combine(_productos, _actualList, _sortType) { prod, actList, currentSort ->
-            val sortedList = when(currentSort) {
+            val sortedList = when (currentSort) {
                 SortType.NONE -> prod
-                SortType.ALPHABETICAL -> prod.sortedBy { it.name  }
+                SortType.ALPHABETICAL -> prod.sortedBy { it.name }
                 SortType.REVERSE_ALPHABETICAL -> prod.sortedByDescending { it.name }
+                SortType.PRICE -> prod.sortedBy { it.price }
+                SortType.REVERSE_PRICE -> prod.sortedByDescending { it.price }
             }
             val filterList = sortedList.filter { it.client == actList.id }
             filterList.partition { !it.checked }
@@ -226,15 +228,20 @@ class ProductViewModel @Inject constructor(
     }
 
     fun addPresu(clientId: Int?, presu: String) {
-        _presupuesto.value = presu
-        _clientList.update { currentList ->
-            currentList.map { client ->
-                if (client.id == clientId) client.copy(presupuesto = presu)
-                else client
+        try {
+            val presuDivtasa = if (!presu.isEmpty()) presu.toFloat() / _tasa.value else presu
+            _presupuesto.value = presuDivtasa.toString()
+            _clientList.update { currentList ->
+                currentList.map { client ->
+                    if (client.id == clientId) client.copy(presupuesto = presu)
+                    else client
+                }
             }
-        }
-        viewModelScope.launch {
-            clientRepository.updatePresuClient(clientId, presu)
+            viewModelScope.launch {
+                clientRepository.updatePresuClient(clientId, presu)
+            }
+        } catch (_: Exception) {
+
         }
     }
 
@@ -249,10 +256,26 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    fun changeSortType(
-        sort: SortType = SortType.NONE
-    ) {
-        _sortType.value = sort
+    fun changeSortTypeAlphabetical() {
+        _sortType.update { current ->
+            when (current) {
+                SortType.NONE -> SortType.ALPHABETICAL
+                SortType.ALPHABETICAL -> SortType.REVERSE_ALPHABETICAL
+                SortType.REVERSE_ALPHABETICAL -> SortType.NONE
+                else -> SortType.ALPHABETICAL
+            }
+        }
+    }
+
+    fun changeSortTypePrice() {
+        _sortType.update { current ->
+            when (current) {
+                SortType.NONE -> SortType.PRICE
+                SortType.PRICE -> SortType.REVERSE_PRICE
+                SortType.REVERSE_PRICE -> SortType.NONE
+                else -> SortType.PRICE
+            }
+        }
     }
 
     fun changeCurrentList(clientId: Int?) {
