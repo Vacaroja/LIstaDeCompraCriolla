@@ -119,9 +119,9 @@ class ProductViewModel @Inject constructor(
     //--------------------variable para verificar presupuesto excedido-------------------------------
 
     val deathPresu: StateFlow<Boolean> =
-        combine(_presupuesto, inCar) { presu, incar ->//funcion que evalua los 2 stateFlows
+        combine(_presupuesto, inCar,_tasa) { presu, incar,tasa ->//funcion que evalua los 2 stateFlows
             try {
-                presu.toFloat() < incar
+                (presu.toFloat() * tasa) < incar
             } catch (_: Exception) {
                 false
             }
@@ -229,7 +229,7 @@ class ProductViewModel @Inject constructor(
 
     fun addPresu(clientId: Int?, presu: String) {
         try {
-            val presuDivtasa = if (!presu.isEmpty()) presu.toFloat() / _tasa.value else presu
+            val presuDivtasa = presu.toFloat() / _tasa.value
             _presupuesto.value = presuDivtasa.toString()
             _clientList.update { currentList ->
                 currentList.map { client ->
@@ -391,7 +391,7 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    //-----------------------------DeathPresupuestoChanged-----------------------
+
 
 
     fun loadActualList() {
@@ -487,6 +487,17 @@ class ProductViewModel @Inject constructor(
         //delete in database
         viewModelScope.launch {
             clientRepository.deleteProductById(idProd)
+        }
+    }
+
+    fun deleteAllProductByClientId(idClient: Int?) {
+        //borrado en la lista local
+        _productos.update {products ->
+            products.filter { it.client != idClient }
+        }
+        //delete in database
+        viewModelScope.launch {
+            clientRepository.deleteProductByClient(idClient)
         }
     }
 

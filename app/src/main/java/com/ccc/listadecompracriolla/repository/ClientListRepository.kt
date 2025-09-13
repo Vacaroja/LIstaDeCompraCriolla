@@ -136,6 +136,12 @@ class ClientRepository @Inject constructor(
         clientDao.deleteProduct(product)
     }
 
+    suspend fun deleteProductByClient(clientId: Int?) {
+        withContext(Dispatchers.IO) {
+            clientDao.deleteProductByClientId(clientId)
+        }
+    }
+
     suspend fun deleteProductById(productId: Int?) {
         withContext(Dispatchers.IO) {
             val clientToUpdate = getProductByID(productId)

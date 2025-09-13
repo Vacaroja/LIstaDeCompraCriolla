@@ -28,6 +28,7 @@ fun DropDownMenuTop(
     expanded: Boolean,
     viewModel: ProductViewModel,
     onExpandex: () -> Unit,
+    onDeleteAll:()-> Unit
 ) {
     val sortType by viewModel.sortType.collectAsState()
     var subMenuState by remember { mutableStateOf(false) }
@@ -69,7 +70,7 @@ fun DropDownMenuTop(
             HorizontalDivider()
             DropdownMenuItem(
                 onClick = {
-
+                    onDeleteAll()
                 },
                 text = { Text("Borrar todos") },
                 leadingIcon = { Icon(painter =painterResource(R.drawable.deleteall), contentDescription = "Borrar todos") }

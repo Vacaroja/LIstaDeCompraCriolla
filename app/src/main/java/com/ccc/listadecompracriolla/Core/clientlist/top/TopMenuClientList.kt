@@ -169,7 +169,8 @@ fun TopMenu(
             DropDownMenuTop(
                 expanded = isExpandedMenu,
                 viewModel = viewModel,
-                onExpandex = {isExpandedMenu = !isExpandedMenu}
+                onExpandex = { isExpandedMenu = !isExpandedMenu },
+                onDeleteAll = {viewModel.deleteAllProductByClientId(actualList.id)}
             )
         },
 //------------------------------------------colores-----------------------------------------

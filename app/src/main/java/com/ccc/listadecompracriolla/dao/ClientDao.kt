@@ -87,5 +87,8 @@ interface ClientDao{
     @Query("SELECT * FROM products WHERE id = :productId")
     fun getProductById(productId: Int?): ProductEntity
 
+    @Query("DELETE FROM products WHERE client = :clientId")
+    fun deleteProductByClientId(clientId: Int?)
+
 
 }

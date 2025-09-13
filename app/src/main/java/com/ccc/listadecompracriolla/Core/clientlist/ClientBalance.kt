@@ -22,7 +22,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -38,7 +40,7 @@ import com.ccc.listadecompracriolla.Core.formatterdata.formatNumber
 import com.ccc.listadecompracriolla.R
 import com.ccc.listadecompracriolla.ui.theme.Red
 import com.ccc.listadecompracriolla.ui.theme.greenApple
-
+//mejorar este pedo
 @Composable
 fun ClientBalance(
     viewModel: ProductViewModel,
@@ -48,6 +50,7 @@ fun ClientBalance(
 ) {
     val actualPresu by viewModel.actualList.collectAsState()
     val presupuesto by viewModel.presupuesto.collectAsState()
+    var presu by remember { mutableStateOf("") }
     val inCar by viewModel.inCar.collectAsState()
     val tasa by viewModel.tasa.collectAsState()
     val focusElements = remember { FocusRequester() }
@@ -68,9 +71,10 @@ fun ClientBalance(
                         .width(150.dp)
                         .heightIn(min = 56.dp)
                         .focusRequester(focusElements),
-                    value = presupuesto,
+                    value = presu,
                     onValueChange = { nuevoValor ->
                         if (nuevoValor.isEmpty() || nuevoValor.matches(Regex("^\\d*\\.?\\d*$"))) {
+                            presu = nuevoValor
                             viewModel.addPresu(actualPresu.id, nuevoValor)
                         }
                     },
@@ -90,10 +94,10 @@ fun ClientBalance(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Done
                     ),
-
                     keyboardActions = KeyboardActions(onDone = {
                         onDimiss()
-                    })
+                    }),
+                    placeholder = {Text(presupuesto)}
                 )
                 LaunchedEffect(Unit) { focusElements.requestFocus() }
             }
