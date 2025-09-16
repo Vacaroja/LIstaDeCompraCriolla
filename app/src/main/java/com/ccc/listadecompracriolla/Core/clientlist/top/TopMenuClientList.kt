@@ -74,7 +74,7 @@ fun TopMenu(
                 text = if (isEmptyClient) "AÑADIR LISTA" else if (actualList.id == 0) "CAMBIAR LISTA" else "${actualList.name}",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { bottomSheetNewClient = true },
+                    .clickable { bottomSheetClient = true },
                 textAlign = TextAlign.Center,
 
             )

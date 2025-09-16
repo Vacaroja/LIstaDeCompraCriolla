@@ -259,7 +259,8 @@ fun CreateFoodScreen(
                         contentDescription = "Nota"
                     )
                 },
-                shape = MaterialTheme.shapes.medium
+                shape = MaterialTheme.shapes.medium,
+                modifier = modifier.padding(bottom = 15.dp)
 
             )
             Box(modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {

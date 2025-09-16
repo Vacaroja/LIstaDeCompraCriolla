@@ -3,6 +3,7 @@ package com.ccc.listadecompracriolla.Core.clientlist
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -53,7 +54,11 @@ fun SheetToChangePrice(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Coloque el precio que quiere cambiar", fontSize = 20.sp)
+            Row(horizontalArrangement = Arrangement.Center) {
+                Spacer(modifier.weight(1f))
+                Text(text = " Coloque el precio\nque desea cambiar", fontSize = 20.sp)
+                Spacer(modifier.weight(1f))
+            }
             Row {
                 OutlinedTextField(
                     modifier = modifier

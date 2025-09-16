@@ -232,8 +232,11 @@ class ProductViewModel @Inject constructor(
     }
 
     fun addPresu(clientId: Int?, presu: String) {
-        try {
-            val presuDivtasa = if (presu.isEmpty() || presu == ".") 0 else presu.toFloat() / _tasa.value
+        val presuDivtasa = try {
+             if (presu.isEmpty() || presu == ".") 0 else presu.toFloat() / _tasa.value}
+        catch (_: Exception) {
+            0
+        }
             _presupuesto.value = presuDivtasa.toString()
             _clientList.update { currentList ->
                 currentList.map { client ->
@@ -244,9 +247,7 @@ class ProductViewModel @Inject constructor(
             viewModelScope.launch {
                 clientRepository.updatePresuClient(clientId, presu)
             }
-        } catch (_: Exception) {
 
-        }
     }
 
     fun getClient(idClient: Int?): ClientList? {

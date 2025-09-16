@@ -75,19 +75,20 @@ fun LazyListClient(
                             .weight(1f)
                             .padding(start = 8.dp),
                         thickness = 2.dp,
-                        color = black
+                        color = MaterialTheme.colorScheme.inversePrimary
                     )
                     Text(
                         "Listos",
                         style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier.padding(horizontal = 8.dp)
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        color = MaterialTheme.colorScheme.inversePrimary
                     )
                     HorizontalDivider(
                         modifier
                             .weight(1f)
                             .padding(end = 8.dp),
                         thickness = 2.dp,
-                        color = black
+                        color = MaterialTheme.colorScheme.inversePrimary
                     )
                 }
             }

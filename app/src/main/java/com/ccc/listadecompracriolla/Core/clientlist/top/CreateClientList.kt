@@ -3,6 +3,7 @@ package com.ccc.listadecompracriolla.Core.clientlist.top
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -55,8 +56,12 @@ fun CreateClientList(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Coloque el nombre de la lista", fontSize = 20.sp)
-            Row {
+            Row(horizontalArrangement = Arrangement.Center) {
+                Spacer(modifier.weight(1f))
+                Text(text = "Coloque el nombre de la lista", fontSize = 20.sp)
+                Spacer(modifier.weight(1f))
+            }
+            Row(horizontalArrangement = Arrangement.Center) {
                 OutlinedTextField(
                     modifier = modifier
                         .width(180.dp)//modificador de anchura

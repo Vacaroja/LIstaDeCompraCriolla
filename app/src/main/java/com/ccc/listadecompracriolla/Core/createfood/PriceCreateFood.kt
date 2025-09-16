@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.R
+import com.ccc.listadecompracriolla.ui.theme.black
 import com.ccc.listadecompracriolla.ui.theme.pressedColorButton
 import com.ccc.listadecompracriolla.ui.theme.unPressedColorButton
 
@@ -95,7 +96,8 @@ fun PriceCreateFood(
             Icon(
                 painter = painterResource(R.drawable.ic_bolivar),
                 contentDescription = "bolivares",
-                modifier = modifier.size(50.dp)
+                modifier = modifier.size(50.dp),
+                tint = black
             )
 
         }
@@ -117,7 +119,8 @@ fun PriceCreateFood(
             Icon(
                 painter = painterResource(R.drawable.dolar),
                 contentDescription = "bolivares",
-                modifier = modifier.size(50.dp)
+                modifier = modifier.size(50.dp),
+                tint = black
             )
 
         }
