@@ -69,35 +69,16 @@ fun TopMenu(
     )
     TopAppBar(
         title = {
-            if (isEmptyClient) {
-                Text(
-                    text = "AÑADIR LISTA",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { bottomSheetNewClient = true },
-                    textAlign = TextAlign.Center
-                )
 
-            } else {
-                if (actualList.id == 0) {
-                    Text(
-                        text = "CAMBIAR LISTA",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { bottomSheetClient = true },
-                        textAlign = TextAlign.Center
-                    )
+            Text(
+                text = if (isEmptyClient) "AÑADIR LISTA" else if (actualList.id == 0) "CAMBIAR LISTA" else "${actualList.name}",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { bottomSheetNewClient = true },
+                textAlign = TextAlign.Center,
 
-                } else {
-                    Text(
-                        text = "${actualList.name}",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { bottomSheetClient = true },
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
+            )
+
 
 //------------------------------------------NavigationIcons-----------------------------------------
 

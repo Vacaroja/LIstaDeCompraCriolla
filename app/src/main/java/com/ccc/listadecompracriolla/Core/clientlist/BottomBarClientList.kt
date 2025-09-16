@@ -25,6 +25,7 @@ import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.formatterdata.formatNumber
 import com.ccc.listadecompracriolla.R
 import com.ccc.listadecompracriolla.ui.theme.Orange
+import com.ccc.listadecompracriolla.ui.theme.black
 
 @Composable
 fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel) {
@@ -46,7 +47,8 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
             contentDescription = "Productos en carrito",
             modifier
                 .size(40.dp)
-                .padding(start = 5.dp)
+                .padding(start = 5.dp),
+            tint = black
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -54,12 +56,14 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
         ) {
             Text(
                 text = "En carrito",
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = black
             )
             Text(
                 text = formatNumber(df.format(inCar).toFloat()),
                 fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = black
             )
 
         }
@@ -74,32 +78,30 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
         )
 //------------------------------------------BottomTotalPrice-----------------------------------------
 
-
         Icon(
             painter = painterResource(id = R.drawable.dinero),
             contentDescription = "",
             modifier
                 .size(40.dp)
-                .padding(start = 5.dp)
+                .padding(start = 5.dp),
+            tint = black
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
                 .widthIn(min = fontSizeTasa, max = fontSizeTasa)
-
         ) {
             Text(
                 text = "TOTAL",
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = black
             )
             Text(
                 text = formatNumber(df.format(total).toFloat()),
                 fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = black
             )
-
         }
-
-
     }
 }

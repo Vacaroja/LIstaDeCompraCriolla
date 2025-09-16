@@ -12,8 +12,10 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -33,8 +35,6 @@ import androidx.compose.ui.unit.sp
 import com.ccc.listadecompracriolla.Core.clases.Product
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.formatterdata.formatNumber
-import com.ccc.listadecompracriolla.ui.theme.Purple80
-import com.ccc.listadecompracriolla.ui.theme.black
 
 @Composable
 fun ProducIterator(
@@ -73,9 +73,9 @@ fun ProducIterator(
             .clickable {
                 onChangeProduct(product.id)
             },
-        border = BorderStroke(1.dp, black),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSecondaryContainer),
         colors = CardDefaults.cardColors(
-            containerColor = Purple80
+            containerColor = MaterialTheme.colorScheme.primary,
         )
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -85,12 +85,16 @@ fun ProducIterator(
                 onCheckedChange = { //verificar status de checkbox
                     viewModel.toggleCheck(product.id)
                 },//cambiar valor de producto para ver cuales productos estan en carrito
-                checked = product.checked
+                checked = product.checked,
+                colors = CheckboxDefaults.colors(
+                    uncheckedColor = MaterialTheme.colorScheme.onPrimary
+                )
+
             )
 
 
             Text(
-                text = product.name, color = black,
+                text = product.name, color = MaterialTheme.colorScheme.onPrimary,
                 textDecoration = if (product.checked) TextDecoration.LineThrough else TextDecoration.None,
                 fontSize = fontSizeName,
                 modifier = modifier.widthIn(max = namePaddingValues, min = namePaddingValues),
@@ -105,7 +109,7 @@ fun ProducIterator(
 
                 Text(
                     text = "$cantidad ${product.medida}",
-                    modifier = modifier.widthIn(max = 60.dp)
+                    modifier = modifier.widthIn(max = 60.dp), color = MaterialTheme.colorScheme.onPrimary,
                 )
 
             }
@@ -119,7 +123,7 @@ fun ProducIterator(
                     }" else "$",
                     modifier = modifier.widthIn(max = fontSizeCost, min = fontSizeCost),
                     fontWeight = FontWeight.Bold,
-                    fontSize = fontSizePrice
+                    fontSize = fontSizePrice, color = MaterialTheme.colorScheme.onPrimary,
 
                 )
             }
@@ -127,7 +131,7 @@ fun ProducIterator(
             IconButton(onClick = { viewModel.deleteProduct(product.id) }) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "minus"
+                    contentDescription = "minus", tint = MaterialTheme.colorScheme.onPrimary,
                 )
             }
 

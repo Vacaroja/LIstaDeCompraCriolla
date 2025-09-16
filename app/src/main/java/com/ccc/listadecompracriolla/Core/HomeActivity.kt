@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.ccc.listadecompracriolla.ui.theme.Orange
 import com.ccc.listadecompracriolla.ui.theme.Pink80
+import com.ccc.listadecompracriolla.ui.theme.lightBlue
 import com.ccc.listadecompracriolla.ui.theme.titleDrawerBrush
 
 
@@ -79,14 +80,15 @@ fun HomeScreen(modifier: Modifier = Modifier, navigateToClient: () -> Unit) {
                     Text(
                         text = about,
                         fontSize = 20.sp,
-                        modifier = modifier.padding(10.dp)
+                        modifier = modifier.padding(10.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                     Row {
                         Spacer(modifier.weight(1f))
                         Text(
                             text = bcvLink,
                             fontSize = 20.sp,
-                            color = MaterialTheme.colorScheme.primary,
+                            color = lightBlue,
                             textDecoration = TextDecoration.Underline,
                             modifier = modifier.padding(10.dp).clickable(onClick = {
                                 val intent = Intent(Intent.ACTION_VIEW, bcvLink.toUri())

@@ -41,6 +41,7 @@ import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.formatterdata.formatNumber
 import com.ccc.listadecompracriolla.R
 import com.ccc.listadecompracriolla.ui.theme.Red
+import com.ccc.listadecompracriolla.ui.theme.black
 import com.ccc.listadecompracriolla.ui.theme.greenApple
 
 //mejorar este pedo
@@ -122,7 +123,8 @@ fun ClientBalance(
                                 else painterResource(id = R.drawable.okcard)
                             },
                             contentDescription = "Presupuesto",
-                            modifier = Modifier.size(30.dp)
+                            modifier = Modifier.size(30.dp),
+                            tint = black
                         )
 
 
@@ -132,7 +134,8 @@ fun ClientBalance(
                             Text(
                                 text = (formatNumber((presupuesto.toFloat() * tasa) - (inCar))),
                                 fontSize = 16.sp,
-                                maxLines = 1
+                                maxLines = 1,
+                                color = black
                             )
                         }
 
