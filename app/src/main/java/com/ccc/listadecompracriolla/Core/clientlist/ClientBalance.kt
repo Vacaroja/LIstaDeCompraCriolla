@@ -30,8 +30,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,6 +42,7 @@ import com.ccc.listadecompracriolla.Core.formatterdata.formatNumber
 import com.ccc.listadecompracriolla.R
 import com.ccc.listadecompracriolla.ui.theme.Red
 import com.ccc.listadecompracriolla.ui.theme.greenApple
+
 //mejorar este pedo
 @Composable
 fun ClientBalance(
@@ -50,7 +53,6 @@ fun ClientBalance(
 ) {
     val actualPresu by viewModel.actualList.collectAsState()
     val presupuesto by viewModel.presupuesto.collectAsState()
-    var presu by remember { mutableStateOf("") }
     val inCar by viewModel.inCar.collectAsState()
     val tasa by viewModel.tasa.collectAsState()
     val focusElements = remember { FocusRequester() }
@@ -59,23 +61,28 @@ fun ClientBalance(
         targetValue = if (deathPresu) Red else greenApple,
         animationSpec = tween(durationMillis = 200)
     )
+    var textFieldValue by remember { mutableStateOf(TextFieldValue("")) }
+
     AnimatedContent(
         targetState = stateOfBalance,
         modifier = modifier.padding(all = 5.dp)
     ) { isExpanded ->
         if (isExpanded) {
             Row {
-
                 OutlinedTextField(
                     modifier = modifier
                         .width(150.dp)
                         .heightIn(min = 56.dp)
                         .focusRequester(focusElements),
-                    value = presu,
+                    value = textFieldValue,
                     onValueChange = { nuevoValor ->
-                        if (nuevoValor.isEmpty() || nuevoValor.matches(Regex("^\\d*\\.?\\d*$"))) {
-                            presu = nuevoValor
-                            viewModel.addPresu(actualPresu.id, nuevoValor)
+                        if (nuevoValor.text.isEmpty() || nuevoValor.text.matches(Regex("^\\d*\\.?\\d*$"))) {
+                            textFieldValue = TextFieldValue(
+                                text = nuevoValor.text,
+                                // Mueve el cursor al final de lo que se ha escrito
+                                selection = TextRange(nuevoValor.text.length)
+                            )
+                            viewModel.addPresu(actualPresu.id, nuevoValor.text)
                         }
                     },
                     leadingIcon = {
@@ -84,7 +91,6 @@ fun ClientBalance(
                             contentDescription = "Presupuesto"
                         )
                     },
-                    label = { Text("Presupuesto") },
                     shape = MaterialTheme.shapes.large,
                     singleLine = true,
                     textStyle = MaterialTheme.typography.bodyLarge.copy(
@@ -106,7 +112,6 @@ fun ClientBalance(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(
                         onClick = { onDimiss() }
-
                     ) {
 
                         Icon(

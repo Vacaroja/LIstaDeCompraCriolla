@@ -233,7 +233,7 @@ class ProductViewModel @Inject constructor(
 
     fun addPresu(clientId: Int?, presu: String) {
         try {
-            val presuDivtasa = presu.toFloat() / _tasa.value
+            val presuDivtasa = if (presu.isEmpty() || presu == ".") 0 else presu.toFloat() / _tasa.value
             _presupuesto.value = presuDivtasa.toString()
             _clientList.update { currentList ->
                 currentList.map { client ->

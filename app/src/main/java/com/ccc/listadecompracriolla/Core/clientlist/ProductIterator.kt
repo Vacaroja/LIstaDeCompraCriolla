@@ -25,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -34,7 +33,6 @@ import androidx.compose.ui.unit.sp
 import com.ccc.listadecompracriolla.Core.clases.Product
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.formatterdata.formatNumber
-
 import com.ccc.listadecompracriolla.ui.theme.Purple80
 import com.ccc.listadecompracriolla.ui.theme.black
 
@@ -92,7 +90,7 @@ fun ProducIterator(
 
 
             Text(
-                product.name, color = Color.Blue,
+                text = product.name, color = black,
                 textDecoration = if (product.checked) TextDecoration.LineThrough else TextDecoration.None,
                 fontSize = fontSizeName,
                 modifier = modifier.widthIn(max = namePaddingValues, min = namePaddingValues),
@@ -100,9 +98,7 @@ fun ProducIterator(
             )
 
 
-//------------------------------------------añadir y disminuir cantidad-----------------------------------------
-
-            //convertir en Textbutton para cambiarlo directamente
+//------------------------------------------cantidad-----------------------------------------
 
 
             Row(modifier = modifier.padding(horizontal = 5.dp)) {
