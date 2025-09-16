@@ -59,6 +59,7 @@ fun ClientListScreen(
     modifier: Modifier = Modifier,
     viewModel: ProductViewModel,
     navigateToCreateFood: () -> Unit,
+    onAbout:() -> Unit
 ) {
 //------------------------------------------Variables-----------------------------------------
     //var for pull to refresh
@@ -96,7 +97,7 @@ fun ClientListScreen(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            NavigationDrawerClientList()
+            NavigationDrawerClientList{onAbout()}
         },
     ) {
         PullToRefreshBox(state = refreshState, isRefreshing = loading, onRefresh = {

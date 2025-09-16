@@ -30,8 +30,10 @@ fun NavegationControl(viewModel: ProductViewModel) {
             exitTransition = { slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.End) },
             popEnterTransition = { slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start) },
             popExitTransition = { slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start) }) {//pantalla de la lista de los productos
-            ClientListScreen(viewModel = viewModel,
-                navigateToCreateFood = { navegationController.navigate(CreateFood) }
+            ClientListScreen(
+                viewModel = viewModel,
+                navigateToCreateFood = { navegationController.navigate(CreateFood) },
+                onAbout = {navegationController.navigate(Home)}
             )
         }
         composable<CreateFood>(

@@ -1,5 +1,6 @@
 package com.ccc.listadecompracriolla.ui.theme
 
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
 val Purple80 = Color(0xFFD0BCFF)
@@ -25,3 +26,5 @@ val unPressedColorButton = Color(0xFFB0B0BB)
 val pressedColorButton = Color(0xFF7B7B85)
 
 val black = Color(0xFF171616)
+//title colors
+val titleDrawerBrush = Brush.horizontalGradient(listOf(amarillo, Blue, Red))

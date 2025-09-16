@@ -35,6 +35,9 @@ import com.ccc.listadecompracriolla.Core.clases.Product
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.formatterdata.formatNumber
 
+import com.ccc.listadecompracriolla.ui.theme.Purple80
+import com.ccc.listadecompracriolla.ui.theme.black
+
 @Composable
 fun ProducIterator(
     product: Product,
@@ -72,8 +75,10 @@ fun ProducIterator(
             .clickable {
                 onChangeProduct(product.id)
             },
-        border = BorderStroke(1.dp, Color.Black),
-        colors = CardDefaults.cardColors()
+        border = BorderStroke(1.dp, black),
+        colors = CardDefaults.cardColors(
+            containerColor = Purple80
+        )
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
 //------------------------------------------NameButton-----------------------------------------

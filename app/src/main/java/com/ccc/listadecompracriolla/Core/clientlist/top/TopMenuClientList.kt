@@ -180,8 +180,8 @@ fun TopMenu(
             scrolledContainerColor = Orange,
             navigationIconContentColor = Color.Black,
             titleContentColor = Color.Black,
-
-            )
+            actionIconContentColor = Color.Black,
+        )
     )
     if (bottomSheetClient) {
         ModalBottomSheetClientList(

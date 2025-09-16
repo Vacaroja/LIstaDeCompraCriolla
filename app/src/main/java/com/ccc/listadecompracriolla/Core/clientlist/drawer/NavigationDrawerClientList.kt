@@ -17,20 +17,19 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ccc.listadecompracriolla.ui.theme.Blue
 import com.ccc.listadecompracriolla.ui.theme.Red
-import com.ccc.listadecompracriolla.ui.theme.amarillo
 import com.ccc.listadecompracriolla.ui.theme.oro
+import com.ccc.listadecompracriolla.ui.theme.titleDrawerBrush
 
 @Composable
 fun NavigationDrawerClientList(
     modifier: Modifier = Modifier,
+    onAbout:() -> Unit
 ) {
-    val titleDrawerBrush = Brush.horizontalGradient(listOf(amarillo, Blue, Red))
     val titleDrawerPaddingValues =
         PaddingValues(start = 15.dp, top = 30.dp, end = 5.dp, bottom = 5.dp)
 
@@ -53,24 +52,24 @@ fun NavigationDrawerClientList(
             label = { Text("Ajustes") },
             selected = false,
             onClick = { /* Handle click */ },
-            icon = { Icon(imageVector = Icons.Default.Settings, "ajustes") }
+            icon = { Icon(imageVector = Icons.Default.Settings, "ajustes",tint = oro) }
         )
         NavigationDrawerItem(//pantalla de acerca de la aplicacion
-            label = { Text("Premiun", color = oro) },
+            label = { Text("Premiun",color = Blue) },
             selected = false,
             onClick = { /* Handle click */ },
-            icon = { Icon(imageVector = Icons.Default.Star, "Premiun", tint = oro) }
+            icon = { Icon(imageVector = Icons.Default.Star, "Premiun", tint = Blue) }
         )
         NavigationDrawerItem(//pantalla de acerca de la aplicacion
-            label = { Text("Apoyanos ", color = Red) },
+            label = { Text("Calificanos ", color = Red) },
             selected = false,
             onClick = { /* Handle click */ },
-            icon = { Icon(imageVector = Icons.Default.Favorite, "Apoyanos", tint = Red) }
+            icon = { Icon(imageVector = Icons.Default.Favorite, "Calificanos", tint = Red) }
         )
         NavigationDrawerItem(//pantalla de acerca de la aplicacion
             label = { Text("Info de app") },
             selected = false,
-            onClick = { /* Handle click */ },
+            onClick = { onAbout() },
             icon = { Icon(imageVector = Icons.Default.Info, "info") }
         )
     }

@@ -2,235 +2,152 @@
 
 package com.ccc.listadecompracriolla.Core
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
+import android.content.Intent
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.DrawerValue
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import com.ccc.listadecompracriolla.ui.theme.Orange
-import kotlinx.coroutines.launch
+import com.ccc.listadecompracriolla.ui.theme.Pink80
+import com.ccc.listadecompracriolla.ui.theme.titleDrawerBrush
 
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier, navigateToClient: () -> Unit) {
 //------------------------------------------variables de estado-----------------------------------------
+    val bcvLink = "https://www.bcv.org.ve/"
+    val context = LocalContext.current
+    val about =
+        "   Esta aplicacion es netamente referencial, la tasa del dolar utilizada es tomada " +
+                "del unico ente regulador del precio de las remesas "
 
-    var openDialog by remember { mutableStateOf(false) }
 
 
 //------------------------------------------Scaffold-----------------------------------------
 
     Scaffold(
-        topBar = { TopBarHome() },
-        bottomBar = { BottomBarHome() },
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = {
-                    openDialog = true
-                },
-                modifier = Modifier.padding(16.dp),
-                icon = { Icon(Icons.Filled.Add, "Agregar") },
-                text = { Text("Nueva Lista") }
-            )
-        },
+        topBar = { TopBarHome { navigateToClient() } },
     ) { innerpadding ->
-        Column(
+        Box(
             modifier
                 .fillMaxSize()
-                .padding(innerpadding), horizontalAlignment = Alignment.CenterHorizontally
-
+                .padding(innerpadding)
         ) {
-//------------------------------------------Texto principal-----------------------------------------
+            ElevatedCard(
+                modifier = modifier
+                    .padding(20.dp)
+                    .fillMaxSize(),
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = Pink80
+                ), content = {
+                    Row {
+                        Spacer(modifier.weight(1f))
+                        Text(
+                            text = "Lista de Compra Criolla",
+                            fontSize = 25.sp,
+                            style = MaterialTheme.typography.titleLarge.copy(brush = titleDrawerBrush),
+                            fontWeight = FontWeight.ExtraBold,
+                            modifier = modifier.padding(top = 10.dp)
+                        )
+                        Spacer(modifier.weight(1f))
 
-            Spacer(modifier.weight(1f))
-            Text(
-                text = "Presione el botón + para crear una nueva lista de compras",
-                style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier.weight(1f))
+                    }
+                    Text(
+                        text = about,
+                        fontSize = 20.sp,
+                        modifier = modifier.padding(10.dp)
+                    )
+                    Row {
+                        Spacer(modifier.weight(1f))
+                        Text(
+                            text = bcvLink,
+                            fontSize = 20.sp,
+                            color = MaterialTheme.colorScheme.primary,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = modifier.padding(10.dp).clickable(onClick = {
+                                val intent = Intent(Intent.ACTION_VIEW, bcvLink.toUri())
+                                context.startActivity(intent)
+                            }))
+                        Spacer(modifier.weight(1f))
+                    }
 
-//------------------------------------------MostrarAlCrearLista-----------------------------------------
 
+                })
         }
-        if (openDialog) CreateListScreenDialog(
-            onDismiss = {openDialog = false },
-            onConfirm = {
-                openDialog = false
-                navigateToClient()
-            }
-        )
-
     }
 }
-//------------------------------------------BottomBar-----------------------------------------
 
-@Composable
-fun BottomBarHome() {
-    BottomAppBar(containerColor = Orange) { }
-}
 
 //------------------------------------------TopBar-----------------------------------------
 
 @Composable
-fun TopBarHome(modifier: Modifier = Modifier,
-               ) {
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
+fun TopBarHome(
+    modifier: Modifier = Modifier,
+    navigateToClient: () -> Unit
+) {
+
 //------------------------------------------HorizontalSheet-----------------------------------------
-
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            Spacer(Modifier.height(12.dp))
-            ModalDrawerSheet {
-                NavigationDrawerItem(
-                    label = {
-                        Text(
-                            text = "Lista de Compra Criolla",
-                            fontSize = 20.sp
-                        )
-                    },
-                    selected = false,
-                    onClick = { /* Handle click */ },
-                    badge = {
-                        Image(Icons.Default.Info,
-                            contentDescription = "",
-                            modifier.size(30.dp)
-                        )
-                    }
-                )
-
-                HorizontalDivider()
-                NavigationDrawerItem(//pantalla de ajustes
-                    label = { Text("Apoyanos") },
-                    selected = false,
-                    onClick = { /* Handle click */ },
-                    icon = { Icon(imageVector = Icons.Default.Settings, "ajustes") }
-                )
-                NavigationDrawerItem(//pantalla de acerca de la aplicacion
-                    label = { Text("Premiun") },
-                    selected = false,
-                    onClick = { /* Handle click */ },
-                    icon = { Icon(imageVector = Icons.Default.Info, "Acerca de") }
-                )
-
-            }
-
+    TopAppBar(
+        title = {
+            Text(
+                text = "INFORMACION",
+                fontWeight = FontWeight.Bold
+            )
+            modifier.padding(15.dp)
         },
-    ) {
-        TopAppBar(
-            title = {
-                Text(
-                    text = "Lista de compra criolla",
-                    fontWeight = FontWeight.Bold
-                )
-                modifier.padding(15.dp)
-            },
-            navigationIcon = {
+        navigationIcon = {
 //------------------------------------------EstadoDelHorizontalSheet-----------------------------------------
 
-                IconButton(onClick = {
-                    scope.launch {
-                        drawerState.apply {
-                            if (isClosed) open() else close()
-                        }
-                    }
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.Menu,
-                        contentDescription = "Back"
-                    )
-                }
-            },
-            actions = {
+            IconButton(onClick = {
+                navigateToClient()
+
+            }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
+        },
+        actions = {
 
 //------------------------------------------SettingsButton-----------------------------------------
 
-                IconButton(onClick = {}) {//BOTON PARA LAS OPCIONES
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "Settings"
-                    )
-                }
-            }, colors = TopAppBarColors(
-                containerColor = Orange,
-                scrolledContainerColor = Orange,
-                navigationIconContentColor = Color.Black,
-                titleContentColor = Color.Black,
-                actionIconContentColor = Color.Unspecified
-            )
+
+        }, colors = TopAppBarColors(
+            containerColor = Orange,
+            scrolledContainerColor = Orange,
+            navigationIconContentColor = Color.Black,
+            titleContentColor = Color.Black,
+            actionIconContentColor = Color.Unspecified
         )
-
-
-    }
-}
-//------------------------------------------AlertDialog-----------------------------------------
-
-@Composable
-fun CreateListScreenDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
-    var nameList by remember { mutableStateOf("") }
-    AlertDialog(
-        confirmButton = {
-            TextButton(
-                onClick = { onConfirm(nameList) },
-                enabled = nameList.isNotEmpty()
-            ) { Text(text = "Registrar lista") }
-        },
-        dismissButton = { TextButton(onClick = { onDismiss() }) { Text("Cancelar") } },
-        title = { Text(text = "Coloque el Nombre de la lista", textAlign = TextAlign.Center) },
-        text = {
-            OutlinedTextField(
-                value = nameList,
-                onValueChange = { nameList = it },
-                label = { Text("Lista") },
-                placeholder = { Text("Coloque el nombre de la lista") })
-        },
-        onDismissRequest = { onDismiss() })
+    )
 }
 
-//------------------------------------------Preview-----------------------------------------
-
+@Preview
 @Composable
 fun HomePreview() {
     HomeScreen { }
