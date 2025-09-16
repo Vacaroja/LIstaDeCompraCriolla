@@ -30,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
+import com.ccc.listadecompracriolla.Core.clientlist.AlertBoxDeleteClient
 import com.ccc.listadecompracriolla.R
 import com.ccc.listadecompracriolla.ui.theme.Orange
 import com.ccc.listadecompracriolla.ui.theme.OrangeBlack
@@ -43,7 +44,7 @@ fun TopMenu(
     onFailureApi: () -> Unit,
     onOpenDrawer: () -> Unit,
 
-) {
+    ) {
     var bottomSheetClient by remember { mutableStateOf(false) }
     var bottomSheetNewClient by remember { mutableStateOf(false) }
     var isExpandedMenu by remember { mutableStateOf(false) }
@@ -51,6 +52,7 @@ fun TopMenu(
 
     val isPressed by viewModel.isBcv.collectAsState()
 
+    var deleteAll by remember { mutableStateOf(false) }
     var changedClientName: String? by remember { mutableStateOf(null) }
     var changedClientId: Int? by remember { mutableStateOf(null) }
 
@@ -100,7 +102,7 @@ fun TopMenu(
 //------------------------------------------NavigationIcons-----------------------------------------
 
         }, navigationIcon = {
-            IconButton(onClick = { onOpenDrawer()}) {//BOTON PARA DRAWER
+            IconButton(onClick = { onOpenDrawer() }) {//BOTON PARA DRAWER
                 Icon(
                     imageVector = Icons.Default.Menu,
                     contentDescription = "Back"
@@ -160,7 +162,7 @@ fun TopMenu(
 
 //------------------------------------------ButtonMore-----------------------------------------
 
-            IconButton(onClick = {isExpandedMenu = true}) {//BOTON PARA LAS OPCIONES
+            IconButton(onClick = { isExpandedMenu = true }) {//BOTON PARA LAS OPCIONES
                 Icon(
                     imageVector = Icons.Default.MoreVert,
                     contentDescription = "More"
@@ -170,8 +172,14 @@ fun TopMenu(
                 expanded = isExpandedMenu,
                 viewModel = viewModel,
                 onExpandex = { isExpandedMenu = !isExpandedMenu },
-                onDeleteAll = { viewModel.deleteAllProductByClientId(actualList.id) },
-                onAllToggle = {toggle -> viewModel.toggleCheckAllByClient(actualList.id,toggle)}
+                onDeleteAll = {
+                    deleteAll = true
+                    isExpandedMenu = false
+                },
+                onAllToggle = { toggle ->
+                    viewModel.toggleCheckAllByClient(actualList.id, toggle)
+                    isExpandedMenu = false
+                }
             )
         },
 //------------------------------------------colores-----------------------------------------
@@ -193,7 +201,7 @@ fun TopMenu(
                 bottomSheetClient = false
             },
             onDelete = { clientToDelete ->
-                if (clientToDelete != null){
+                if (clientToDelete != null) {
                     viewModel.changeBeforeDeleteList(clientToDelete)
                     viewModel.deleteClient(clientToDelete)
                 }
@@ -224,6 +232,16 @@ fun TopMenu(
                 bottomSheetNewClient = false
             }
         )
+    }
+    if (deleteAll) {
+        AlertBoxDeleteClient(
+            anyText = "TODOS LOS PRODUCTOS?",
+            onDismiss = { deleteAll = false }
+        ) {
+            viewModel.deleteAllProductByClientId(actualList.id)
+            deleteAll = false
+            isExpandedMenu = false
+        }
     }
 
 

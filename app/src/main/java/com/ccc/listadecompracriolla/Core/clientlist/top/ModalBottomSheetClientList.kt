@@ -119,7 +119,8 @@ fun ModalBottomSheetClientList(
                         onDelete(idToDelete)
                         idToDelete = null
                         isDelete = false
-                    }
+                    },
+                    anyText = "LA LISTA?",
                 )
             }
         }
