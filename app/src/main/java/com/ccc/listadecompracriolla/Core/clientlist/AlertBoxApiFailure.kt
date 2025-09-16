@@ -21,8 +21,10 @@ import com.ccc.listadecompracriolla.ui.theme.Red
 @Composable
 fun AlertBoxDeleteClient(
     modifier: Modifier = Modifier,
+    anyText: String,
     onDismiss: () -> Unit,
-    onConfirm: () -> Unit
+    onConfirm: () -> Unit,
+
 ) {
     AlertDialog(
         onDismissRequest = { onDismiss() },
@@ -35,7 +37,10 @@ fun AlertBoxDeleteClient(
 
         },
         title = {
-            Column(horizontalAlignment = Alignment.CenterHorizontally,modifier = modifier.fillMaxWidth()) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = modifier.fillMaxWidth()
+            ) {
                 Icon(
                     imageVector = Icons.Default.Warning,
                     contentDescription = "Alerta de borrado",
@@ -46,6 +51,15 @@ fun AlertBoxDeleteClient(
                 )
             }
         },
-        text = { Column(horizontalAlignment = Alignment.CenterHorizontally,modifier = modifier.fillMaxWidth()) { Text("¿ESTA SEGURO DE QUERER BORRAR LA LISTA?") } })
+        text = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = modifier.fillMaxWidth()
+            ) {
+                Text(
+                    "¿ESTA SEGURO DE QUERER BORRAR $anyText"
+                )
+            }
+        })
 
 }
