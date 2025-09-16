@@ -23,7 +23,7 @@ fun NavegationControl(viewModel: ProductViewModel) {
             exitTransition = { slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.End) },
             popEnterTransition = { slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start) },
             popExitTransition = { slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Start) }) {
-            HomeScreen { navegationController.navigate(ClientList) }
+            HomeScreen { navegationController.popBackStack() }
         }
         composable<ClientList>(
             enterTransition = { slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.End) },
