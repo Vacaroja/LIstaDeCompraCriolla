@@ -123,6 +123,12 @@ class ClientRepository @Inject constructor(
         }
     }
 
+    suspend fun updatePrice(client: Int?) {
+        withContext(Dispatchers.IO) {
+            clientDao.resetProductByClient(client)
+        }
+    }
+
     //------------------------------------DELETE-----------------------------------------
 
     suspend fun deleteClient(client: ClientListEntity) {

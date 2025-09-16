@@ -48,6 +48,7 @@ fun TopMenu(
     var bottomSheetClient by remember { mutableStateOf(false) }
     var bottomSheetNewClient by remember { mutableStateOf(false) }
     var isExpandedMenu by remember { mutableStateOf(false) }
+    var reseterPrices by remember { mutableStateOf(false) }
 
 
     val isPressed by viewModel.isBcv.collectAsState()
@@ -77,7 +78,7 @@ fun TopMenu(
                     .clickable { bottomSheetClient = true },
                 textAlign = TextAlign.Center,
 
-            )
+                )
 
 
 //------------------------------------------NavigationIcons-----------------------------------------
@@ -161,7 +162,9 @@ fun TopMenu(
                     viewModel.toggleCheckAllByClient(actualList.id, toggle)
                     isExpandedMenu = false
                 }
-            )
+            ) {
+                reseterPrices = true
+            }
         },
 //------------------------------------------colores-----------------------------------------
         colors = TopAppBarDefaults.topAppBarColors(
@@ -223,6 +226,15 @@ fun TopMenu(
             deleteAll = false
             isExpandedMenu = false
         }
+    }
+    if (reseterPrices) {
+        AlertBoxDeleteClient(
+
+            anyText = "TODOS LOS PRECIOS?",
+            onDismiss = { reseterPrices = false }
+        ) { viewModel.resetPrecio(actualList.id)
+            reseterPrices = false
+            isExpandedMenu = false}
     }
 
 

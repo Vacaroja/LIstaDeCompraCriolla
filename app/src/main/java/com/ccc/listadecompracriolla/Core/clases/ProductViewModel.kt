@@ -344,6 +344,21 @@ class ProductViewModel @Inject constructor(
         }
     }
 
+    fun resetPrecio(client: Int?) {
+        _productos.update { currentList ->
+            currentList.map { product ->
+                if (product.client == client) {
+                    product.copy(price = 0f)
+                } else {
+                    product
+                }
+            }
+        }
+        viewModelScope.launch {
+            clientRepository.updatePrice(client)
+        }
+    }
+
     fun toggleCheckAllByClient(clientId: Int?, toggle: Boolean) {
         _productos.update { currentList ->
             currentList.map { product ->

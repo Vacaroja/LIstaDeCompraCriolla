@@ -9,10 +9,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import com.ccc.listadecompracriolla.Core.clases.Product
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.formatterdata.formatNumber
+import com.ccc.listadecompracriolla.R
 
 @Composable
 fun ProducIterator(
@@ -76,6 +78,7 @@ fun ProducIterator(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSecondaryContainer),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
         )
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -86,15 +89,13 @@ fun ProducIterator(
                     viewModel.toggleCheck(product.id)
                 },//cambiar valor de producto para ver cuales productos estan en carrito
                 checked = product.checked,
-                colors = CheckboxDefaults.colors(
-                    uncheckedColor = MaterialTheme.colorScheme.onPrimary
-                )
 
-            )
+
+                )
 
 
             Text(
-                text = product.name, color = MaterialTheme.colorScheme.onPrimary,
+                text = product.name,
                 textDecoration = if (product.checked) TextDecoration.LineThrough else TextDecoration.None,
                 fontSize = fontSizeName,
                 modifier = modifier.widthIn(max = namePaddingValues, min = namePaddingValues),
@@ -109,33 +110,38 @@ fun ProducIterator(
 
                 Text(
                     text = "$cantidad ${product.medida}",
-                    modifier = modifier.widthIn(max = 60.dp), color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = modifier.widthIn(max = 60.dp),
                 )
 
             }
+//------------------------------------------Price*Cant-----------------------------------------
 
-            TextButton(onClick = { showBottomSheet = true }) {
-                Text(
-                    text = if (product.price != 0f) "$: ${
-                        formatNumber(
-                            df.format(product.price * product.cant * tasa).toFloat()
+            if (product.price != 0f) {
+                TextButton(onClick = { showBottomSheet = true }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onPrimary)) {
+                    Text(
+                        text = "$: ${formatNumber(df.format(product.price * product.cant * tasa).toFloat())}",
+                        modifier = modifier.widthIn(max = fontSizeCost, min = fontSizeCost),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = fontSizePrice,
+
                         )
-                    }" else "$",
-                    modifier = modifier.widthIn(max = fontSizeCost, min = fontSizeCost),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = fontSizePrice, color = MaterialTheme.colorScheme.onPrimary,
-
-                )
+                }
+            }else {
+                IconButton(onClick = {showBottomSheet = true},modifier = modifier.widthIn(max = fontSizeCost, min = fontSizeCost)) {
+                    Icon(
+                        painter = painterResource(R.drawable.changeprice),
+                        contentDescription = "cambiar precio",
+                    )
+                }
             }
+
             //-------------------------borrar-----------------------
             IconButton(onClick = { viewModel.deleteProduct(product.id) }) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "minus", tint = MaterialTheme.colorScheme.onPrimary,
+                    contentDescription = "minus",
                 )
             }
-
-//------------------------------------------Price*Cant-----------------------------------------
 
 
 //------------------------------------------BottomSheettToChangePrice-----------------------------------------

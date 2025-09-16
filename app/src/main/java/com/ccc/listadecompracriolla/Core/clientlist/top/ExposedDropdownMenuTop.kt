@@ -28,7 +28,8 @@ fun DropDownMenuTop(
     viewModel: ProductViewModel,
     onExpandex: () -> Unit,
     onDeleteAll:()-> Unit,
-    onAllToggle:(Boolean)-> Unit
+    onAllToggle:(Boolean)-> Unit,
+    onResetPrices:()-> Unit
 ) {
     val sortType by viewModel.sortType.collectAsState()
     var subMenuState by remember { mutableStateOf(false) }
@@ -79,9 +80,10 @@ fun DropDownMenuTop(
             HorizontalDivider()
             DropdownMenuItem(
                 onClick = {
+                    onResetPrices()
                 },
-                text = { Text("Envianos sugerencias") },
-                leadingIcon = { Icon(painter =painterResource(R.drawable.addcomments), contentDescription = "Enviar comentarios") },
+                text = { Text("Resetear precios") },
+                leadingIcon = { Icon(painter =painterResource(R.drawable.resetprice), contentDescription = "Resetear precios") },
             )
             DropdownMenuItem(
                 onClick = {

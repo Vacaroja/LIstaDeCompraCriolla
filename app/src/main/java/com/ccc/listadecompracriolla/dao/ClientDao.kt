@@ -58,6 +58,9 @@ interface ClientDao{
 
     @Query("UPDATE products SET checked = :toggle WHERE client = :clientId")
     suspend fun updateAllProductsChecked(clientId: Int?, toggle: Boolean)
+
+    @Query("UPDATE products SET price = 0 WHERE client = :clientId")
+    suspend fun resetProductByClient(clientId: Int?)
     @Update
     suspend fun updateProduct(product: ProductEntity)
 
