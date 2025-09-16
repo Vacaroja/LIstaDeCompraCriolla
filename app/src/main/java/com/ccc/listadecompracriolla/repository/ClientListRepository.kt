@@ -109,6 +109,12 @@ class ClientRepository @Inject constructor(
         }
     }
 
+    suspend fun updateAllCheckedByClient(client: Int?,toggle: Boolean) {
+        withContext(Dispatchers.IO) {
+            clientDao.updateAllProductsChecked(client,toggle)
+        }
+    }
+
     suspend fun updatePrice(productId: Int?, newPrice: Float) {
         withContext(Dispatchers.IO) {
             val actProd = getProductByID(productId)

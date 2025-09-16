@@ -3,7 +3,6 @@ package com.ccc.listadecompracriolla.Core.clientlist.top
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -28,7 +27,8 @@ fun DropDownMenuTop(
     expanded: Boolean,
     viewModel: ProductViewModel,
     onExpandex: () -> Unit,
-    onDeleteAll:()-> Unit
+    onDeleteAll:()-> Unit,
+    onAllToggle:(Boolean)-> Unit
 ) {
     val sortType by viewModel.sortType.collectAsState()
     var subMenuState by remember { mutableStateOf(false) }
@@ -53,6 +53,7 @@ fun DropDownMenuTop(
             HorizontalDivider()
             DropdownMenuItem(
                 onClick = {
+                    onAllToggle(true)
                 },
                 text = { Text("Seleccionar todos") },
                 leadingIcon = { Icon(painter =painterResource(R.drawable.check_all), contentDescription = "seleccionar todos") }
@@ -60,7 +61,7 @@ fun DropDownMenuTop(
             )
             DropdownMenuItem(
                 onClick = {
-
+                    onAllToggle(false)
                 },
                 text = { Text("Deseleccionar todos") },
                 leadingIcon = { Icon(painter =painterResource(R.drawable.uncheckall), contentDescription = "Deseleccionar todos") }

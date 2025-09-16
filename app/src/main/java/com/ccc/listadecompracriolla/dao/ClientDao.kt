@@ -56,6 +56,8 @@ interface ClientDao{
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProduct(product: ProductEntity): Long // Retorna el ID del producto insertado
 
+    @Query("UPDATE products SET checked = :toggle WHERE client = :clientId")
+    suspend fun updateAllProductsChecked(clientId: Int?, toggle: Boolean)
     @Update
     suspend fun updateProduct(product: ProductEntity)
 

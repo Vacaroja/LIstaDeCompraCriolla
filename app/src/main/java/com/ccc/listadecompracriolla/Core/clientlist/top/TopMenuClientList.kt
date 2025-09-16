@@ -170,7 +170,8 @@ fun TopMenu(
                 expanded = isExpandedMenu,
                 viewModel = viewModel,
                 onExpandex = { isExpandedMenu = !isExpandedMenu },
-                onDeleteAll = {viewModel.deleteAllProductByClientId(actualList.id)}
+                onDeleteAll = { viewModel.deleteAllProductByClientId(actualList.id) },
+                onAllToggle = {toggle -> viewModel.toggleCheckAllByClient(actualList.id,toggle)}
             )
         },
 //------------------------------------------colores-----------------------------------------
