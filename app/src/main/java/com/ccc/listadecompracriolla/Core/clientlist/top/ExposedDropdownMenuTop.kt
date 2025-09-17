@@ -92,13 +92,7 @@ fun DropDownMenuTop(
                 text = { Text("Calificanos <3") },
                 leadingIcon = { Icon(painter =painterResource(R.drawable.starrate), contentDescription = "Enviar comentarios") },
             )
-            DropdownMenuItem(
-                onClick = {
-                    throw RuntimeException("Test Crash")
-                },
-                text = { Text("Crashear") },
-                leadingIcon = { Icon(painter =painterResource(R.drawable.starrate), contentDescription = "Enviar comentarios") },
-            )
+            
 
         }
         SubMenuTop(
