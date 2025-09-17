@@ -201,6 +201,7 @@ fun ClientListScreen(
                 Box(modifier = modifier.clickable {
                     //var to hide keyboard if its show
                     focusManager.clearFocus()
+
                     stateOfBalance = false
                 }) {
 

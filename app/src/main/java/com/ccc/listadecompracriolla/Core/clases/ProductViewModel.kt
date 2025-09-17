@@ -60,8 +60,22 @@ class ProductViewModel @Inject constructor(
     val clientList: StateFlow<List<ClientList>> = _clientList.asStateFlow()
 
     //--------------------------stateFlow para el cliente actual-------------------------
-    private val _actualList = MutableStateFlow(ClientList())
-    val actualList: StateFlow<ClientList> = _actualList.asStateFlow()
+
+    private val _idActual = MutableStateFlow<Int?>(0)
+
+    val actualList: StateFlow<ClientList> =
+        combine(
+            _idActual,
+            _clientList
+        ) { actual, client ->//funcion que evalua los 2 stateFlows
+            val act = client.firstOrNull { it.id == actual }
+            act ?: ClientList()
+        }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(200),
+                initialValue = ClientList()
+            )
 
     //---------------------------------PRODUCTOS---------------------------------------------------
     //-----------------------------all products-------------------------------
@@ -88,7 +102,7 @@ class ProductViewModel @Inject constructor(
     val total: StateFlow<Float> =
         combine(
             _productos,
-            _actualList,
+            actualList,
             _tasa
         ) { products, actList, tasa ->//funcion que evalua los 2 stateFlows
             products.filter { it.client == actList.id }//filtro para actualList y Product
@@ -105,7 +119,7 @@ class ProductViewModel @Inject constructor(
 
     //------------------------------------Total en carrito (productos marcados)------------------
     val inCar: StateFlow<Float> =
-        combine(_productos, _actualList, _tasa) { products, actList, tasa ->
+        combine(_productos, actualList, _tasa) { products, actList, tasa ->
             products.filter { it.checked && it.client == actList.id }
                 .fold(0f) { acc, product ->
                     acc + (product.price * product.cant)
@@ -138,7 +152,7 @@ class ProductViewModel @Inject constructor(
     //--------------------variable para verificar si la lista esta completa para el anuncio-------------------------------
 
     val completedActualList: StateFlow<Boolean> =
-        combine(_productos, _actualList) { products, actList ->
+        combine(_productos, actualList) { products, actList ->
             products.filter { it.client == actList.id }.all { it.checked }
         }
             .stateIn(
@@ -146,14 +160,14 @@ class ProductViewModel @Inject constructor(
                 started = SharingStarted.WhileSubscribed(200),
                 initialValue = false
             )
-    val emptyClient: StateFlow<Boolean> = combine(_clientList) { client ->
-        client.isEmpty()
+    val emptyClient: StateFlow<Boolean> = actualList.map {
+        it.id == 0
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(200),
         initialValue = false
     )
-    val dividerCheckedItems: StateFlow<Boolean> = combine(_actualList, _productos) { client, prod ->
+    val dividerCheckedItems: StateFlow<Boolean> = combine(actualList, _productos) { client, prod ->
         prod.any { it.checked && it.client == client.id } && !prod.all { it.checked && it.client == client.id }
     }.stateIn(
         scope = viewModelScope,
@@ -162,7 +176,7 @@ class ProductViewModel @Inject constructor(
     )
 
     val actualDobleProductList: StateFlow<Pair<List<Product>, List<Product>>> =
-        combine(_productos, _actualList, _sortType) { prod, actList, currentSort ->
+        combine(_productos, actualList, _sortType) { prod, actList, currentSort ->
             val sortedList = when (currentSort) {
                 SortType.NONE -> prod
                 SortType.ALPHABETICAL -> prod.sortedBy { it.name }
@@ -233,25 +247,21 @@ class ProductViewModel @Inject constructor(
 
     fun addPresu(clientId: Int?, presu: String) {
         val presuDivtasa = try {
-             if (presu.isEmpty() || presu == ".") 0 else presu.toFloat() / _tasa.value}
-        catch (_: Exception) {
+            if (presu.isEmpty() || presu == ".") 0 else presu.toFloat() / _tasa.value
+        } catch (_: Exception) {
             0
         }
-            _presupuesto.value = presuDivtasa.toString()
-            _clientList.update { currentList ->
-                currentList.map { client ->
-                    if (client.id == clientId) client.copy(presupuesto = presu)
-                    else client
-                }
+        _presupuesto.value = presuDivtasa.toString()
+        _clientList.update { currentList ->
+            currentList.map { client ->
+                if (client.id == clientId) client.copy(presupuesto = presu)
+                else client
             }
-            viewModelScope.launch {
-                clientRepository.updatePresuClient(clientId, presu)
-            }
+        }
+        viewModelScope.launch {
+            clientRepository.updatePresuClient(clientId, presu)
+        }
 
-    }
-
-    fun getClient(idClient: Int?): ClientList? {
-        return _clientList.value.firstOrNull { it.id == idClient }
     }
 
 
@@ -284,16 +294,14 @@ class ProductViewModel @Inject constructor(
     }
 
     fun changeCurrentList(clientId: Int?) {
-        val currentList = getClient(clientId)
-        if (currentList != null) {
-            saveActualList(clientId)
-            _actualList.value = currentList
-            _presupuesto.value = currentList.presupuesto
-        }
+        saveActualList(clientId)
+        _idActual.value = clientId
+        _presupuesto.value = actualList.value.presupuesto
+
     }
 
     fun updateClient(idClient: Int?, newName: String) {
-        val currentClient = getClient(idClient)
+        val currentClient = _clientList.value.firstOrNull { it.id == idClient }
         if (currentClient != null) {
             val newClientName = currentClient.copy(name = newName)
             _clientList.update { currentList ->
@@ -364,7 +372,7 @@ class ProductViewModel @Inject constructor(
             currentList.map { product ->
                 if (product.client == clientId) {
                     product.copy(checked = toggle)
-                }else product
+                } else product
             }
 
 
@@ -421,7 +429,7 @@ class ProductViewModel @Inject constructor(
         val changeList = clientList.firstOrNull { it.id != null && it.id != idClientList }
 
         //si encuentra alguno y la lista actual es igual a la que se quiere borrar se cambia sino eso quiere decir que es la unica lista y la lista actual vuelve a 0
-        if (changeList != null && _actualList.value.id == idClientList) {
+        if (changeList != null && actualList.value.id == idClientList) {
             changeCurrentList(changeList.id)
         }
     }
@@ -439,7 +447,7 @@ class ProductViewModel @Inject constructor(
                     clientRepository.getActualList()
                 }
             actualList?.let {
-                _actualList.value = it
+                _idActual.value = it.id
                 _presupuesto.value = it.presupuesto
             }
         }
@@ -536,14 +544,12 @@ class ProductViewModel @Inject constructor(
 
     fun deleteClient(idClient: Int?) {
         //primero convierte las dos listas en listas mutables para iterarlas mejor
-        val clientList = _clientList.value.toMutableList()
-        val product = _productos.value.toMutableList()
-        //luego las borra donde encuentren la Id del cliente
-        product.removeIf { it.client == idClient }
-        clientList.removeIf { it.id == idClient }
-        //luego las convierten nuevamente en listas para actualizar la lista actual
-        _clientList.value = clientList.toList()
-        _productos.value = product.toList()
+        _productos.update { currentProductos ->
+            currentProductos.filter { it.client != idClient }
+        }
+        _clientList.update { currentClients ->
+            currentClients.filter { it.id != idClient }
+        }
         //por ultimo lo borra en la base de datos
         viewModelScope.launch {
             clientRepository.deleteClientById(idClient)

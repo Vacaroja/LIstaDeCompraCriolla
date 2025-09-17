@@ -6,6 +6,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -59,9 +60,17 @@ fun ModalBottomSheetClientList(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            ElevatedButton(onClick = {
-                onAddNew()
-            }) { Text("CREAR NUEVA LISTA") }
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Spacer(modifier.weight(1f))
+                ElevatedButton(onClick = { onAddNew() },modifier = modifier.padding(bottom = 20.dp)) {
+                    Text("CREAR NUEVA LISTA")
+                }
+                Spacer(modifier.weight(1f))
+
+            }
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = 140.dp),
                 horizontalArrangement = Arrangement.Center
