@@ -15,7 +15,7 @@ interface MedidaDao {
     fun getAllMedida(): Flow<List<MedidaEntities>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMedida(medida: MedidaEntities): Int // Retorna el ID del cliente insertado
+    suspend fun insertMedida(medida: MedidaEntities): Long // Retorna el ID del cliente insertado
 
     @Update
     suspend fun updateClient(medida: MedidaEntities)

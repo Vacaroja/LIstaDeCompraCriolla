@@ -59,12 +59,12 @@ data class ClientProductCrossRef(
         onDelete = ForeignKey.CASCADE // Si se elimina un cliente, sus referencias en esta tabla también
     ),
     ForeignKey(
-        entity = ClientListEntity::class,
+        entity = MedidaEntities::class,
         parentColumns = ["idMedida"],
         childColumns = ["medida"],
         onDelete = ForeignKey.CASCADE // Si se elimina un cliente, sus referencias en esta tabla también
     ),
-], indices = [Index(value = ["client"])])
+], indices = [Index(value = ["client"]),Index(value = ["medida"])])
 data class ProductEntity(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
     val name: String = "",

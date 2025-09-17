@@ -169,7 +169,7 @@ class ClientRepository @Inject constructor(
     }
 
     suspend fun insertMedida(medida: MedidaEntities): Int?{
-        return medidaDao.insertMedida(medida)
+        return medidaDao.insertMedida(medida).toInt()
     }
 
 }
