@@ -3,9 +3,11 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.ccc.listadecompracriolla.dao.BcvDao
 import com.ccc.listadecompracriolla.dao.ClientDao
+import com.ccc.listadecompracriolla.dao.MedidaDao
 import com.ccc.listadecompracriolla.entities.BcvEntity
 import com.ccc.listadecompracriolla.entities.ClientListEntity
 import com.ccc.listadecompracriolla.entities.ClientProductCrossRef
+import com.ccc.listadecompracriolla.entities.MedidaEntities
 import com.ccc.listadecompracriolla.entities.ProductEntity
 
 @Database(
@@ -13,14 +15,17 @@ import com.ccc.listadecompracriolla.entities.ProductEntity
         BcvEntity::class,
         ClientListEntity::class,
         ProductEntity::class,
-        ClientProductCrossRef::class
+        ClientProductCrossRef::class,
+        MedidaEntities::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun bcvDao(): BcvDao
     abstract fun clientDao(): ClientDao
+
+    abstract fun medidaDao(): MedidaDao
 
 }

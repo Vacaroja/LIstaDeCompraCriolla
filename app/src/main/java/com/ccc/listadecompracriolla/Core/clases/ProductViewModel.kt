@@ -79,6 +79,9 @@ class ProductViewModel @Inject constructor(
 
     //---------------------------------PRODUCTOS---------------------------------------------------
     //-----------------------------all products-------------------------------
+    private val _medida = MutableStateFlow<List<MedidaList>>(emptyList())
+    val medida: StateFlow<List<MedidaList>> = _medida.asStateFlow()
+
     private val _productos = MutableStateFlow<List<Product>>(emptyList())
     val productos: StateFlow<List<Product>> = _productos.asStateFlow()
 
@@ -195,6 +198,14 @@ class ProductViewModel @Inject constructor(
     //--------------------------------------------INIT-----------------------------------------------
     init {
         viewModelScope.launch {
+            try {
+                addMedida(MedidaList(1,"und"))
+            }catch (_:Exception){}
+            clientRepository.getAllMedida().collect { medidaEntities ->
+                _medida.value = medidaEntities.map { it.toMedidaList() }
+            }
+        }
+        viewModelScope.launch {
             clientRepository.getAllProducts().collect { productEntities ->
                 _productos.value = productEntities.map { it.toProduct() }
             }
@@ -241,6 +252,16 @@ class ProductViewModel @Inject constructor(
             val productWithId = producto.copy(id = newId.toInt())
             _productos.update { currentList ->
                 currentList + productWithId
+            }
+        }
+    }
+    fun addMedida(medidaList: MedidaList) {
+        viewModelScope.launch {
+            val medidaEntities = medidaList.toMedidaEntities()
+            val newId = clientRepository.insertMedida(medidaEntities)
+            val medidaWithId = medidaList.copy(idMedida = newId)
+            _medida.update { currentList ->
+                currentList + medidaWithId
             }
         }
     }

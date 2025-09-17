@@ -58,6 +58,12 @@ data class ClientProductCrossRef(
         childColumns = ["client"],
         onDelete = ForeignKey.CASCADE // Si se elimina un cliente, sus referencias en esta tabla también
     ),
+    ForeignKey(
+        entity = ClientListEntity::class,
+        parentColumns = ["idMedida"],
+        childColumns = ["medida"],
+        onDelete = ForeignKey.CASCADE // Si se elimina un cliente, sus referencias en esta tabla también
+    ),
 ], indices = [Index(value = ["client"])])
 data class ProductEntity(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
@@ -66,7 +72,7 @@ data class ProductEntity(
     var price: Float = 0f,
     var checked: Boolean = false,
     var nota: String = "",
-    var medida: String = "",
+    var medida: Int? = null,
     var client: Int? = null
 )
 fun ProductEntity.toProduct(): Product{
@@ -81,3 +87,9 @@ fun ProductEntity.toProduct(): Product{
         this.client
     )
 }
+
+@Entity(tableName = "Medida")
+data class MedidaEntities(
+    @PrimaryKey(autoGenerate = true) val idMedida: Int? = null,
+    val medida: String = "",
+)

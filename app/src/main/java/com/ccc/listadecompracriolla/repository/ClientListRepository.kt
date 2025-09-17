@@ -12,11 +12,14 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 import androidx.core.content.edit
+import com.ccc.listadecompracriolla.dao.MedidaDao
+import com.ccc.listadecompracriolla.entities.MedidaEntities
 
 @Singleton
 class ClientRepository @Inject constructor(
     private val clientDao: ClientDao,
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    private val medidaDao: MedidaDao
 ) {
 
     //---------------------------------------SHARED PREFERENCES-----------------------------
@@ -161,5 +164,12 @@ class ClientRepository @Inject constructor(
         }
     }
 
+     fun getAllMedida(): Flow<List<MedidaEntities>> {
+        return medidaDao.getAllMedida()
+    }
+
+    suspend fun insertMedida(medida: MedidaEntities): Int?{
+        return medidaDao.insertMedida(medida)
+    }
 
 }

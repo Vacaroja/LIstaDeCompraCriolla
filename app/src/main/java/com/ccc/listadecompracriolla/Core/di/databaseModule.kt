@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.ccc.listadecompracriolla.dao.BcvDao
 import com.ccc.listadecompracriolla.dao.ClientDao
+import com.ccc.listadecompracriolla.dao.MedidaDao
 import com.ccc.listadecompracriolla.repository.AppDatabase
 import dagger.Module
 import dagger.Provides
@@ -39,5 +40,11 @@ object DatabaseModule { // Usar 'object' es común si todos los métodos son @Pr
     fun provideClientDao(appDatabase: AppDatabase): ClientDao {
         // Hilt automáticamente inyectará la instancia de AppDatabase creada arriba
         return appDatabase.clientDao()
+    }
+
+    @Provides
+    fun provideMedidaDao(appDatabase: AppDatabase): MedidaDao {
+        // Hilt automáticamente inyectará la instancia de AppDatabase creada arriba
+        return appDatabase.medidaDao()
     }
 }

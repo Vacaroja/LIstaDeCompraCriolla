@@ -35,7 +35,6 @@ data class ClientWithProducts(
 interface ClientDao{
 
 
-
     @Query("SELECT * FROM clients ORDER BY id ASC LIMIT 1")
     suspend fun getFirstId(): ClientListEntity?
 
@@ -94,6 +93,7 @@ interface ClientDao{
 
     @Query("DELETE FROM products WHERE client = :clientId")
     fun deleteProductByClientId(clientId: Int?)
+
 
 
 }

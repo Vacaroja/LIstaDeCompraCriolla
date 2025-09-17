@@ -29,7 +29,7 @@ data class Product(
     var price: Float = 0f,
     var checked: Boolean = false,
     var nota: String = "",
-    var medida : String = "",
+    var medida : Int? = null,
     val client: Int? = null
     )
 

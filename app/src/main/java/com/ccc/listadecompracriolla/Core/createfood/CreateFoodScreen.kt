@@ -62,10 +62,11 @@ fun CreateFoodScreen(
     val actProduct by viewModel.actualprod.collectAsState()
     val tasa by viewModel.tasa.collectAsState()
     val actual by viewModel.actualList.collectAsState()
+    val medida by viewModel.medida.collectAsState()
 
     val medidaList = listOf("Und", "Lb", "Kg", "L")
 
-
+    var uni by remember { mutableStateOf(medida[0]) }
     var nombre by remember { mutableStateOf("") }
     var precio by remember { mutableStateOf("") }
     var nota by remember { mutableStateOf("") }
@@ -84,7 +85,7 @@ fun CreateFoodScreen(
         nombre = actProduct.name
         precio = actProduct.price.toString()
         nota = actProduct.nota
-        unidad = actProduct.medida
+        //unidad = actProduct.medida
         cantidad = actProduct.cant.toString()
     }
 
@@ -128,7 +129,7 @@ fun CreateFoodScreen(
                     0f
                 },
                 nota = nota,
-                medida = unidad,
+                medida = 1,
                 client = if (actProduct.id != 0) actProduct.client else actual.id
             )
             if (actProduct.id != 0) {
