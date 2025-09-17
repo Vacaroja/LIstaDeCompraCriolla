@@ -33,6 +33,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -46,9 +47,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
+import com.ccc.listadecompracriolla.Core.clases.VersionManager
 import com.ccc.listadecompracriolla.Core.clientlist.drawer.NavigationDrawerClientList
 import com.ccc.listadecompracriolla.Core.clientlist.principal.LazyListClient
 import com.ccc.listadecompracriolla.Core.clientlist.top.TopMenu
+import com.ccc.listadecompracriolla.Core.versionmanager.ForcedUpdateDialog
 import com.ccc.listadecompracriolla.adds.loadInterstitialAd
 import com.ccc.listadecompracriolla.adds.showInterstitialAd
 import kotlinx.coroutines.launch
@@ -62,6 +65,7 @@ fun ClientListScreen(
     onAbout:() -> Unit
 ) {
 //------------------------------------------Variables-----------------------------------------
+
     //var for pull to refresh
     val loading by viewModel.isLoading.collectAsState()
     val refreshState = rememberPullToRefreshState()
@@ -73,7 +77,7 @@ fun ClientListScreen(
     val isCompleted by viewModel.completedActualList.collectAsState()
 
 
-
+    var showUpdateDialog by remember { mutableStateOf(false) }
     //variable to state of balance
     var stateOfBalance by remember { mutableStateOf(false) }
 
@@ -88,11 +92,18 @@ fun ClientListScreen(
     val focusManager = LocalFocusManager.current
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
+
     val context = LocalContext.current
     val activity = context as? Activity
+    val appVersionManager = remember { VersionManager(context) }
 
 
 
+    LaunchedEffect(Unit) {
+        appVersionManager.checkForUpdates {
+        showUpdateDialog = true
+        }
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -217,6 +228,11 @@ fun ClientListScreen(
                 }
             }
         }
+        if (showUpdateDialog){
+            ForcedUpdateDialog {
+                showUpdateDialog = false
+            }
+        }
     }
     if (isCompleted) {
         if (activity != null) {
@@ -224,6 +240,7 @@ fun ClientListScreen(
             loadInterstitialAd(context)
         }
     }
+
 }
 
 

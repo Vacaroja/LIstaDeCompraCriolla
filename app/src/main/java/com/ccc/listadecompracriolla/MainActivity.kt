@@ -21,7 +21,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ListaDeCompraCriollaTheme {
-
                 val viewModel: ProductViewModel by viewModels()
                 viewModel.searchDolarBcv()
                 NavegationControl(viewModel)
