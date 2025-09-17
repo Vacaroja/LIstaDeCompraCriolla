@@ -77,7 +77,7 @@ fun DropDownMenuTop(
                 text = { Text("Borrar todos") },
                 leadingIcon = { Icon(painter =painterResource(R.drawable.deleteall), contentDescription = "Borrar todos") }
             )
-            HorizontalDivider()
+
             DropdownMenuItem(
                 onClick = {
                     onResetPrices()
@@ -85,10 +85,18 @@ fun DropDownMenuTop(
                 text = { Text("Resetear precios") },
                 leadingIcon = { Icon(painter =painterResource(R.drawable.resetprice), contentDescription = "Resetear precios") },
             )
+            HorizontalDivider()
             DropdownMenuItem(
                 onClick = {
                 },
                 text = { Text("Calificanos <3") },
+                leadingIcon = { Icon(painter =painterResource(R.drawable.starrate), contentDescription = "Enviar comentarios") },
+            )
+            DropdownMenuItem(
+                onClick = {
+                    throw RuntimeException("Test Crash")
+                },
+                text = { Text("Crashear") },
                 leadingIcon = { Icon(painter =painterResource(R.drawable.starrate), contentDescription = "Enviar comentarios") },
             )
 

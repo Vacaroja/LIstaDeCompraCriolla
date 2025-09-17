@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "646922800163",
+    "project_id": "lista-de-compra-criolla-dc5cc",
+    "storage_bucket": "lista-de-compra-criolla-dc5cc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:646922800163:android:affcf1241200b42a6ef596",
+        "android_client_info": {
+          "package_name": "com.ccc.listadecompracriolla"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8GzGpfCp57l6cWvc5Mva-rjVnPSS7UIA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
