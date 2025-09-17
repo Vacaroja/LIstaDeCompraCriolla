@@ -1,5 +1,6 @@
 package com.ccc.listadecompracriolla.Core.clientlist.drawer
 
+import android.content.Intent
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
@@ -7,7 +8,6 @@ import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -17,9 +17,11 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import com.ccc.listadecompracriolla.ui.theme.Blue
 import com.ccc.listadecompracriolla.ui.theme.Red
 import com.ccc.listadecompracriolla.ui.theme.oro
@@ -32,7 +34,7 @@ fun NavigationDrawerClientList(
 ) {
     val titleDrawerPaddingValues =
         PaddingValues(start = 15.dp, top = 30.dp, end = 5.dp, bottom = 5.dp)
-
+    val context = LocalContext.current
     ModalDrawerSheet(
         modifier = modifier
             .requiredWidth(250.dp)
@@ -48,29 +50,35 @@ fun NavigationDrawerClientList(
             )
 
         HorizontalDivider()
-        NavigationDrawerItem(//pantalla de ajustes
-            label = { Text("Ajustes") },
+
+        NavigationDrawerItem(//pantalla de acerca de la aplicacion
+            label = { Text("Premiun") },
             selected = false,
-            onClick = { /* Handle click */ },
-            icon = { Icon(imageVector = Icons.Default.Settings, "ajustes",tint = oro) }
+            onClick = { context.startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    "https://github.com/Vacaroja/LIstaDeCompraCriolla".toUri()
+                )
+            ) },
+            icon = { Icon(imageVector = Icons.Default.Star, "Premiun", tint = oro) }
         )
         NavigationDrawerItem(//pantalla de acerca de la aplicacion
-            label = { Text("Premiun",color = Blue) },
+            label = { Text("Calificanos ") },
             selected = false,
-            onClick = { /* Handle click */ },
-            icon = { Icon(imageVector = Icons.Default.Star, "Premiun", tint = Blue) }
-        )
-        NavigationDrawerItem(//pantalla de acerca de la aplicacion
-            label = { Text("Calificanos ", color = Red) },
-            selected = false,
-            onClick = { /* Handle click */ },
-            icon = { Icon(imageVector = Icons.Default.Favorite, "Calificanos", tint = Red) }
+            onClick = {
+                context.startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        "https://github.com/Vacaroja/LIstaDeCompraCriolla".toUri()
+                    )
+                )  },
+            icon = { Icon(imageVector = Icons.Default.Favorite, "Calificanos", tint = Blue) }
         )
         NavigationDrawerItem(//pantalla de acerca de la aplicacion
             label = { Text("Info de app") },
             selected = false,
             onClick = { onAbout() },
-            icon = { Icon(imageVector = Icons.Default.Info, "info") }
+            icon = { Icon(imageVector = Icons.Default.Info, "info",tint = Red) }
         )
     }
 }

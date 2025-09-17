@@ -90,9 +90,8 @@ fun DropDownMenuTop(
                 onClick = {
                 },
                 text = { Text("Calificanos <3") },
-                leadingIcon = { Icon(painter =painterResource(R.drawable.starrate), contentDescription = "Enviar comentarios") },
+                leadingIcon = { Icon(painter =painterResource(R.drawable.starrate), contentDescription = "Calificar") },
             )
-            
 
         }
         SubMenuTop(

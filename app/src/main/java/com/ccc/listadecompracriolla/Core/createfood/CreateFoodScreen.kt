@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -41,6 +42,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.Product
@@ -98,6 +100,47 @@ fun CreateFoodScreen(
     val textFieldMediumWidth = 180.dp
     val textFieldMediumHeight = 56.dp
 
+    val savedProduct: () -> Unit = {
+        if (nombre.isBlank()) {
+            focusManager.clearFocus()
+            scope.launch {
+                val vacio = snackbarHostState.showSnackbar(
+                    message = "Debe colocar un nombre",
+                    actionLabel = "OK",
+                    duration = SnackbarDuration.Short
+                )
+                when (vacio) {
+                    SnackbarResult.Dismissed -> {}
+                    SnackbarResult.ActionPerformed -> {
+                        focusElements.requestFocus()
+                    }
+                }
+            }
+        } else {
+            enableButton = false
+            val nuevoProducto = Product(
+                id = if (actProduct.id != 0) actProduct.id else null, // O usa un UUID
+                name = nombre,
+                cant = cantidad.toFloatOrNull() ?: 1f,
+                price = try {
+                    (precio.toFloatOrNull() ?: 0f) / tasa
+                } catch (_: Exception) {
+                    0f
+                },
+                nota = nota,
+                medida = unidad,
+                client = if (actProduct.id != 0) actProduct.client else actual.id
+            )
+            if (actProduct.id != 0) {
+                viewModel.updateProduct(nuevoProducto)
+                viewModel.actualizeProduct(-1)
+            } else {
+                viewModel.addProduct(nuevoProducto)
+            }
+            navigateToback()
+        }
+    }
+
 
 
 
@@ -118,45 +161,7 @@ fun CreateFoodScreen(
                     viewModel.actualizeProduct(-1)
                     navigateToback()
                 },
-                saveProduct = {
-                    if (nombre.isBlank()) {
-                        focusManager.clearFocus()
-                        scope.launch {
-                            val vacio = snackbarHostState.showSnackbar(
-                                message = "Debe colocar un nombre",
-                                actionLabel = "OK",
-                                duration = SnackbarDuration.Short
-                            )
-                            when (vacio) {
-                                SnackbarResult.Dismissed -> {}
-                                SnackbarResult.ActionPerformed -> {
-                                    focusElements.requestFocus()
-                                }
-                            }
-                        }
-                    } else {
-                        enableButton = false
-                        val nuevoProducto = Product(
-                            id = if (actProduct.id != 0) actProduct.id else null, // O usa un UUID
-                            name = nombre,
-                            cant = if (cantidad.isNotEmpty() && cantidad != ".") cantidad.toFloat() else 1f,
-                            price = if (precio.isNotEmpty() && precio != ".") (if (isPressed) (precio.toFloat() / tasa) else precio.toFloat()) else 0f,
-                            nota = nota,
-                            medida = unidad,
-                            client = if (actProduct.id != 0) actProduct.client else actual.id
-                        )
-                        if (actProduct.id != 0) {
-                            viewModel.updateProduct(nuevoProducto)
-                            viewModel.actualizeProduct(-1)
-                        } else {
-                            viewModel.addProduct(nuevoProducto)
-                        }
-                        navigateToback()
-
-
-                    }
-
-                }
+                saveProduct = savedProduct
             )
         },
 //------------------------------------------bottombar-----------------------------------------
@@ -190,7 +195,12 @@ fun CreateFoodScreen(
                 },
                 shape = MaterialTheme.shapes.medium,
                 modifier = modifier.focusRequester(focusElements),
-                maxLines = 3
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(onDone = { savedProduct()
+                    focusManager.clearFocus()}),
             )
 
             PriceCreateFood(
@@ -260,7 +270,8 @@ fun CreateFoodScreen(
                     )
                 },
                 shape = MaterialTheme.shapes.medium,
-                modifier = modifier.padding(bottom = 15.dp)
+                modifier = modifier.padding(bottom = 15.dp),
+                maxLines = 3
 
             )
             Box(modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
