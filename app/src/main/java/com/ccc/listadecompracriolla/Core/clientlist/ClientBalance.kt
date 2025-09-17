@@ -104,7 +104,7 @@ fun ClientBalance(
                     keyboardActions = KeyboardActions(onDone = {
                         onDimiss()
                     }),
-                    placeholder = {Text("Presupuesto", fontSize = 10.sp)}
+                    placeholder = {Text("Presupuesto", fontSize = 13.sp)}
                 )
                 LaunchedEffect(Unit) { focusElements.requestFocus() }
             }

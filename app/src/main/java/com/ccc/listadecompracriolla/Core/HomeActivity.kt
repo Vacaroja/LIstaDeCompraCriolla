@@ -22,6 +22,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -45,7 +49,6 @@ fun HomeScreen(modifier: Modifier = Modifier, navigateToClient: () -> Unit) {
     val about =
         "   Esta aplicacion es netamente referencial, la tasa del dolar utilizada es tomada " +
                 "del unico ente regulador del precio de las remesas "
-
 
 
 //------------------------------------------Scaffold-----------------------------------------
@@ -90,10 +93,13 @@ fun HomeScreen(modifier: Modifier = Modifier, navigateToClient: () -> Unit) {
                             fontSize = 20.sp,
                             color = lightBlue,
                             textDecoration = TextDecoration.Underline,
-                            modifier = modifier.padding(10.dp).clickable(onClick = {
-                                val intent = Intent(Intent.ACTION_VIEW, bcvLink.toUri())
-                                context.startActivity(intent)
-                            }))
+                            modifier = modifier
+                                .padding(10.dp)
+                                .clickable(onClick = {
+                                    val intent = Intent(Intent.ACTION_VIEW, bcvLink.toUri())
+                                    context.startActivity(intent)
+                                })
+                        )
                         Spacer(modifier.weight(1f))
                     }
 
@@ -111,6 +117,7 @@ fun TopBarHome(
     modifier: Modifier = Modifier,
     navigateToClient: () -> Unit
 ) {
+    var enableButton by remember { mutableStateOf(true) }
 
 //------------------------------------------HorizontalSheet-----------------------------------------
     TopAppBar(
@@ -123,16 +130,16 @@ fun TopBarHome(
         },
         navigationIcon = {
 //------------------------------------------EstadoDelHorizontalSheet-----------------------------------------
-
             IconButton(onClick = {
+                enableButton = false
                 navigateToClient()
-
-            }) {
+            }, enabled = enableButton) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back"
                 )
             }
+
         },
         actions = {
 
