@@ -2,13 +2,12 @@ package com.ccc.listadecompracriolla.Core.clientlist
 
 import android.icu.text.DecimalFormat
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -38,12 +37,15 @@ import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.formatterdata.formatNumber
 import com.ccc.listadecompracriolla.R
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProducIterator(
     product: Product,
     modifier: Modifier = Modifier,
     viewModel: ProductViewModel,
+    selected: Boolean,
     onChangeProduct: (Int?) -> Unit,
+    onSelected: (Int?) -> Unit
 ) {
 //------------------------------------------variables-----------------------------------------
 
@@ -67,17 +69,20 @@ fun ProducIterator(
 
     val namePaddingValues = 90.dp
 //------------------------------------------variables de estado-----------------------------------------
+    val isSelected = if(selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.inversePrimary
 
     Card(
         modifier
             .fillMaxSize()
             .padding(5.dp)
-            .clickable {
-                onChangeProduct(product.id)
-            },
+            .combinedClickable(onClick = {
+                if (viewModel.isNotEmptyProductSelected()) onSelected(product.id) else onChangeProduct(product.id)
+            }, onLongClick = {
+                onSelected(product.id)
+            }),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSecondaryContainer),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary,
+            containerColor = isSelected,
             contentColor = MaterialTheme.colorScheme.onPrimary
         )
     ) {
@@ -89,8 +94,6 @@ fun ProducIterator(
                     viewModel.toggleCheck(product.id)
                 },//cambiar valor de producto para ver cuales productos estan en carrito
                 checked = product.checked,
-
-
                 )
 
 
@@ -101,7 +104,6 @@ fun ProducIterator(
                 modifier = modifier.widthIn(max = namePaddingValues, min = namePaddingValues),
                 maxLines = maxLinesName
             )
-
 
 //------------------------------------------cantidad-----------------------------------------
 
@@ -117,33 +119,33 @@ fun ProducIterator(
 //------------------------------------------Price*Cant-----------------------------------------
 
             if (product.price != 0f) {
-                TextButton(onClick = { showBottomSheet = true }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onPrimary)) {
+                TextButton(
+                    onClick = { showBottomSheet = true },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onPrimary)
+                ) {
                     Text(
-                        text = "$: ${formatNumber(df.format(product.price * product.cant * tasa).toFloat())}",
+                        text = "$: ${
+                            formatNumber(
+                                df.format(product.price * product.cant * tasa).toFloat()
+                            )
+                        }",
                         modifier = modifier.widthIn(max = fontSizeCost, min = fontSizeCost),
                         fontWeight = FontWeight.Bold,
                         fontSize = fontSizePrice,
 
                         )
                 }
-            }else {
-                IconButton(onClick = {showBottomSheet = true},modifier = modifier.widthIn(max = fontSizeCost, min = fontSizeCost)) {
+            } else {
+                IconButton(
+                    onClick = { showBottomSheet = true },
+                    modifier = modifier.widthIn(max = fontSizeCost, min = fontSizeCost)
+                ) {
                     Icon(
                         painter = painterResource(R.drawable.changeprice),
                         contentDescription = "cambiar precio",
                     )
                 }
             }
-
-            //-------------------------borrar-----------------------
-            IconButton(onClick = { viewModel.deleteProduct(product.id) }) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "minus",
-                )
-            }
-
-
 //------------------------------------------BottomSheettToChangePrice-----------------------------------------
             if (showBottomSheet) {
                 SheetToChangePrice(

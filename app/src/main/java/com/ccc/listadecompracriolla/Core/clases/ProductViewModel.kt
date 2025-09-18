@@ -63,20 +63,6 @@ class ProductViewModel @Inject constructor(
 
     private val _idActual = MutableStateFlow<Int?>(0)
 
-    val actualList: StateFlow<ClientList> =
-        combine(
-            _idActual,
-            _clientList
-        ) { actual, client ->//funcion que evalua los 2 stateFlows
-            val act = client.firstOrNull { it.id == actual }
-            act ?: ClientList()
-        }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(200),
-                initialValue = ClientList()
-            )
-
     //---------------------------------PRODUCTOS---------------------------------------------------
     //-----------------------------all products-------------------------------
     private val _productos = MutableStateFlow<List<Product>>(emptyList())
@@ -96,6 +82,24 @@ class ProductViewModel @Inject constructor(
 
     private val _sortType = MutableStateFlow(SortType.NONE)
     val sortType = _sortType.asStateFlow()
+
+    private val _selectedProductIds =
+        MutableStateFlow<Set<Int>>(emptySet()) // Assuming Product ID is String
+    val selectedProductIds: StateFlow<Set<Int>> = _selectedProductIds.asStateFlow()
+
+    val actualList: StateFlow<ClientList> =
+        combine(
+            _idActual,
+            _clientList
+        ) { actual, client ->//funcion que evalua los 2 stateFlows
+            val act = client.firstOrNull { it.id == actual }
+            act ?: ClientList()
+        }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(200),
+                initialValue = ClientList()
+            )
 
 
     //--------------------------------total-------------------------------------
@@ -210,8 +214,6 @@ class ProductViewModel @Inject constructor(
             actualizeProduct(-1)
         }
         loadActualList()
-
-
     }
 
     //---------------------------------------------Funciones-----------------------------------------------------
@@ -263,7 +265,6 @@ class ProductViewModel @Inject constructor(
         }
 
     }
-
 
     fun saveActualList(idClientList: Int?) {
         viewModelScope.launch {
@@ -352,6 +353,10 @@ class ProductViewModel @Inject constructor(
         }
     }
 
+    fun clearSelections() {
+        _selectedProductIds.update { emptySet() }
+    }
+
     fun resetPrecio(client: Int?) {
         _productos.update { currentList ->
             currentList.map { product ->
@@ -364,6 +369,16 @@ class ProductViewModel @Inject constructor(
         }
         viewModelScope.launch {
             clientRepository.updatePrice(client)
+        }
+    }
+
+    fun toggleProductSelection(productId: Int) {
+        _selectedProductIds.update { currentSelectedIds ->
+            if (productId in currentSelectedIds) {
+                currentSelectedIds - productId
+            } else {
+                currentSelectedIds + productId
+            }
         }
     }
 
@@ -492,6 +507,28 @@ class ProductViewModel @Inject constructor(
         return bcvPriceFloat.value == -1f || bcvPriceFloat.value == -2f
     }
 
+    fun isNotEmptyProductSelected(): Boolean {
+        return _selectedProductIds.value.isNotEmpty()
+    }
+
+    fun isOneProductSelected(): Boolean {
+        return _selectedProductIds.value.size == 1
+    }
+
+    fun isProductSelected(productId: Int): Boolean {
+        return productId in _selectedProductIds.value
+    }
+
+    fun editIdSelected(): Int {
+        val idToEdit = _selectedProductIds.value
+        val idSelected = try {
+            idToEdit.single()
+        } catch (_: Exception) {
+            -1
+        }
+        return idSelected
+    }
+
     //------------------------------buscar la tasa---------------------------------------------
     fun searchDolarBcv() {
         _isLoading.value = true // Indica que la carga ha comenzado
@@ -539,6 +576,19 @@ class ProductViewModel @Inject constructor(
         //delete in database
         viewModelScope.launch {
             clientRepository.deleteProductByClient(idClient)
+        }
+    }
+
+    fun deleteSelected() {
+        //borrado en la lista local
+        val idToDelete = _selectedProductIds.value
+        if (idToDelete.isNotEmpty()) {
+            clearSelections()
+            _productos.update { products -> products.filterNot { it.id in idToDelete } }
+
+            viewModelScope.launch {
+                idToDelete.forEach { clientRepository.deleteProductById(it) }
+            }
         }
     }
 

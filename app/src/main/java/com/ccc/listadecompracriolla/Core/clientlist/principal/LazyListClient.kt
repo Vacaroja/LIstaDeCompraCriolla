@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.clientlist.ProducIterator
-import com.ccc.listadecompracriolla.ui.theme.black
 
 @Composable
 fun LazyListClient(
@@ -33,14 +32,17 @@ fun LazyListClient(
     innerpadding: PaddingValues,
     viewModel: ProductViewModel,
     scrollState: LazyListState,
-    onNavigateToCreateFood:()-> Unit,
+    onNavigateToCreateFood: () -> Unit,
 
-) {
-
-    val clients by viewModel.actualList.collectAsState()
+    ) {
 
     val actualProducts by viewModel.actualDobleProductList.collectAsState()
     val dividerCheckedItems by viewModel.dividerCheckedItems.collectAsState()
+    val selected by viewModel.selectedProductIds.collectAsState()
+    val onSelected:(Int)->Unit = {idProd ->
+        viewModel.toggleProductSelection(idProd)
+    }
+
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -60,9 +62,13 @@ fun LazyListClient(
                 ProducIterator(
                     product = producto,
                     viewModel = viewModel,
+                    selected = producto.id in selected,
                     onChangeProduct = { idProduct ->
                         viewModel.actualizeProduct(idProduct)
                         onNavigateToCreateFood()
+                    },
+                    onSelected = {id ->
+                        onSelected(id!!)
                     },
                 )
             }
@@ -96,24 +102,25 @@ fun LazyListClient(
         items(
             items = actualProducts.second,
             key = { it.id!! }) { producto ->
-            if (producto.client == clients.id) {
-                AnimatedVisibility(
-                    visible = true,
-                    enter = fadeIn() + slideInVertically(),
-                    exit = fadeOut() + slideOutVertically()
+            AnimatedVisibility(
+                visible = true,
+                enter = fadeIn() + slideInVertically(),
+                exit = fadeOut() + slideOutVertically()
 
-                ) {
-                    ProducIterator(
-                        product = producto,
-                        viewModel = viewModel,
-                        onChangeProduct = { idProduct ->
-                            viewModel.actualizeProduct(idProduct)
-                            onNavigateToCreateFood()
-
-                        }
-                    )
-                }
+            ) {
+                ProducIterator(
+                    product = producto,
+                    viewModel = viewModel,
+                    selected = producto.id in selected,
+                    onChangeProduct = { idProduct ->
+                        viewModel.actualizeProduct(idProduct)
+                        onNavigateToCreateFood()
+                    },
+                    onSelected = { id ->
+                        onSelected(id!!)}
+                )
             }
+
         }
     }
 }

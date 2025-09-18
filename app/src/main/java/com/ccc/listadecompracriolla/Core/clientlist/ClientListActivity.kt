@@ -50,6 +50,7 @@ import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.clases.VersionManager
 import com.ccc.listadecompracriolla.Core.clientlist.drawer.NavigationDrawerClientList
 import com.ccc.listadecompracriolla.Core.clientlist.principal.LazyListClient
+import com.ccc.listadecompracriolla.Core.clientlist.top.TopClientListSelected
 import com.ccc.listadecompracriolla.Core.clientlist.top.TopMenu
 import com.ccc.listadecompracriolla.Core.versionmanager.ForcedUpdateDialog
 import com.ccc.listadecompracriolla.adds.loadInterstitialAd
@@ -62,7 +63,7 @@ fun ClientListScreen(
     modifier: Modifier = Modifier,
     viewModel: ProductViewModel,
     navigateToCreateFood: () -> Unit,
-    onAbout:() -> Unit
+    onAbout: () -> Unit
 ) {
 //------------------------------------------Variables-----------------------------------------
 
@@ -75,6 +76,7 @@ fun ClientListScreen(
     //variables from viewmodels
 
     val isCompleted by viewModel.completedActualList.collectAsState()
+    val isSelected by viewModel.selectedProductIds.collectAsState()
 
 
     var showUpdateDialog by remember { mutableStateOf(false) }
@@ -101,14 +103,17 @@ fun ClientListScreen(
 
     LaunchedEffect(Unit) {
         appVersionManager.checkForUpdates {
-        showUpdateDialog = true
+            showUpdateDialog = true
         }
     }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            NavigationDrawerClientList{onAbout()}
+            NavigationDrawerClientList {
+                viewModel.clearSelections()
+                onAbout()
+            }
         },
     ) {
         PullToRefreshBox(state = refreshState, isRefreshing = loading, onRefresh = {
@@ -120,45 +125,64 @@ fun ClientListScreen(
 
             Scaffold(
                 topBar = {
-                    TopMenu(
-                        viewModel = viewModel,
-                        onOpenDrawer = {
-                            coroutineScope.launch {
-                                drawerState.apply {
-                                    if (isClosed) open() else close()
+                    if (isSelected.isNotEmpty()) {
+                        TopClientListSelected(
+                            isOneSelected = viewModel.isOneProductSelected(),
+                            modifier = modifier, onDeleteSelected = {
+                                viewModel.deleteSelected()
+                                viewModel.clearSelections()
+                            },
+                            onChanged = {
+                                val idToDelete = viewModel.editIdSelected()
+                                if (idToDelete != -1) {
+                                    viewModel.actualizeProduct(idToDelete)
+                                    viewModel.clearSelections()
+                                    navigateToCreateFood()
+
                                 }
                             }
-                        },
-                        onFailureApi = {//on failure Api show snackBar to internet
-                            coroutineScope.launch {
-                                val result = snackbarHostState.showSnackbar(
-                                    message = "Debe conectarse a internet para usar el conversor de tasas",
-                                    actionLabel = "Ya estoy conectado",
-                                    duration = SnackbarDuration.Short
-                                )
-                                when (result) {
-                                    SnackbarResult.Dismissed -> {
-                                        viewModel.chargeDolarFromDB()
-                                        if (viewModel.validTasa()) {
-                                            snackbarHostState.showSnackbar(
-                                                "Se usara la ultima tasa guardada, recargue para volver a intenter buscar la tasa",
-                                                actionLabel = "OK"
-                                            )
-                                        } else {
-                                            snackbarHostState.showSnackbar(
-                                                "No se encuentra ninguna tasa guardada para usar, conectese a internet si quiere usar el convertidor de tasas",
-                                                actionLabel = "OK"
-                                            )
+                        ) { viewModel.clearSelections() }
+                    } else {
+                        TopMenu(
+                            viewModel = viewModel,
+                            onOpenDrawer = {
+                                coroutineScope.launch {
+                                    drawerState.apply {
+                                        if (isClosed) open() else close()
+                                    }
+                                }
+                            },
+                            onFailureApi = {//on failure Api show snackBar to internet
+                                coroutineScope.launch {
+                                    val result = snackbarHostState.showSnackbar(
+                                        message = "Debe conectarse a internet para usar el conversor de tasas",
+                                        actionLabel = "Ya estoy conectado",
+                                        duration = SnackbarDuration.Short
+                                    )
+                                    when (result) {
+                                        SnackbarResult.Dismissed -> {
+                                            viewModel.chargeDolarFromDB()
+                                            if (viewModel.validTasa()) {
+                                                snackbarHostState.showSnackbar(
+                                                    "Se usara la ultima tasa guardada, recargue para volver a intenter buscar la tasa",
+                                                    actionLabel = "OK"
+                                                )
+                                            } else {
+                                                snackbarHostState.showSnackbar(
+                                                    "No se encuentra ninguna tasa guardada para usar, conectese a internet si quiere usar el convertidor de tasas",
+                                                    actionLabel = "OK"
+                                                )
+                                            }
+                                        }
+
+                                        SnackbarResult.ActionPerformed -> {
+                                            viewModel.searchDolarBcv()
                                         }
                                     }
-
-                                    SnackbarResult.ActionPerformed -> {
-                                        viewModel.searchDolarBcv()
-                                    }
                                 }
-                            }
-                        },
-                    )
+                            },
+                        )
+                    }
                 },
                 bottomBar = { BottomClientList(viewModel = viewModel) },
                 snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -176,6 +200,7 @@ fun ClientListScreen(
                                 onClick = {
                                     navigateToCreateFood()
                                     enableButton = false
+                                    viewModel.clearSelections()
                                 },
                                 icon = { Icon(Icons.Default.Add, "Agregar producto") },
                                 text = { Text("AGREGAR") }, // Texto visible solo cuando no hay scroll
@@ -183,12 +208,12 @@ fun ClientListScreen(
                             )
                         }
                         if (!isExtended) {
-
                             FloatingActionButton(
                                 modifier = Modifier.padding(16.dp),
                                 onClick = {
                                     enableButton = false
                                     navigateToCreateFood()
+                                    viewModel.clearSelections()
                                 }
                             ) {
                                 Icon(Icons.Default.Add, "Agregar PRODUCTO")
@@ -213,6 +238,7 @@ fun ClientListScreen(
                             onNavigateToCreateFood = {
                                 enableButton = false
                                 navigateToCreateFood()
+                                viewModel.clearSelections()
                             }
                         )
                         Row(
@@ -229,7 +255,7 @@ fun ClientListScreen(
                 }
             }
         }
-        if (showUpdateDialog){
+        if (showUpdateDialog) {
             ForcedUpdateDialog {
                 showUpdateDialog = false
             }
