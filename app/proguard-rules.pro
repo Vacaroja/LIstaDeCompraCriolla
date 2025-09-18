@@ -19,3 +19,10 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keep class com.ccc.listadecompracriolla.pydolarnetwork.*
+-keep class com.ccc.listadecompracriolla.entities.*
+-keep class com.ccc.listadecompracriolla.dao.*
+-keep class com.ccc.listadecompracriolla.repository.AppDatabase
+-keepattributes SourceFile,LineNumberTable
+
