@@ -4,6 +4,7 @@ package com.ccc.listadecompracriolla.Core.clientlist
 
 
 import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -83,6 +84,8 @@ fun ClientListScreen(
     //variable to state of balance
     var stateOfBalance by remember { mutableStateOf(false) }
 
+
+
     val isEmptyClient by viewModel.emptyClient.collectAsState()
     var enableButton by remember { mutableStateOf(true) }
 
@@ -98,6 +101,12 @@ fun ClientListScreen(
     val context = LocalContext.current
     val activity = context as? Activity
     val appVersionManager = remember { VersionManager(context) }
+
+
+        BackHandler(enabled = isSelected.isNotEmpty()) {
+            viewModel.clearSelections()
+        }
+
 
 
 
