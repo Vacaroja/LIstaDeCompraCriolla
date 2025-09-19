@@ -2,26 +2,36 @@ package com.ccc.listadecompracriolla.Core.versionmanager
 
 import android.content.Intent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.ccc.listadecompracriolla.R
 
 @Composable
-fun ForcedUpdateDialog(onDismiss:()-> Unit) {
+fun ForcedUpdateDialog(onDismiss: () -> Unit) {
     val context = LocalContext.current
 
     AlertDialog(
         onDismissRequest = { onDismiss() },
         title = { Text("Actualización requerida") },
-        icon = { Image(painterResource(R.drawable.logo_app),"Icono App") },
+        icon = {
+            Surface(shape = RoundedCornerShape(10.dp)) {
+                Image(
+                    painterResource(R.drawable.logo_app),
+                    "Icono App"
+                )
+            }
+        },
         text = {
-            Text("Para seguir usando esta aplicación, por favor, actualiza a la última versión.") },
+            Text("Para seguir usando esta aplicación, por favor, actualiza a la última versión.")
+        },
         confirmButton = {
             TextButton(
                 onClick = {
@@ -33,8 +43,12 @@ fun ForcedUpdateDialog(onDismiss:()-> Unit) {
                             )
                         )
                     } catch (_: Exception) {
-                        context.startActivity(Intent(Intent.ACTION_VIEW,
-                            "https://www.google.com/".toUri()))
+                        context.startActivity(
+                            Intent(
+                                Intent.ACTION_VIEW,
+                                "https://www.google.com/".toUri()
+                            )
+                        )
                     }
                 }
             ) {

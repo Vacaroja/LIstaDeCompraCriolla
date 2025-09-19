@@ -1,5 +1,6 @@
 package com.ccc.listadecompracriolla.Core.clientlist.top
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -18,24 +19,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.ccc.listadecompracriolla.Core.clientlist.AlertBoxDeleteClient
-import com.ccc.listadecompracriolla.ui.theme.Orange
+import com.ccc.listadecompracriolla.ui.theme.OrangeBlack
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopClientListSelected(
     isOneSelected: Boolean,
     modifier: Modifier,
-    onDeleteSelected:() ->  Unit,
-    onChanged:() ->  Unit,
-    onBack:() ->  Unit,
-){
+    onDeleteSelected: () -> Unit,
+    onChanged: () -> Unit,
+    onBack: () -> Unit,
+) {
     var isDelete by remember { mutableStateOf(false) }
 
     TopAppBar(
         title = {
 //------------------------------------------NavigationIcons-----------------------------------------
         }, navigationIcon = {
-            IconButton(onClick = {  onBack()}) {//BOTON PARA DRAWER
+            IconButton(onClick = { onBack() }) {//BOTON PARA DRAWER
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Volver"
@@ -43,29 +44,29 @@ fun TopClientListSelected(
             }
         }, actions = {
             Spacer(modifier = modifier.weight(1f))
-            if (isOneSelected){
-            IconButton(onClick = {onChanged()}) {
-                Icon(Icons.Default.Edit, contentDescription = "Modificar")
+            AnimatedVisibility(isOneSelected) {
+                IconButton(onClick = { onChanged() }) {
+                    Icon(Icons.Default.Edit, contentDescription = "Modificar")
+                }
             }
-        }
-            IconButton(onClick = {onDeleteSelected()}) {
+            IconButton(onClick = { onDeleteSelected() }) {
                 Icon(Icons.Default.Delete, contentDescription = "Borrar seleccionados")
             }
 
         },
 //------------------------------------------colores-----------------------------------------
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Orange,
-            scrolledContainerColor = Orange,
+            containerColor = OrangeBlack,
+            scrolledContainerColor = OrangeBlack,
             navigationIconContentColor = Color.Black,
             titleContentColor = Color.Black,
             actionIconContentColor = Color.Black,
         )
     )
-    if (isDelete){
+    if (isDelete) {
         AlertBoxDeleteClient(
             anyText = "LOS PRODUCTOS SELECCIONADOS?",
-            onDismiss = {isDelete = false}
+            onDismiss = { isDelete = false }
         ) { }
     }
 }

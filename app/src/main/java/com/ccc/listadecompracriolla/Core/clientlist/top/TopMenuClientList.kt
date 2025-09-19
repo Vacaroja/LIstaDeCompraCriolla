@@ -1,7 +1,11 @@
 package com.ccc.listadecompracriolla.Core.clientlist.top
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -72,6 +76,7 @@ fun TopMenu(
         targetValue = if (!isPressed) OrangeBlack else Orange,
         animationSpec = tween(durationMillis = 200)
     )
+    val secondAnimationTop = 800
     TopAppBar(
         title = {
 
@@ -159,20 +164,26 @@ fun TopMenu(
                     contentDescription = "More"
                 )
             }
-            DropDownMenuTop(
-                expanded = isExpandedMenu,
-                viewModel = viewModel,
-                onExpandex = { isExpandedMenu = !isExpandedMenu },
-                onDeleteAll = {
-                    deleteAll = true
-                    isExpandedMenu = false
-                },
-                onAllToggle = { toggle ->
-                    viewModel.toggleCheckAllByClient(actualList.id, toggle)
-                    isExpandedMenu = false
-                }
+            AnimatedVisibility(
+                isExpandedMenu,
+                enter = expandVertically(),
+                exit = fadeOut(animationSpec = tween(durationMillis = secondAnimationTop))
             ) {
-                reseterPrices = true
+                DropDownMenuTop(
+                    expanded = isExpandedMenu,
+                    viewModel = viewModel,
+                    onExpandex = { isExpandedMenu = !isExpandedMenu },
+                    onDeleteAll = {
+                        deleteAll = true
+                        isExpandedMenu = false
+                    },
+                    onAllToggle = { toggle ->
+                        viewModel.toggleCheckAllByClient(actualList.id, toggle)
+                        isExpandedMenu = false
+                    }
+                ) {
+                    reseterPrices = true
+                }
             }
         },
 //------------------------------------------colores-----------------------------------------

@@ -5,11 +5,16 @@ package com.ccc.listadecompracriolla.Core.clientlist
 
 import android.app.Activity
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -85,7 +90,6 @@ fun ClientListScreen(
     var stateOfBalance by remember { mutableStateOf(false) }
 
 
-
     val isEmptyClient by viewModel.emptyClient.collectAsState()
     var enableButton by remember { mutableStateOf(true) }
 
@@ -101,11 +105,12 @@ fun ClientListScreen(
     val context = LocalContext.current
     val activity = context as? Activity
     val appVersionManager = remember { VersionManager(context) }
+    val secondAnimationTop = 800
 
 
-        BackHandler(enabled = isSelected.isNotEmpty()) {
-            viewModel.clearSelections()
-        }
+    BackHandler(enabled = isSelected.isNotEmpty()) {
+        viewModel.clearSelections()
+    }
 
 
 
@@ -134,63 +139,77 @@ fun ClientListScreen(
 
             Scaffold(
                 topBar = {
-                    if (isSelected.isNotEmpty()) {
-                        TopClientListSelected(
-                            isOneSelected = viewModel.isOneProductSelected(),
-                            modifier = modifier, onDeleteSelected = {
-                                viewModel.deleteSelected()
-                                viewModel.clearSelections()
-                            },
-                            onChanged = {
-                                val idToDelete = viewModel.editIdSelected()
-                                if (idToDelete != -1) {
-                                    viewModel.actualizeProduct(idToDelete)
-                                    viewModel.clearSelections()
-                                    navigateToCreateFood()
+                    AnimatedContent(
+                        targetState = isSelected.isNotEmpty(),
 
-                                }
+                        transitionSpec = {
+                            if (targetState) { // Content is entering (isSelected becomes not empty)
+                                fadeIn(animationSpec = tween(durationMillis = secondAnimationTop)) togetherWith
+                                        fadeOut(animationSpec = tween(durationMillis = secondAnimationTop))
+                            } else { // Content is exiting (isSelected becomes empty)
+                                fadeIn(animationSpec = tween(durationMillis = secondAnimationTop)) togetherWith
+                                        fadeOut(animationSpec = tween(durationMillis = secondAnimationTop))
                             }
-                        ) { viewModel.clearSelections() }
-                    } else {
-                        TopMenu(
-                            viewModel = viewModel,
-                            onOpenDrawer = {
-                                coroutineScope.launch {
-                                    drawerState.apply {
-                                        if (isClosed) open() else close()
+                        },
+                    ) { notEmpty ->
+                        if (notEmpty) {
+                            TopClientListSelected(
+                                isOneSelected = viewModel.isOneProductSelected(),
+                                modifier = modifier, onDeleteSelected = {
+                                    viewModel.deleteSelected()
+                                    viewModel.clearSelections()
+                                },
+                                onChanged = {
+                                    val idToDelete = viewModel.editIdSelected()
+                                    if (idToDelete != -1) {
+                                        viewModel.actualizeProduct(idToDelete)
+                                        viewModel.clearSelections()
+                                        navigateToCreateFood()
+
                                     }
                                 }
-                            },
-                            onFailureApi = {//on failure Api show snackBar to internet
-                                coroutineScope.launch {
-                                    val result = snackbarHostState.showSnackbar(
-                                        message = "Debe conectarse a internet para usar el conversor de tasas",
-                                        actionLabel = "Ya estoy conectado",
-                                        duration = SnackbarDuration.Short
-                                    )
-                                    when (result) {
-                                        SnackbarResult.Dismissed -> {
-                                            viewModel.chargeDolarFromDB()
-                                            if (viewModel.validTasa()) {
-                                                snackbarHostState.showSnackbar(
-                                                    "Se usara la ultima tasa guardada, recargue para volver a intenter buscar la tasa",
-                                                    actionLabel = "OK"
-                                                )
-                                            } else {
-                                                snackbarHostState.showSnackbar(
-                                                    "No se encuentra ninguna tasa guardada para usar, conectese a internet si quiere usar el convertidor de tasas",
-                                                    actionLabel = "OK"
-                                                )
+                            ) { viewModel.clearSelections() }
+                        } else {
+                            TopMenu(
+                                viewModel = viewModel,
+                                onOpenDrawer = {
+                                    coroutineScope.launch {
+                                        drawerState.apply {
+                                            if (isClosed) open() else close()
+                                        }
+                                    }
+                                },
+                                onFailureApi = {//on failure Api show snackBar to internet
+                                    coroutineScope.launch {
+                                        val result = snackbarHostState.showSnackbar(
+                                            message = "Debe conectarse a internet para usar el conversor de tasas",
+                                            actionLabel = "Ya estoy conectado",
+                                            duration = SnackbarDuration.Short
+                                        )
+                                        when (result) {
+                                            SnackbarResult.Dismissed -> {
+                                                viewModel.chargeDolarFromDB()
+                                                if (viewModel.validTasa()) {
+                                                    snackbarHostState.showSnackbar(
+                                                        "Se usara la ultima tasa guardada, recargue para volver a intenter buscar la tasa",
+                                                        actionLabel = "OK"
+                                                    )
+                                                } else {
+                                                    snackbarHostState.showSnackbar(
+                                                        "No se encuentra ninguna tasa guardada para usar, conectese a internet si quiere usar el convertidor de tasas",
+                                                        actionLabel = "OK"
+                                                    )
+                                                }
+                                            }
+
+                                            SnackbarResult.ActionPerformed -> {
+                                                viewModel.searchDolarBcv()
                                             }
                                         }
-
-                                        SnackbarResult.ActionPerformed -> {
-                                            viewModel.searchDolarBcv()
-                                        }
                                     }
-                                }
-                            },
-                        )
+                                },
+                            )
+                        }
                     }
                 },
                 bottomBar = { BottomClientList(viewModel = viewModel) },
