@@ -165,7 +165,7 @@ fun TopMenu(
                 )
             }
             AnimatedVisibility(
-                isExpandedMenu,
+                true,
                 enter = expandVertically(),
                 exit = fadeOut(animationSpec = tween(durationMillis = secondAnimationTop))
             ) {

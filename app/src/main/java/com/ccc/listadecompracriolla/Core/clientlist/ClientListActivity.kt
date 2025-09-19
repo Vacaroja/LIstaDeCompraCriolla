@@ -112,9 +112,6 @@ fun ClientListScreen(
         viewModel.clearSelections()
     }
 
-
-
-
     LaunchedEffect(Unit) {
         appVersionManager.checkForUpdates {
             showUpdateDialog = true

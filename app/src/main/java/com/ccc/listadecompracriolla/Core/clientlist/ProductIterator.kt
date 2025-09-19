@@ -147,29 +147,30 @@ fun ProducIterator(
                 }
             }
 //------------------------------------------BottomSheettToChangePrice-----------------------------------------
-            if (showBottomSheet) {
-                SheetToChangePrice(
-                    precio = precio,
-                    onDismiss = { showBottomSheet = false },
-                    onSave = {
-                        focusManager.clearFocus()
-                        showBottomSheet = false
-                        try {
-                            viewModel.updatePrecio(product.id, precio.toFloat())
-                        } catch (_: Exception) {
-                            viewModel.updatePrecio(product.id, 0f)
-                        }
-                        precio = ""
-                    },
-                    onChange = { nuevoValor ->
-                        if (nuevoValor.isEmpty() || nuevoValor.matches(Regex("^\\d*\\.?\\d*$"))) {
-                            precio = nuevoValor
-                        }
-                    })
 
-
-            }
 
         }
+    }
+    if (showBottomSheet) {
+        SheetToChangePrice(
+            precio = precio,
+            onDismiss = { showBottomSheet = false },
+            onSave = {
+                focusManager.clearFocus()
+                showBottomSheet = false
+                try {
+                    viewModel.updatePrecio(product.id, precio.toFloat())
+                } catch (_: Exception) {
+                    viewModel.updatePrecio(product.id, 0f)
+                }
+                precio = ""
+            },
+            onChange = { nuevoValor ->
+                if (nuevoValor.isEmpty() || nuevoValor.matches(Regex("^\\d*\\.?\\d*$"))) {
+                    precio = nuevoValor
+                }
+            })
+
+
     }
 }

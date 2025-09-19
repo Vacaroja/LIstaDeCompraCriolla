@@ -1,12 +1,11 @@
 package com.ccc.listadecompracriolla.Core.clientlist.principal
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -54,12 +53,14 @@ fun LazyListClient(
         items(
             items = actualProducts.first,
             key = { it.id!! }) { producto ->
-            AnimatedVisibility(
-                visible = true,
-                enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically()
-            ) {
                 ProducIterator(
+                    modifier = Modifier.animateItem(
+                        fadeInSpec = tween(durationMillis = 350), // Animation for when item appears
+                        fadeOutSpec = tween(durationMillis = 250), // Animation for when item disappears
+                        placementSpec = spring( // Animation for when item reorders
+                            dampingRatio = Spring.DampingRatioLowBouncy,
+                            stiffness = Spring.StiffnessMediumLow
+                        )),
                     product = producto,
                     viewModel = viewModel,
                     selected = producto.id in selected,
@@ -71,44 +72,47 @@ fun LazyListClient(
                         onSelected(id!!)
                     },
                 )
-            }
+
         }
-        if (dividerCheckedItems) {
+
             item {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    HorizontalDivider(
-                        modifier
-                            .weight(1f)
-                            .padding(start = 8.dp),
-                        thickness = 2.dp,
-                        color = MaterialTheme.colorScheme.inversePrimary
-                    )
-                    Text(
-                        "Listos",
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier.padding(horizontal = 8.dp),
-                        color = MaterialTheme.colorScheme.inversePrimary
-                    )
-                    HorizontalDivider(
-                        modifier
-                            .weight(1f)
-                            .padding(end = 8.dp),
-                        thickness = 2.dp,
-                        color = MaterialTheme.colorScheme.inversePrimary
-                    )
+                AnimatedVisibility (dividerCheckedItems, enter = fadeIn(), exit = fadeOut()){
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        HorizontalDivider(
+                            modifier
+                                .weight(1f)
+                                .padding(start = 8.dp),
+                            thickness = 2.dp,
+                            color = MaterialTheme.colorScheme.inversePrimary
+                        )
+                        Text(
+                            "Listos",
+                            style = MaterialTheme.typography.titleSmall,
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                            color = MaterialTheme.colorScheme.inversePrimary
+                        )
+                        HorizontalDivider(
+                            modifier
+                                .weight(1f)
+                                .padding(end = 8.dp),
+                            thickness = 2.dp,
+                            color = MaterialTheme.colorScheme.inversePrimary
+                        )
+                    }
                 }
             }
-        }
+
         items(
             items = actualProducts.second,
             key = { it.id!! }) { producto ->
-            AnimatedVisibility(
-                visible = true,
-                enter = fadeIn() + slideInVertically(),
-                exit = fadeOut() + slideOutVertically()
-
-            ) {
                 ProducIterator(
+                    modifier = Modifier.animateItem(
+                        fadeInSpec = tween(durationMillis = 350), // Animation for when item appears
+                        fadeOutSpec = tween(durationMillis = 250), // Animation for when item disappears
+                        placementSpec = spring( // Animation for when item reorders
+                            dampingRatio = Spring.DampingRatioLowBouncy,
+                            stiffness = Spring.StiffnessMediumLow
+                        )),
                     product = producto,
                     viewModel = viewModel,
                     selected = producto.id in selected,
@@ -119,7 +123,7 @@ fun LazyListClient(
                     onSelected = { id ->
                         onSelected(id!!)}
                 )
-            }
+
 
         }
     }
