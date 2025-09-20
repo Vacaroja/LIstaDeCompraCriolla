@@ -41,7 +41,6 @@ fun AnimationAddList() {
 fun AnimationArrowAddList() {
     val arrowComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.up_arrow_animation))
 
-
     val arrowProgress by animateLottieCompositionAsState(
         composition = arrowComposition,
         iterations = LottieConstants.IterateForever

@@ -294,7 +294,7 @@ fun ClientListScreen(
                             }
                         }
                     }else
-                    {   
+                    {
                         Column(modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center){
                             Box(modifier.size(200.dp)){AnimationAddList()}
                             Text("PRESIONE \n<AÑADIR LISTA> \nPARA EMPEZAR ")
