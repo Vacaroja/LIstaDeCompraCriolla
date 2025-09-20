@@ -55,9 +55,8 @@ fun SheetToChangePrice(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(horizontalArrangement = Arrangement.Center) {
-                Spacer(modifier.weight(1f))
-                Text(text = " Coloque el precio\nque desea cambiar", fontSize = 20.sp)
-                Spacer(modifier.weight(1f))
+                Text(text = " Coloque el precio que desea cambiar", fontSize = 20.sp,textAlign = TextAlign.Center)
+
             }
             Row {
                 OutlinedTextField(

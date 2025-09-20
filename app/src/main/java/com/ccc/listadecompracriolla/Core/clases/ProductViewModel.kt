@@ -34,7 +34,6 @@ class ProductViewModel @Inject constructor(
     //----------------------------------TASA------------------------------------------------------
     // LiveData para los datos del BCV
     private val _bcvData = MutableStateFlow<ApiDolarServices?>(null)
-    val bcvData: StateFlow<ApiDolarServices?> = _bcvData.asStateFlow()
 
     //StateFlow para el precio como Float
     private val _bcvPriceFloat = MutableStateFlow<Float?>(null)
@@ -66,7 +65,7 @@ class ProductViewModel @Inject constructor(
     //---------------------------------PRODUCTOS---------------------------------------------------
     //-----------------------------all products-------------------------------
     private val _productos = MutableStateFlow<List<Product>>(emptyList())
-    val productos: StateFlow<List<Product>> = _productos.asStateFlow()
+
 
     //-----------------------------actual product for actualize it
     private val _actualprod = MutableStateFlow(Product())
@@ -515,9 +514,6 @@ class ProductViewModel @Inject constructor(
         return _selectedProductIds.value.size == 1
     }
 
-    fun isProductSelected(productId: Int): Boolean {
-        return productId in _selectedProductIds.value
-    }
 
     fun editIdSelected(): Int {
         val idToEdit = _selectedProductIds.value

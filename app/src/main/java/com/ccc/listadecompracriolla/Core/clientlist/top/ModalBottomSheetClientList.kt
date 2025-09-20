@@ -30,6 +30,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.clientlist.AlertBoxDeleteClient
@@ -51,6 +53,8 @@ fun ModalBottomSheetClientList(
     val clientL by viewModel.clientList.collectAsState()
     var isDelete by remember { mutableStateOf(false) }
     var idToDelete by remember { mutableStateOf<Int?>(null) }
+    val haptic = LocalHapticFeedback.current
+
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
         sheetState = sheetState,
@@ -84,6 +88,7 @@ fun ModalBottomSheetClientList(
                                 onChange(client.id)
                                 onDismiss()
                             }, onLongClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 idToDelete = client.id
                                 isDelete = true
                             })

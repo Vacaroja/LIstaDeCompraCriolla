@@ -4,6 +4,7 @@ import android.icu.text.DecimalFormat
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -26,7 +27,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -54,7 +58,7 @@ fun ProducIterator(
     var showBottomSheet by remember { mutableStateOf(false) }//var of BottomScreen
     val focusManager = LocalFocusManager.current
     val tasa by viewModel.tasa.collectAsState()
-
+    val haptic = LocalHapticFeedback.current
 
     //-------------------------------------textParameters-------------------------------------
     val df = DecimalFormat("#.##")
@@ -78,6 +82,7 @@ fun ProducIterator(
             .combinedClickable(onClick = {
                 if (viewModel.isNotEmptyProductSelected()) onSelected(product.id) else onChangeProduct(product.id)
             }, onLongClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 onSelected(product.id)
             }),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSecondaryContainer),
