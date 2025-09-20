@@ -91,7 +91,7 @@ fun ClientListScreen(
     var stateOfBalance by remember { mutableStateOf(false) }
     var alertDialogIsWeekend by remember { mutableStateOf(false) }
     var enableButton by remember { mutableStateOf(true) }
-    val isWeekend by remember { mutableStateOf(date.dayOfWeek == DayOfWeek.SATURDAY) }
+    val isWeekend by remember { mutableStateOf(date.dayOfWeek == DayOfWeek.SATURDAY || date.dayOfWeek == DayOfWeek.SUNDAY) }
 
 
     //variable corrutinas
