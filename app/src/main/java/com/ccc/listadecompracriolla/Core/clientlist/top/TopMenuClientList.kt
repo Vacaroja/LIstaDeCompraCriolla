@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
@@ -77,124 +78,126 @@ fun TopMenu(
         animationSpec = tween(durationMillis = 200)
     )
     val secondAnimationTop = 800
-    TopAppBar(
-        title = {
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { bottomSheetClient = true },
-                horizontalArrangement = Arrangement.Center, // Centra el contenido en el Row
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = if (isEmptyClient) "Añadir lista" else "${actualList.name}",
-                    textAlign = TextAlign.Center,
-                )
-                Icon(Icons.Default.ArrowDropDown, contentDescription = "Listas")
-            }
+        TopAppBar(
+            title = {
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { bottomSheetClient = true },
+                    horizontalArrangement = Arrangement.Center, // Centra el contenido en el Row
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = if (isEmptyClient) "Añadir lista" else "${actualList.name}",
+                        textAlign = TextAlign.Center,
+                    )
+                    Icon(Icons.Default.ArrowDropDown, contentDescription = "Listas")
+                }
 
 
 //------------------------------------------NavigationIcons-----------------------------------------
 
-        }, navigationIcon = {
-            IconButton(onClick = { onOpenDrawer() }) {//BOTON PARA DRAWER
-                Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = "Back"
-                )
-            }
+            }, navigationIcon = {
+                IconButton(onClick = { onOpenDrawer() }) {//BOTON PARA DRAWER
+                    Icon(
+                        imageVector = Icons.Default.Menu,
+                        contentDescription = "Back"
+                    )
+                }
 
 
-        }, actions = {
+            }, actions = {
 //------------------------------------------DolarToDolar-----------------------------------------
 
-            Card(
-                modifier.clickable {
-                    viewModel.actualizarTasa(ProductViewModel.TipoConversion.DIRECTA)
-                },
-                colors = CardDefaults.cardColors(
-                    containerColor = animatedColorDolar
-                )
-            ) {//BOTON PARA LAS CAMBIAR A DOLAR
-                Icon(
-                    painter = painterResource(id = R.drawable.dolar),
-                    contentDescription = "Settings",
-                    modifier = modifier.size(45.dp)
-                )
-            }
+                Card(
+                    modifier.clickable {
+                        viewModel.actualizarTasa(ProductViewModel.TipoConversion.DIRECTA)
+                    },
+                    colors = CardDefaults.cardColors(
+                        containerColor = animatedColorDolar
+                    )
+                ) {//BOTON PARA LAS CAMBIAR A DOLAR
+                    Icon(
+                        painter = painterResource(id = R.drawable.dolar),
+                        contentDescription = "Settings",
+                        modifier = modifier.size(45.dp)
+                    )
+                }
 //------------------------------------------VerticalDivider-----------------------------------------
 
-            VerticalDivider(
-                color = Color.Black, thickness = 2.dp,
-                modifier = modifier.padding(
-                    top = 3.dp,
-                    bottom = 4.dp,
-                    start = 4.dp,
-                    end = 2.dp
+                VerticalDivider(
+                    color = Color.Black, thickness = 2.dp,
+                    modifier = modifier.padding(
+                        top = 3.dp,
+                        bottom = 4.dp,
+                        start = 4.dp,
+                        end = 2.dp
+                    )
                 )
-            )
 //------------------------------------------DolarToBCV-----------------------------------------
 
-            Card(
-                modifier.clickable {
+                Card(
+                    modifier.clickable {
 
-                    if (viewModel.validTasa()) {
-                        onFailureApi()
-                    } else {
-                        viewModel.actualizarTasa(ProductViewModel.TipoConversion.DOLAR_A_BCV)
-                    }
-                },
-                colors = CardDefaults.cardColors(
-                    containerColor = animatedColorBs
-                )
-            ) {//BOTON PARA LAS CAMBIAR A DOLAR BCV
-                Icon(
-                    painter = painterResource(id = R.drawable.bcv_icon),
-                    contentDescription = "bcv",
-                    modifier = modifier.size(50.dp)
-                )
-            }
+                        if (viewModel.validTasa()) {
+                            onFailureApi()
+                        } else {
+                            viewModel.actualizarTasa(ProductViewModel.TipoConversion.DOLAR_A_BCV)
+                        }
+                    },
+                    colors = CardDefaults.cardColors(
+                        containerColor = animatedColorBs
+                    )
+                ) {//BOTON PARA LAS CAMBIAR A DOLAR BCV
+                    Icon(
+                        painter = painterResource(id = R.drawable.bcv_icon),
+                        contentDescription = "bcv",
+                        modifier = modifier.size(50.dp)
+                    )
+                }
 
 //------------------------------------------ButtonMore-----------------------------------------
 
-            IconButton(onClick = { isExpandedMenu = true }) {//BOTON PARA LAS OPCIONES
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "More"
-                )
-            }
-            AnimatedVisibility(
-                true,
-                enter = expandVertically(),
-                exit = fadeOut(animationSpec = tween(durationMillis = secondAnimationTop))
-            ) {
-                DropDownMenuTop(
-                    expanded = isExpandedMenu,
-                    viewModel = viewModel,
-                    onExpandex = { isExpandedMenu = !isExpandedMenu },
-                    onDeleteAll = {
-                        deleteAll = true
-                        isExpandedMenu = false
-                    },
-                    onAllToggle = { toggle ->
-                        viewModel.toggleCheckAllByClient(actualList.id, toggle)
-                        isExpandedMenu = false
-                    }
-                ) {
-                    reseterPrices = true
+                IconButton(onClick = { isExpandedMenu = true }) {//BOTON PARA LAS OPCIONES
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "More"
+                    )
                 }
-            }
-        },
+                AnimatedVisibility(
+                    true,
+                    enter = expandVertically(),
+                    exit = fadeOut(animationSpec = tween(durationMillis = secondAnimationTop))
+                ) {
+                    DropDownMenuTop(
+                        expanded = isExpandedMenu,
+                        viewModel = viewModel,
+                        onExpandex = { isExpandedMenu = !isExpandedMenu },
+                        onDeleteAll = {
+                            deleteAll = true
+                            isExpandedMenu = false
+                        },
+                        onAllToggle = { toggle ->
+                            viewModel.toggleCheckAllByClient(actualList.id, toggle)
+                            isExpandedMenu = false
+                        }
+                    ) {
+                        reseterPrices = true
+                    }
+                }
+            },
 //------------------------------------------colores-----------------------------------------
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Orange,
-            scrolledContainerColor = Orange,
-            navigationIconContentColor = Color.Black,
-            titleContentColor = Color.Black,
-            actionIconContentColor = Color.Black,
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Orange,
+                scrolledContainerColor = Orange,
+                navigationIconContentColor = Color.Black,
+                titleContentColor = Color.Black,
+                actionIconContentColor = Color.Black,
+            )
         )
-    )
+
     if (bottomSheetClient) {
         ModalBottomSheetClientList(
             viewModel = viewModel,

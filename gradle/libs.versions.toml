@@ -16,6 +16,7 @@ composeBom = "2024.09.00"
 lifecycleRuntimeKtxVersion = "2.6.2"
 lifecycleViewmodelCompose = "2.6.2"
 lifecycleViewmodelComposeVersion = "2.6.1"
+lottieVersion = "6.6.6"
 navigationCompose = "2.9.0"
 navigationComposeJvmstubs = "2.9.0"
 foundationLayoutAndroid = "1.7.2"
@@ -57,6 +58,7 @@ androidx-navigation-compose-jvmstubs = { group = "androidx.navigation", name = "
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 androidx-foundation-layout-android = { group = "androidx.compose.foundation", name = "foundation-layout-android", version.ref = "foundationLayoutAndroid" }
+lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieVersion" }
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }

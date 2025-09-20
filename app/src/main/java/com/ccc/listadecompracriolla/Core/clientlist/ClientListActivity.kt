@@ -15,9 +15,13 @@ import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -53,6 +57,8 @@ import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.clases.VersionManager
 import com.ccc.listadecompracriolla.Core.clientlist.drawer.NavigationDrawerClientList
+import com.ccc.listadecompracriolla.Core.clientlist.principal.AnimationAddList
+import com.ccc.listadecompracriolla.Core.clientlist.principal.AnimationArrowAddList
 import com.ccc.listadecompracriolla.Core.clientlist.principal.LazyListClient
 import com.ccc.listadecompracriolla.Core.clientlist.top.TopClientListSelected
 import com.ccc.listadecompracriolla.Core.clientlist.top.TopMenu
@@ -106,7 +112,7 @@ fun ClientListScreen(
     val context = LocalContext.current
     val activity = context as? Activity
     val appVersionManager = remember { VersionManager(context) }
-    val secondAnimationTop = 800
+    val secondAnimationTop = 500
 
     if (alertDialogIsWeekend) AlertDialogIsWeekend(
         onDismiss = {
@@ -287,8 +293,16 @@ fun ClientListScreen(
                                 stateOfBalance = !stateOfBalance
                             }
                         }
+                    }else
+                    {   
+                        Column(modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center){
+                            Box(modifier.size(200.dp)){AnimationAddList()}
+                            Text("PRESIONE \n<AÑADIR LISTA> \nPARA EMPEZAR ")
+                        }
                     }
+
                 }
+
             }
         }
         if (showUpdateDialog) {

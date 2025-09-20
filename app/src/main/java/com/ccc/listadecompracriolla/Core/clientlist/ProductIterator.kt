@@ -4,7 +4,7 @@ import android.icu.text.DecimalFormat
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -30,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -80,7 +79,9 @@ fun ProducIterator(
             .fillMaxSize()
             .padding(5.dp)
             .combinedClickable(onClick = {
-                if (viewModel.isNotEmptyProductSelected()) onSelected(product.id) else onChangeProduct(product.id)
+                if (viewModel.isNotEmptyProductSelected()) onSelected(product.id) else onChangeProduct(
+                    product.id
+                )
             }, onLongClick = {
                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 onSelected(product.id)
@@ -123,32 +124,34 @@ fun ProducIterator(
             }
 //------------------------------------------Price*Cant-----------------------------------------
 
-            if (product.price != 0f) {
-                TextButton(
-                    onClick = { showBottomSheet = true },
-                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onPrimary)
-                ) {
-                    Text(
-                        text = "$: ${
-                            formatNumber(
-                                df.format(product.price * product.cant * tasa).toFloat()
-                            )
-                        }",
-                        modifier = modifier.widthIn(max = fontSizeCost, min = fontSizeCost),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = fontSizePrice,
+            Row(modifier.widthIn(max = fontSizeCost, min = fontSizeCost), horizontalArrangement = Arrangement.End){
+                if (product.price != 0f) {
+                    TextButton(
+                        onClick = { showBottomSheet = true },
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onPrimary)
+                    ) {
+                        Text(
+                            text = "$: ${
+                                formatNumber(
+                                    df.format(product.price * product.cant * tasa).toFloat()
+                                )
+                            }",
 
+                            fontWeight = FontWeight.Bold,
+                            fontSize = fontSizePrice,
+
+                            )
+                    }
+                } else {
+                    IconButton(
+                        onClick = { showBottomSheet = true },
+
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.changeprice),
+                            contentDescription = "cambiar precio",
                         )
-                }
-            } else {
-                IconButton(
-                    onClick = { showBottomSheet = true },
-                    modifier = modifier.widthIn(max = fontSizeCost, min = fontSizeCost)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.changeprice),
-                        contentDescription = "cambiar precio",
-                    )
+                    }
                 }
             }
 //------------------------------------------BottomSheettToChangePrice-----------------------------------------
