@@ -51,7 +51,7 @@ class BcvRepository @Inject constructor(
      * Esta función dependerá de tu configuración de red.
      */
 
-    suspend fun fetchAndSaveBcvFromApi(): ApiDolarServices? {
+    suspend fun fetchAndSaveBcvFromApi(isWeekend: Boolean): ApiDolarServices? {
         return withContext(Dispatchers.IO) {
             try {
                 val bcvFromApi = DolarApi.retrofitService.getData()
@@ -59,7 +59,7 @@ class BcvRepository @Inject constructor(
                 val formatDateFromApi = dateFormattert(dateFromApi)
                 if (formatDateFromApi != null) {
                     val actualDate = LocalDate.now()
-                    val bcvData = if (formatDateFromApi.isEqual(actualDate)) bcvFromApi.current else bcvFromApi.previous
+                    val bcvData = if (formatDateFromApi.isEqual(actualDate) || isWeekend) bcvFromApi.current else bcvFromApi.previous
                     // Llama a tu servicio de API
                     val bcvEntity = bcvData.toBcvEntity()// Convierte el modelo de API a la entidad de DB
                     saveBcvData(bcvEntity) // Guarda en la DB

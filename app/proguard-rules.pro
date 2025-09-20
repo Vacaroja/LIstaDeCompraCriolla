@@ -27,4 +27,5 @@
 -keepattributes SourceFile,LineNumberTable
 -keep class retrofit2.** {*;}
 -keep interface * {*;}
+-keep class com.ccc.listadecompracriolla.Core.clases.VersionManager
 

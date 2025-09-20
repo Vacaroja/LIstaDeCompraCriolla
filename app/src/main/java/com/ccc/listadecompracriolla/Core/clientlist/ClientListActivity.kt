@@ -12,8 +12,6 @@ import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -62,6 +60,8 @@ import com.ccc.listadecompracriolla.Core.versionmanager.ForcedUpdateDialog
 import com.ccc.listadecompracriolla.adds.loadInterstitialAd
 import com.ccc.listadecompracriolla.adds.showInterstitialAd
 import kotlinx.coroutines.launch
+import java.time.DayOfWeek
+import java.time.LocalDate
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -74,24 +74,25 @@ fun ClientListScreen(
 //------------------------------------------Variables-----------------------------------------
 
     //var for pull to refresh
-    val loading by viewModel.isLoading.collectAsState()
     val refreshState = rememberPullToRefreshState()
+    val date = LocalDate.now()
 
     val scrollState = rememberLazyListState()
     val isExtended by remember { derivedStateOf { scrollState.firstVisibleItemIndex == 0 } }//var for state of the FAB
-    //variables from viewmodels
 
+    //variables from viewmodels
+    val loading by viewModel.isLoading.collectAsState()
     val isCompleted by viewModel.completedActualList.collectAsState()
     val isSelected by viewModel.selectedProductIds.collectAsState()
-
+    val isEmptyClient by viewModel.emptyClient.collectAsState()
 
     var showUpdateDialog by remember { mutableStateOf(false) }
     //variable to state of balance
     var stateOfBalance by remember { mutableStateOf(false) }
-
-
-    val isEmptyClient by viewModel.emptyClient.collectAsState()
+    var alertDialogIsWeekend by remember { mutableStateOf(false) }
     var enableButton by remember { mutableStateOf(true) }
+    val isWeekend by remember { mutableStateOf(date.dayOfWeek == DayOfWeek.SATURDAY) }
+
 
     //variable corrutinas
     val coroutineScope = rememberCoroutineScope()
@@ -107,6 +108,16 @@ fun ClientListScreen(
     val appVersionManager = remember { VersionManager(context) }
     val secondAnimationTop = 800
 
+    if (alertDialogIsWeekend) AlertDialogIsWeekend(
+        onDismiss = {
+            alertDialogIsWeekend = false
+            viewModel.searchDolarBcv()
+        },
+        onConfirm = {
+            alertDialogIsWeekend = false
+            viewModel.searchDolarBcv(true)
+        }
+    )
 
     BackHandler(enabled = isSelected.isNotEmpty()) {
         viewModel.clearSelections()
@@ -129,7 +140,7 @@ fun ClientListScreen(
     ) {
         PullToRefreshBox(state = refreshState, isRefreshing = loading, onRefresh = {
             coroutineScope.launch {
-                viewModel.searchDolarBcv()
+                if (isWeekend) alertDialogIsWeekend = true else viewModel.searchDolarBcv()
             }
         }) {
             //------------------------------------------Variables-----------------------------------------

@@ -530,13 +530,13 @@ class ProductViewModel @Inject constructor(
     }
 
     //------------------------------buscar la tasa---------------------------------------------
-    fun searchDolarBcv() {
+    fun searchDolarBcv(isWeekend: Boolean = false) {
         _isLoading.value = true // Indica que la carga ha comenzado
 
         viewModelScope.launch {
             try {
                 // Realiza la llamada a la API
-                val response = bcvRepository.fetchAndSaveBcvFromApi()
+                val response = bcvRepository.fetchAndSaveBcvFromApi(isWeekend)
                 val df = DecimalFormat("#.##")
 
                 if (response != null) {
