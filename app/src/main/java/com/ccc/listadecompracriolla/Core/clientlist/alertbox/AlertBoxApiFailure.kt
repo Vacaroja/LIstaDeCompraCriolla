@@ -1,4 +1,4 @@
-package com.ccc.listadecompracriolla.Core.clientlist
+package com.ccc.listadecompracriolla.Core.clientlist.alertbox
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

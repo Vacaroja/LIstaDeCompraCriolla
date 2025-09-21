@@ -18,7 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.ccc.listadecompracriolla.Core.clientlist.AlertBoxDeleteClient
+import com.ccc.listadecompracriolla.Core.clientlist.alertbox.AlertBoxDeleteClient
 import com.ccc.listadecompracriolla.ui.theme.OrangeBlack
 
 @OptIn(ExperimentalMaterial3Api::class)

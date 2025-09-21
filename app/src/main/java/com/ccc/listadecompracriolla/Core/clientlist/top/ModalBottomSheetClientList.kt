@@ -34,7 +34,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
-import com.ccc.listadecompracriolla.Core.clientlist.AlertBoxDeleteClient
+import com.ccc.listadecompracriolla.Core.clientlist.alertbox.AlertBoxDeleteClient
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable

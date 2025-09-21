@@ -2,8 +2,8 @@ package com.ccc.listadecompracriolla.Core.clases
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ccc.listadecompracriolla.entities.ToClientList
-import com.ccc.listadecompracriolla.entities.toProduct
+import com.ccc.listadecompracriolla.database.entities.ToClientList
+import com.ccc.listadecompracriolla.database.entities.toProduct
 import com.ccc.listadecompracriolla.pydolarnetwork.ApiDolarServices
 import com.ccc.listadecompracriolla.repository.BcvRepository
 import com.ccc.listadecompracriolla.repository.ClientRepository

@@ -1,4 +1,4 @@
-package com.ccc.listadecompracriolla.Core.clientlist.principal
+package com.ccc.listadecompracriolla.Core.clientlist.lottieanimations
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,7 +11,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.ccc.listadecompracriolla.R
 
 @Composable
-fun AnimationAddList(modifier: Modifier) {
+fun AnimationAddList() {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.add_list_animation))
     val clickComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.click_animation))
 

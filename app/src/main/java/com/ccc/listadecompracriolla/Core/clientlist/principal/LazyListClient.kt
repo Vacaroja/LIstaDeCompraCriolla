@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
-import com.ccc.listadecompracriolla.Core.clientlist.ProducIterator
 
 @Composable
 fun LazyListClient(

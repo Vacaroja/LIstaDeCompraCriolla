@@ -2,9 +2,9 @@ package com.ccc.listadecompracriolla.Core.di
 
 import android.content.Context
 import androidx.room.Room
-import com.ccc.listadecompracriolla.dao.BcvDao
-import com.ccc.listadecompracriolla.dao.ClientDao
-import com.ccc.listadecompracriolla.repository.AppDatabase
+import com.ccc.listadecompracriolla.database.dao.BcvDao
+import com.ccc.listadecompracriolla.database.dao.ClientDao
+import com.ccc.listadecompracriolla.database.AppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

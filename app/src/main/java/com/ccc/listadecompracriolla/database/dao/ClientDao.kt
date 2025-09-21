@@ -1,4 +1,4 @@
-package com.ccc.listadecompracriolla.dao
+package com.ccc.listadecompracriolla.database.dao
 
 import androidx.room.Delete
 import androidx.room.Dao
@@ -10,9 +10,9 @@ import androidx.room.Query
 import androidx.room.Relation
 import androidx.room.Transaction
 import androidx.room.Update
-import com.ccc.listadecompracriolla.entities.ClientListEntity
-import com.ccc.listadecompracriolla.entities.ClientProductCrossRef
-import com.ccc.listadecompracriolla.entities.ProductEntity
+import com.ccc.listadecompracriolla.database.entities.ClientListEntity
+import com.ccc.listadecompracriolla.database.entities.ClientProductCrossRef
+import com.ccc.listadecompracriolla.database.entities.ProductEntity
 import kotlinx.coroutines.flow.Flow
 
 

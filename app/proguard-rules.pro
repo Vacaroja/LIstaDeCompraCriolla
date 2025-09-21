@@ -21,9 +21,7 @@
 #-renamesourcefileattribute SourceFile
 
 -keep class com.ccc.listadecompracriolla.pydolarnetwork.** {*;}
--keep class com.ccc.listadecompracriolla.entities.*
--keep class com.ccc.listadecompracriolla.dao.*
--keep class com.ccc.listadecompracriolla.repository.AppDatabase
+-keep class com.ccc.listadecompracriolla.database.** {*;}
 -keepattributes SourceFile,LineNumberTable
 -keep class retrofit2.** {*;}
 -keep interface * {*;}

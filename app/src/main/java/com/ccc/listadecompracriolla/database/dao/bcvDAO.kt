@@ -1,10 +1,10 @@
-package com.ccc.listadecompracriolla.dao
+package com.ccc.listadecompracriolla.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.ccc.listadecompracriolla.entities.BcvEntity
+import com.ccc.listadecompracriolla.database.entities.BcvEntity
 
 
 @Dao

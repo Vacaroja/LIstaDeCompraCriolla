@@ -1,4 +1,4 @@
-package com.ccc.listadecompracriolla.Core.clientlist
+package com.ccc.listadecompracriolla.Core.clientlist.principal
 
 import android.icu.text.DecimalFormat
 import androidx.compose.foundation.BorderStroke

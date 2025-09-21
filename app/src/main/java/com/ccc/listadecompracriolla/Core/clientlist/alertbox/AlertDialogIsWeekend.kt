@@ -1,4 +1,4 @@
-package com.ccc.listadecompracriolla.Core.clientlist
+package com.ccc.listadecompracriolla.Core.clientlist.alertbox
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer

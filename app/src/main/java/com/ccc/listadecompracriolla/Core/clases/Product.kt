@@ -1,7 +1,7 @@
 package com.ccc.listadecompracriolla.Core.clases
 
-import com.ccc.listadecompracriolla.entities.ClientListEntity
-import com.ccc.listadecompracriolla.entities.ProductEntity
+import com.ccc.listadecompracriolla.database.entities.ClientListEntity
+import com.ccc.listadecompracriolla.database.entities.ProductEntity
 
 data class ClientList(
     val id : Int? = 0,

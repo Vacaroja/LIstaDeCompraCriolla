@@ -37,7 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
-import com.ccc.listadecompracriolla.Core.clientlist.AlertBoxDeleteClient
+import com.ccc.listadecompracriolla.Core.clientlist.alertbox.AlertBoxDeleteClient
 import com.ccc.listadecompracriolla.R
 import com.ccc.listadecompracriolla.ui.theme.Orange
 import com.ccc.listadecompracriolla.ui.theme.OrangeBlack

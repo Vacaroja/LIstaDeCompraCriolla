@@ -1,4 +1,4 @@
-package com.ccc.listadecompracriolla.Core.clientlist
+package com.ccc.listadecompracriolla.Core.clientlist.principal
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

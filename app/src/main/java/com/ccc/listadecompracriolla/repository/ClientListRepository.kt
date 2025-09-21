@@ -2,10 +2,10 @@ package com.ccc.listadecompracriolla.repository
 
 import android.content.SharedPreferences
 import com.ccc.listadecompracriolla.Core.clases.ClientList
-import com.ccc.listadecompracriolla.dao.ClientDao
-import com.ccc.listadecompracriolla.entities.ClientListEntity
-import com.ccc.listadecompracriolla.entities.ProductEntity
-import com.ccc.listadecompracriolla.entities.ToClientList
+import com.ccc.listadecompracriolla.database.dao.ClientDao
+import com.ccc.listadecompracriolla.database.entities.ClientListEntity
+import com.ccc.listadecompracriolla.database.entities.ProductEntity
+import com.ccc.listadecompracriolla.database.entities.ToClientList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext

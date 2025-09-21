@@ -1,10 +1,10 @@
 package com.ccc.listadecompracriolla.repository
 
 import com.ccc.listadecompracriolla.Core.formatterdata.dateFormattert
-import com.ccc.listadecompracriolla.dao.BcvDao
-import com.ccc.listadecompracriolla.entities.BcvEntity
-import com.ccc.listadecompracriolla.entities.toApiDolarServices
-import com.ccc.listadecompracriolla.entities.toBcvEntity
+import com.ccc.listadecompracriolla.database.dao.BcvDao
+import com.ccc.listadecompracriolla.database.entities.BcvEntity
+import com.ccc.listadecompracriolla.database.entities.toApiDolarServices
+import com.ccc.listadecompracriolla.database.entities.toBcvEntity
 import com.ccc.listadecompracriolla.pydolarnetwork.ApiDolarServices
 import com.ccc.listadecompracriolla.pydolarnetwork.DolarApi
 import kotlinx.coroutines.Dispatchers

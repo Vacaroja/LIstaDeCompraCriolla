@@ -1,4 +1,4 @@
-package com.ccc.listadecompracriolla.Core.clientlist
+package com.ccc.listadecompracriolla.Core.clientlist.bottombarclientlist
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState

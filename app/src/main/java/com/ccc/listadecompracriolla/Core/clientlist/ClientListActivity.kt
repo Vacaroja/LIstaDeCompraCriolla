@@ -58,9 +58,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.clases.VersionManager
+import com.ccc.listadecompracriolla.Core.clientlist.alertbox.AlertDialogIsWeekend
+import com.ccc.listadecompracriolla.Core.clientlist.bottombarclientlist.BottomClientList
+import com.ccc.listadecompracriolla.Core.clientlist.bottombarclientlist.ClientBalance
 import com.ccc.listadecompracriolla.Core.clientlist.drawer.NavigationDrawerClientList
-import com.ccc.listadecompracriolla.Core.clientlist.principal.AnimationAddList
-import com.ccc.listadecompracriolla.Core.clientlist.principal.AnimationArrowAddList
+import com.ccc.listadecompracriolla.Core.clientlist.lottieanimations.AnimationAddList
+import com.ccc.listadecompracriolla.Core.clientlist.lottieanimations.AnimationArrowAddList
 import com.ccc.listadecompracriolla.Core.clientlist.principal.LazyListClient
 import com.ccc.listadecompracriolla.Core.clientlist.top.CreateClientList
 import com.ccc.listadecompracriolla.Core.clientlist.top.TopClientListSelected
@@ -298,7 +301,7 @@ fun ClientListScreen(
                                         .size(200.dp)
                                         .clickable { createNewList = true }
                                 ) {
-                                    AnimationAddList(modifier)
+                                    AnimationAddList()
                                 }
                                 Text(
                                     "PRESIONE \n<AÑADIR LISTA> \nPARA EMPEZAR ",
