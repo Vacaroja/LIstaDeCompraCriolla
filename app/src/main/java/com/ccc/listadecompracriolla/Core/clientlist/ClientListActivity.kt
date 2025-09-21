@@ -53,6 +53,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.clases.VersionManager
@@ -60,11 +62,13 @@ import com.ccc.listadecompracriolla.Core.clientlist.drawer.NavigationDrawerClien
 import com.ccc.listadecompracriolla.Core.clientlist.principal.AnimationAddList
 import com.ccc.listadecompracriolla.Core.clientlist.principal.AnimationArrowAddList
 import com.ccc.listadecompracriolla.Core.clientlist.principal.LazyListClient
+import com.ccc.listadecompracriolla.Core.clientlist.top.CreateClientList
 import com.ccc.listadecompracriolla.Core.clientlist.top.TopClientListSelected
 import com.ccc.listadecompracriolla.Core.clientlist.top.TopMenu
 import com.ccc.listadecompracriolla.Core.versionmanager.ForcedUpdateDialog
 import com.ccc.listadecompracriolla.adds.loadInterstitialAd
 import com.ccc.listadecompracriolla.adds.showInterstitialAd
+import com.ccc.listadecompracriolla.ui.theme.unPressedColorButton
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -92,6 +96,7 @@ fun ClientListScreen(
     val isSelected by viewModel.selectedProductIds.collectAsState()
     val isEmptyClient by viewModel.emptyClient.collectAsState()
 
+    var createNewList by remember { mutableStateOf(false) }
     var showUpdateDialog by remember { mutableStateOf(false) }
     //variable to state of balance
     var stateOfBalance by remember { mutableStateOf(false) }
@@ -268,38 +273,77 @@ fun ClientListScreen(
                 Box(modifier = modifier.clickable {
                     //var to hide keyboard if its show
                     focusManager.clearFocus()
-
                     stateOfBalance = false
                 }) {
+                    if (isEmptyClient) {
 
-                    if (enableButton && !isEmptyClient) {
-                        LazyListClient(
-                            innerpadding = innerpadding,
-                            viewModel = viewModel,
-                            scrollState = scrollState,
-                            onNavigateToCreateFood = {
-                                enableButton = false
-                                navigateToCreateFood()
-                                viewModel.clearSelections()
-                            }
-                        )
-                        Row(
-                            modifier = modifier
-                                .align(Alignment.BottomStart)
+                        Column(
+                            modifier
                                 .padding(innerpadding)
-                            // Asegura que el botón esté por encima
+                                .fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            ClientBalance(viewModel, stateOfBalance = stateOfBalance) {
-                                stateOfBalance = !stateOfBalance
+                            Box(contentAlignment = Alignment.TopCenter) {
+                                AnimationArrowAddList(
+                                )
+                            }
+                            Column(
+                                modifier = modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+
+                            ) {
+                                Box(
+                                    modifier
+                                        .size(200.dp)
+                                        .clickable { createNewList = true }
+                                ) {
+                                    AnimationAddList(modifier)
+                                }
+                                Text(
+                                    "PRESIONE \n<AÑADIR LISTA> \nPARA EMPEZAR ",
+                                    textAlign = TextAlign.Center,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = unPressedColorButton
+                                )
+                            }
+
+                        }
+                        if (createNewList) {
+                            CreateClientList(
+                                null, onChangeName = {},
+                                onDismiss = { createNewList = false }
+                            ) { nameClient ->
+                                viewModel.addClientList(nameClient)
+                                createNewList = false
                             }
                         }
-                    }else
-                    {
-                        Column(modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center){
-                            Box(modifier.size(200.dp)){AnimationAddList()}
-                            Text("PRESIONE \n<AÑADIR LISTA> \nPARA EMPEZAR ")
+
+                    } else {
+                        if (enableButton) {
+                            LazyListClient(
+                                innerpadding = innerpadding,
+                                viewModel = viewModel,
+                                scrollState = scrollState,
+                                onNavigateToCreateFood = {
+                                    enableButton = false
+                                    navigateToCreateFood()
+                                    viewModel.clearSelections()
+                                }
+                            )
+                            Row(
+                                modifier = modifier
+                                    .align(Alignment.BottomStart)
+                                    .padding(innerpadding)
+                                // Asegura que el botón esté por encima
+                            ) {
+                                ClientBalance(viewModel, stateOfBalance = stateOfBalance) {
+                                    stateOfBalance = !stateOfBalance
+                                }
+                            }
                         }
                     }
+
 
                 }
 

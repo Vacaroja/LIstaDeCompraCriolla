@@ -34,9 +34,9 @@ import androidx.compose.ui.unit.sp
 fun CreateClientList(
     lastName : String?,
     modifier:Modifier = Modifier,
-    onSave: (String) -> Unit,
     onDismiss: () -> Unit,
     onChangeName: (String) -> Unit,
+    onSave: (String) -> Unit,
 ){
     val focusElements = remember { FocusRequester() }
     val sheetState = rememberModalBottomSheetState(
