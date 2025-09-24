@@ -53,7 +53,6 @@ fun ProducIterator(
 //------------------------------------------variables-----------------------------------------
 
     var precio by remember { mutableStateOf("") }//var price
-    var cantidad by remember { mutableFloatStateOf(product.cant) }//var cant
     var showBottomSheet by remember { mutableStateOf(false) }//var of BottomScreen
     val focusManager = LocalFocusManager.current
     val tasa by viewModel.tasa.collectAsState()
@@ -117,10 +116,9 @@ fun ProducIterator(
             Row(modifier = modifier.padding(horizontal = 5.dp)) {
 
                 Text(
-                    text = "$cantidad ${product.medida}",
+                    text = "${product.cant} ${product.medida}",
                     modifier = modifier.widthIn(max = 60.dp),
                 )
-
             }
 //------------------------------------------Price*Cant-----------------------------------------
 

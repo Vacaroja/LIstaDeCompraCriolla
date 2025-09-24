@@ -184,8 +184,8 @@ class ProductViewModel @Inject constructor(
                 SortType.NONE -> prod
                 SortType.ALPHABETICAL -> prod.sortedBy { it.name }
                 SortType.REVERSE_ALPHABETICAL -> prod.sortedByDescending { it.name }
-                SortType.PRICE -> prod.sortedBy { it.price }
-                SortType.REVERSE_PRICE -> prod.sortedByDescending { it.price }
+                SortType.PRICE -> prod.sortedBy { it.price * it.cant }
+                SortType.REVERSE_PRICE -> prod.sortedByDescending { it.price * it.cant }
             }
             val filterList = sortedList.filter { it.client == actList.id }
             filterList.partition { !it.checked }
