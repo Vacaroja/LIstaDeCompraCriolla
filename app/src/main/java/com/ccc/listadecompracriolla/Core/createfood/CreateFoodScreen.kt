@@ -10,15 +10,21 @@ arreglar error con el .
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -49,7 +55,6 @@ import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.Product
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.formatterdata.formatFloatToDecimals
-
 import com.ccc.listadecompracriolla.R
 import com.ccc.listadecompracriolla.adds.AdBanner
 import kotlinx.coroutines.launch
@@ -74,6 +79,7 @@ fun CreateFoodScreen(
     var unidad by remember { mutableStateOf(medidaList[0]) }
     var cantidad by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
+    var inCarProduct by remember { mutableStateOf(false) }
 
 
     val isPressed by viewModel.isBcv.collectAsState()
@@ -132,7 +138,8 @@ fun CreateFoodScreen(
                 },
                 nota = nota,
                 medida = unidad,
-                client = if (actProduct.id != 0) actProduct.client else actual.id
+                client = if (actProduct.id != 0) actProduct.client else actual.id,
+                checked = inCarProduct
             )
             if (actProduct.id != 0) {
                 viewModel.updateProduct(nuevoProducto)
@@ -202,8 +209,10 @@ fun CreateFoodScreen(
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done
                 ),
-                keyboardActions = KeyboardActions(onDone = { savedProduct()
-                    focusManager.clearFocus()}),
+                keyboardActions = KeyboardActions(onDone = {
+                    savedProduct()
+                    focusManager.clearFocus()
+                }),
             )
 
             PriceCreateFood(
@@ -277,8 +286,34 @@ fun CreateFoodScreen(
                 maxLines = 3
 
             )
-            Box(modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+            Box(contentAlignment = Alignment.TopCenter) {
                 AdBanner()
+            }
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = modifier.fillMaxWidth().padding(vertical = 5.dp),
+            ) {
+                Button(modifier = modifier.padding(horizontal = 10.dp), onClick = {savedProduct()}) {
+                    Text("Guardar")
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Guardar"
+                    )
+                }
+                Button(
+                    modifier = modifier.padding(horizontal = 10.dp),
+                    onClick = { inCarProduct = true
+                        savedProduct()
+                    }) {
+                    Text("En carrito")
+                    Icon(
+                        Icons.Default.ShoppingCart,
+                        "En carrito"
+                    )
+                }
+
+
             }
 
         }
