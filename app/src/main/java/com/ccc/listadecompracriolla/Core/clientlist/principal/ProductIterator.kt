@@ -21,7 +21,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -59,7 +58,7 @@ fun ProducIterator(
     val haptic = LocalHapticFeedback.current
 
     //-------------------------------------textParameters-------------------------------------
-    val df = DecimalFormat("#.##")
+    val df = DecimalFormat("#.###")
     val maxLinesName = 3
     val fontSizeName = 15.sp
     val fontSizePrice = 12.sp

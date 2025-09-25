@@ -1,5 +1,6 @@
 package com.ccc.listadecompracriolla.Core.formatterdata
 
+import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
@@ -36,20 +37,22 @@ fun formatNumber(number: Float): String {
     return formatter.format(number)
 }
 
-fun formatNumberText(value: String): String {
+fun formatFloatToDecimals(value: Float): String {
+    // 1. Convertir el Float a Double para tener una mejor base, luego a BigDecimal
+    val bigDecimal = BigDecimal.valueOf(value.toDouble())
 
-    val sanitizedText = value.replace("\\D".toRegex(), "")
+    // 2. Definir el patrón de formato:
+    //    "#" para dígitos opcionales (elimina ceros a la izquierda)
+    //    "0" para dígitos obligatorios (fuerza al menos un cero antes del punto)
+    //    ".########" permite hasta 8 decimales. Los # evitan ceros innecesarios al final.
+    val pattern = "0.#####"
 
-    if (sanitizedText.isEmpty()) {
-        return ""
-    }
-    val number = sanitizedText.toLongOrNull() ?: 0
-    val venezuelaLocale = Locale.Builder()
-        .setLanguage("es")
-        .setRegion("VE")
-        .build()
-    val symbols = DecimalFormatSymbols(venezuelaLocale)
-    val formatter = DecimalFormat("#,##0", symbols)
+    // 3. Configurar el formato para usar el punto (.) como separador decimal
+    val symbols = DecimalFormatSymbols(Locale.ROOT)
+    symbols.decimalSeparator = '.'
 
-    return formatter.format(number)
+    val formatter = DecimalFormat(pattern, symbols)
+
+    // 4. Aplicar el formato
+    return formatter.format(bigDecimal)
 }

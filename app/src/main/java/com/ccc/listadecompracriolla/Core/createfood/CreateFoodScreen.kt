@@ -7,6 +7,7 @@ package com.ccc.listadecompracriolla.Core.createfood
 arreglar error con el .
  */
 
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -47,6 +48,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.Product
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
+import com.ccc.listadecompracriolla.Core.formatterdata.formatFloatToDecimals
+
 import com.ccc.listadecompracriolla.R
 import com.ccc.listadecompracriolla.adds.AdBanner
 import kotlinx.coroutines.launch
@@ -65,7 +68,6 @@ fun CreateFoodScreen(
 
     val medidaList = listOf("Und", "Lb", "Kg", "L")
 
-
     var nombre by remember { mutableStateOf("") }
     var precio by remember { mutableStateOf("") }
     var nota by remember { mutableStateOf("") }
@@ -81,11 +83,12 @@ fun CreateFoodScreen(
 
 
     if (actProduct.id != 0) {
+
         nombre = actProduct.name
-        precio = actProduct.price.toString()
+        precio = formatFloatToDecimals(actProduct.price)
         nota = actProduct.nota
         unidad = actProduct.medida
-        cantidad = actProduct.cant.toString()
+        cantidad = formatFloatToDecimals(actProduct.cant)
     }
 
     val snackbarHostState = remember { SnackbarHostState() }
