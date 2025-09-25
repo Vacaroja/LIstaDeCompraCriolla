@@ -18,8 +18,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
+import com.ccc.listadecompracriolla.Core.clientlist.drawer.sendFeedback
 import com.ccc.listadecompracriolla.R
 
 @Composable
@@ -33,6 +36,8 @@ fun DropDownMenuTop(
 ) {
     val sortType by viewModel.sortType.collectAsState()
     var subMenuState by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
     Box {
         DropdownMenu(//menu desplegable para medida
             expanded = expanded,
@@ -88,6 +93,7 @@ fun DropDownMenuTop(
             HorizontalDivider()
             DropdownMenuItem(
                 onClick = {
+                    sendFeedback(context)
                 },
                 text = { Text("Calificanos <3") },
                 leadingIcon = { Icon(painter =painterResource(R.drawable.starrate), contentDescription = "Calificar") },
@@ -123,7 +129,7 @@ fun SubMenuTop(
                 onDismiss()
                 onExpandex()
             },
-            text = { Text("...") }
+            text = { Text("...", textAlign = TextAlign.End) }
         )
         DropdownMenuItem(
             onClick = {

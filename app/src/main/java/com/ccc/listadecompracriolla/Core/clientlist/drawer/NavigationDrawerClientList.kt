@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Star
@@ -79,6 +80,14 @@ fun NavigationDrawerClientList(
             selected = false,
             onClick = { onAbout() },
             icon = { Icon(imageVector = Icons.Default.Info, "info",tint = Red) }
+        )
+        HorizontalDivider()
+
+        NavigationDrawerItem(//pantalla de acerca de la aplicacion
+            label = { Text("Enviar comentarios") },
+            selected = false,
+            onClick = { sendFeedback(context) },
+            icon = { Icon(imageVector = Icons.AutoMirrored.Filled.Send, "enviar comentarios", tint = oro) }
         )
     }
 }
