@@ -13,6 +13,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -38,6 +39,10 @@ import com.ccc.listadecompracriolla.Core.clases.Product
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.formatterdata.formatNumber
 import com.ccc.listadecompracriolla.R
+import com.ccc.listadecompracriolla.ui.theme.Blue
+import com.ccc.listadecompracriolla.ui.theme.Purple80
+import com.ccc.listadecompracriolla.ui.theme.unPressedColorButton
+import com.ccc.listadecompracriolla.ui.theme.white
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -55,6 +60,7 @@ fun ProducIterator(
     var showBottomSheet by remember { mutableStateOf(false) }//var of BottomScreen
     val focusManager = LocalFocusManager.current
     val tasa by viewModel.tasa.collectAsState()
+    val bsOrDollar = if (tasa == 1f) "$" else " Bs."
     val haptic = LocalHapticFeedback.current
 
     //-------------------------------------textParameters-------------------------------------
@@ -63,14 +69,14 @@ fun ProducIterator(
     val fontSizeName = 15.sp
     val fontSizePrice = 12.sp
 
-    val fontSizeCost = 90.dp
+    val fontSizeCost = 120.dp
 
 
     //-------------------------------------paddingValues-----------------------------
 
     val namePaddingValues = 90.dp
 //------------------------------------------variables de estado-----------------------------------------
-    val isSelected = if(selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.inversePrimary
+    val isSelected = if (selected) Blue else Purple80
 
     Card(
         modifier
@@ -87,7 +93,7 @@ fun ProducIterator(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSecondaryContainer),
         colors = CardDefaults.cardColors(
             containerColor = isSelected,
-            contentColor = MaterialTheme.colorScheme.onPrimary
+            contentColor = white
         )
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -98,7 +104,8 @@ fun ProducIterator(
                     viewModel.toggleCheck(product.id)
                 },//cambiar valor de producto para ver cuales productos estan en carrito
                 checked = product.checked,
-                )
+                colors = CheckboxDefaults.colors(uncheckedColor = unPressedColorButton)
+            )
 
 
             Text(
@@ -121,18 +128,19 @@ fun ProducIterator(
             }
 //------------------------------------------Price*Cant-----------------------------------------
 
-            Row(modifier.widthIn(max = fontSizeCost, min = fontSizeCost), horizontalArrangement = Arrangement.End){
+            Row(
+                modifier.widthIn(max = fontSizeCost, min = fontSizeCost),
+                horizontalArrangement = Arrangement.Center
+            ) {
                 if (product.price != 0f) {
                     TextButton(
                         onClick = { showBottomSheet = true },
-                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onPrimary)
+                        colors = ButtonDefaults.textButtonColors(contentColor = white)
                     ) {
                         Text(
-                            text = "$: ${
-                                formatNumber(
-                                    df.format(product.price * product.cant * tasa).toFloat()
-                                )
-                            }",
+                            text = bsOrDollar + formatNumber(
+                                df.format(product.price * product.cant * tasa).toFloat()
+                            ),
 
                             fontWeight = FontWeight.Bold,
                             fontSize = fontSizePrice,
@@ -143,7 +151,7 @@ fun ProducIterator(
                     IconButton(
                         onClick = { showBottomSheet = true },
 
-                    ) {
+                        ) {
                         Icon(
                             painter = painterResource(R.drawable.changeprice),
                             contentDescription = "cambiar precio",
