@@ -41,11 +41,11 @@ fun PriceCreateFood(
 
 ) {
     val animatedColorBs by animateColorAsState(
-        targetValue = if (isPressed) pressedColorButton else unPressedColorButton,
+        targetValue = if (!isPressed) pressedColorButton else unPressedColorButton,
         animationSpec = tween(durationMillis = 200)
     )
     val animatedColorDolar by animateColorAsState(
-        targetValue = if (!isPressed) pressedColorButton else unPressedColorButton,
+        targetValue = if (isPressed) pressedColorButton else unPressedColorButton,
         animationSpec = tween(durationMillis = 200)
     )
 
@@ -77,6 +77,29 @@ fun PriceCreateFood(
             shape = MaterialTheme.shapes.medium,  // Esquinas redondeadas
         )
 
+        //----------------------------boton pa costo en dolares--------------------------
+        Card(
+            modifier = modifier
+                .padding(start = 5.dp, top = 5.dp)
+                .clickable {
+                    onDollarPrice()
+                },
+            elevation = CardDefaults.cardElevation(
+                // Cambiar la elevación para simular el hundimiento
+                defaultElevation = if (!isPressed) 2.dp else 15.dp
+            ),
+            colors = CardDefaults.cardColors(
+                containerColor = animatedColorDolar
+            )
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.dolar),
+                contentDescription = "bolivares",
+                modifier = modifier.size(50.dp),
+                tint = black
+            )
+
+        }
         //----------------------------boton pa costo en bolivares--------------------------
         Card(
             modifier = modifier
@@ -95,29 +118,6 @@ fun PriceCreateFood(
         ) {
             Icon(
                 painter = painterResource(R.drawable.ic_bolivar),
-                contentDescription = "bolivares",
-                modifier = modifier.size(50.dp),
-                tint = black
-            )
-
-        }
-        //----------------------------boton pa costo en dolares--------------------------
-        Card(
-            modifier = modifier
-                .padding(start = 5.dp, top = 5.dp)
-                .clickable {
-                    onDollarPrice()
-                },
-            elevation = CardDefaults.cardElevation(
-                // Cambiar la elevación para simular el hundimiento
-                defaultElevation = if (!isPressed) 2.dp else 15.dp
-            ),
-            colors = CardDefaults.cardColors(
-                containerColor = animatedColorDolar
-            )
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.dolar),
                 contentDescription = "bolivares",
                 modifier = modifier.size(50.dp),
                 tint = black
