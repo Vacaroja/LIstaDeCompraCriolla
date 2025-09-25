@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -18,7 +19,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -32,14 +36,16 @@ import com.ccc.listadecompracriolla.ui.theme.unPressedColorButton
 fun PriceCreateFood(
     textFieldMediumWidth: Dp,
     textFieldMediumHeight: Dp,
+    focusPrice: FocusRequester,
     modifier: Modifier = Modifier,
     precio: String,
     isPressed: Boolean,
     newPrice: (String) -> Unit,
     onBsPrice: () -> Unit,
     onDollarPrice: () -> Unit,
+    onCantRequest:()-> Unit
 
-) {
+    ) {
     val animatedColorBs by animateColorAsState(
         targetValue = if (!isPressed) pressedColorButton else unPressedColorButton,
         animationSpec = tween(durationMillis = 200)
@@ -54,7 +60,7 @@ fun PriceCreateFood(
         OutlinedTextField(
             modifier = modifier
                 .width(textFieldMediumWidth)
-                .heightIn(min = textFieldMediumHeight),
+                .heightIn(min = textFieldMediumHeight).focusRequester(focusPrice),
 
             value = precio,
             onValueChange = { nuevoValor ->
@@ -62,7 +68,10 @@ fun PriceCreateFood(
                     newPrice(nuevoValor)
                 }
             },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(onNext = {
+                onCantRequest()
+            }),
             label = { Text("Costo") },
             leadingIcon = {
                 Icon(

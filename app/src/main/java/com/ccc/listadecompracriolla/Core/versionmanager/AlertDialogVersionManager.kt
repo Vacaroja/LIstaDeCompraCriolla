@@ -39,14 +39,14 @@ fun ForcedUpdateDialog(onDismiss: () -> Unit) {
                         context.startActivity(
                             Intent(
                                 Intent.ACTION_VIEW,
-                                "https://www.google.com/".toUri()
+                                "https://play.google.com/apps/testing/com.ccc.listadecompracriolla".toUri()
                             )
                         )
                     } catch (_: Exception) {
                         context.startActivity(
                             Intent(
                                 Intent.ACTION_VIEW,
-                                "https://www.google.com/".toUri()
+                                "https://play.google.com/apps/testing/com.ccc.listadecompracriolla".toUri()
                             )
                         )
                     }

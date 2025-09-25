@@ -102,7 +102,10 @@ fun CreateFoodScreen(
     val scope = rememberCoroutineScope()
 
     val focusManager = LocalFocusManager.current
-    val focusElements = remember { FocusRequester() }
+    val focusname = remember { FocusRequester() }
+    val focusPrice = remember { FocusRequester() }
+    val focusCant = remember { FocusRequester() }
+
 
     //-----------------------------TextFieldParameter--------------------------
 
@@ -121,7 +124,7 @@ fun CreateFoodScreen(
                 when (vacio) {
                     SnackbarResult.Dismissed -> {}
                     SnackbarResult.ActionPerformed -> {
-                        focusElements.requestFocus()
+                        focusname.requestFocus()
                     }
                 }
             }
@@ -154,7 +157,7 @@ fun CreateFoodScreen(
 
 
 
-    LaunchedEffect(Unit) { focusElements.requestFocus() }
+    LaunchedEffect(Unit) { focusname.requestFocus() }
 
     BackHandler(enabled = true) {
         viewModel.actualizeProduct(-1)
@@ -204,18 +207,18 @@ fun CreateFoodScreen(
                     )
                 },
                 shape = MaterialTheme.shapes.medium,
-                modifier = modifier.focusRequester(focusElements),
+                modifier = modifier.focusRequester(focusname),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done
+                    imeAction = ImeAction.Next
                 ),
-                keyboardActions = KeyboardActions(onDone = {
-                    savedProduct()
-                    focusManager.clearFocus()
+                keyboardActions = KeyboardActions(onNext = {
+                    focusPrice.requestFocus()
                 }),
             )
 
             PriceCreateFood(
+                focusPrice = focusPrice,
                 textFieldMediumWidth = textFieldMediumWidth,
                 textFieldMediumHeight = textFieldMediumHeight,
                 precio = precio,
@@ -223,6 +226,7 @@ fun CreateFoodScreen(
                 newPrice = { nuevoValor -> precio = nuevoValor },
                 onBsPrice = { viewModel.actualizarTasa(ProductViewModel.TipoConversion.DOLAR_A_BCV) },
                 onDollarPrice = { viewModel.actualizarTasa() },
+                onCantRequest = { focusCant.requestFocus() },
             )
 
 
@@ -241,7 +245,8 @@ fun CreateFoodScreen(
                     modifier = modifier
                         .padding(horizontal = 5.dp)
                         .width(textFieldMediumWidth)
-                        .heightIn(min = textFieldMediumHeight),
+                        .heightIn(min = textFieldMediumHeight)
+                        .focusRequester(focusCant),
                     value = cantidad,
                     onValueChange = { nuevoValor ->
                         if (nuevoValor.isEmpty() || nuevoValor.matches(Regex("^\\d*\\.?\\d*$"))) {
@@ -249,13 +254,21 @@ fun CreateFoodScreen(
                         }
                     },
                     label = { Text("Cant/Peso") },
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    ),
                     leadingIcon = {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_scale),
                             contentDescription = "Cantidad o Peso"
                         )
-                    }, shape = MaterialTheme.shapes.medium
+                    },
+                    shape = MaterialTheme.shapes.medium,
+                    keyboardActions = KeyboardActions(onDone = {
+                        focusManager.clearFocus()
+                        savedProduct()
+                    }),
                 )
 //------------------------------------------medida-----------------------------------------
                 DropdownMenuCreateFood(
@@ -292,9 +305,13 @@ fun CreateFoodScreen(
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = modifier.fillMaxWidth().padding(vertical = 5.dp),
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 5.dp),
             ) {
-                Button(modifier = modifier.padding(horizontal = 10.dp), onClick = {savedProduct()}) {
+                Button(
+                    modifier = modifier.padding(horizontal = 10.dp),
+                    onClick = { savedProduct() }) {
                     Text("Guardar")
                     Icon(
                         imageVector = Icons.Default.Check,
@@ -303,7 +320,8 @@ fun CreateFoodScreen(
                 }
                 Button(
                     modifier = modifier.padding(horizontal = 10.dp),
-                    onClick = { inCarProduct = true
+                    onClick = {
+                        inCarProduct = true
                         savedProduct()
                     }) {
                     Text("En carrito")
