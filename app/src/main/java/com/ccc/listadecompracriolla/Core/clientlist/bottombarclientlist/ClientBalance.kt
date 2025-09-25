@@ -63,6 +63,7 @@ fun ClientBalance(
         animationSpec = tween(durationMillis = 200)
     )
     var textFieldValue by remember { mutableStateOf(TextFieldValue("")) }
+    val bsOrDollar = if (tasa == 1f) "$" else " Bs."
 
     AnimatedContent(
         targetState = stateOfBalance,
@@ -87,10 +88,19 @@ fun ClientBalance(
                         }
                     },
                     leadingIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.account_balance),
-                            contentDescription = "Presupuesto"
-                        )
+                        if (tasa == 1f){
+                            Icon(
+                                painter = painterResource(id = R.drawable.dolar),
+                                contentDescription = "Presupuesto dolares",
+                                modifier = Modifier.size(30.dp),
+                            )
+                        }else{
+                            Icon(
+                                painter = painterResource(id = R.drawable.bolivar),
+                                contentDescription = "Presupuesto Bolivares",
+                                modifier = Modifier.size(30.dp),
+                            )
+                        }
                     },
                     shape = MaterialTheme.shapes.large,
                     singleLine = true,
@@ -132,7 +142,7 @@ fun ClientBalance(
                     if (presupuesto.isNotEmpty() && presupuesto != "0") {
                         TextButton(onClick = { onDimiss() }) {
                             Text(
-                                text = (formatNumber((presupuesto.toFloat() * tasa) - (inCar))),
+                                text = (formatNumber((presupuesto.toFloat() * tasa) - (inCar)) + bsOrDollar),
                                 fontSize = 16.sp,
                                 maxLines = 1,
                                 color = black
