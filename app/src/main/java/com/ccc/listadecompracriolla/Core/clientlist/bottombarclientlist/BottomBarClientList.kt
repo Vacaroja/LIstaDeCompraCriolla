@@ -1,6 +1,5 @@
 package com.ccc.listadecompracriolla.Core.clientlist.bottombarclientlist
 
-import android.icu.text.DecimalFormat
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -33,7 +32,6 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
 
     val total by viewModel.total.collectAsState()
     val inCar by viewModel.inCar.collectAsState()
-    val df = DecimalFormat("#.##")
 
 //------------------------------------------Variables-----------------------------------------
     val fontSizeTasa = 120.dp
@@ -60,7 +58,7 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
                 color = black
             )
             Text(
-                text = formatNumber(df.format(inCar).toFloat()),
+                text = formatNumber(inCar),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = black
@@ -97,7 +95,7 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
                 color = black
             )
             Text(
-                text = formatNumber(df.format(total).toFloat()),
+                text = formatNumber(total),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = black

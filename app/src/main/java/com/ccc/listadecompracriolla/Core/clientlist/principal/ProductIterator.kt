@@ -1,6 +1,5 @@
 package com.ccc.listadecompracriolla.Core.clientlist.principal
 
-import android.icu.text.DecimalFormat
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -64,7 +63,6 @@ fun ProducIterator(
     val haptic = LocalHapticFeedback.current
 
     //-------------------------------------textParameters-------------------------------------
-    val df = DecimalFormat("#.###")
     val maxLinesName = 3
     val fontSizeName = 15.sp
     val fontSizePrice = 12.sp
@@ -139,7 +137,7 @@ fun ProducIterator(
                     ) {
                         Text(
                             text = bsOrDollar + formatNumber(
-                                df.format(product.price * product.cant * tasa).toFloat()
+                                product.price * product.cant * tasa
                             ),
 
                             fontWeight = FontWeight.Bold,

@@ -91,7 +91,7 @@ fun CreateFoodScreen(
     if (actProduct.id != 0) {
 
         nombre = actProduct.name
-        precio = formatFloatToDecimals(actProduct.price)
+        precio = formatFloatToDecimals(actProduct.price * tasa)
         nota = actProduct.nota
         unidad = actProduct.medida
         cantidad = formatFloatToDecimals(actProduct.cant)

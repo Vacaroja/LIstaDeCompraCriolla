@@ -27,6 +27,7 @@ fun formatNumber(number: Float): String {
         .setRegion("VE")
         .build()
     val formatter = NumberFormat.getNumberInstance(venezuelaLocale)
+    formatter.maximumFractionDigits = 3
 
     // Si quisieras que el formato usara puntos para miles y comas para decimales
     // (común en muchos países de Europa y América Latina), usarías una Locale diferente,

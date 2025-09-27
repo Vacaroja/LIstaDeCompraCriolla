@@ -1,5 +1,6 @@
 package com.ccc.listadecompracriolla.Core.clases
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ccc.listadecompracriolla.database.entities.ToClientList
@@ -19,6 +20,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -533,10 +536,15 @@ class ProductViewModel @Inject constructor(
             try {
                 // Realiza la llamada a la API
                 val response = bcvRepository.fetchAndSaveBcvFromApi(isWeekend)
+                val symbols = DecimalFormatSymbols(Locale.US)
+                symbols.decimalSeparator = '.'
                 val df = DecimalFormat("#.##")
-
+                df.decimalFormatSymbols = symbols
                 if (response != null) {
                     _bcvData.value = response
+                    Log.d("Miapp",response.toString())
+                    Log.d("Miapp",df.format(response.usd))
+
                     _bcvPriceFloat.value = df.format(response.usd).toFloat()
                 } else {
                     _bcvPriceFloat.value = -1f
