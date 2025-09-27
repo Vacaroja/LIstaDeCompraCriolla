@@ -17,9 +17,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import com.ccc.listadecompracriolla.Core.clientlist.alertbox.AlertBoxDeleteClient
-import com.ccc.listadecompracriolla.ui.theme.OrangeBlack
+import com.ccc.listadecompracriolla.ui.theme.purpleHeartblack
+import com.ccc.listadecompracriolla.ui.theme.white
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,11 +56,11 @@ fun TopClientListSelected(
         },
 //------------------------------------------colores-----------------------------------------
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = OrangeBlack,
-            scrolledContainerColor = OrangeBlack,
-            navigationIconContentColor = Color.Black,
-            titleContentColor = Color.Black,
-            actionIconContentColor = Color.Black,
+            containerColor = purpleHeartblack,
+            scrolledContainerColor = purpleHeartblack,
+            navigationIconContentColor = white,
+            titleContentColor = white,
+            actionIconContentColor = white,
         )
     )
     if (isDelete) {

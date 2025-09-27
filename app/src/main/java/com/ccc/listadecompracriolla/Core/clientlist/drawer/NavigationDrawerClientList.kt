@@ -9,7 +9,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -52,8 +51,8 @@ fun NavigationDrawerClientList(
 
         HorizontalDivider()
 
-        NavigationDrawerItem(//pantalla de acerca de la aplicacion
-            label = { Text("Premiun") },
+       /* NavigationDrawerItem(//pantalla de acerca de la aplicacion
+            label = { Text("Premium") },
             selected = false,
             onClick = { context.startActivity(
                 Intent(
@@ -62,7 +61,7 @@ fun NavigationDrawerClientList(
                 )
             ) },
             icon = { Icon(imageVector = Icons.Default.Star, "Premiun", tint = oro) }
-        )
+        )*/
         NavigationDrawerItem(//pantalla de acerca de la aplicacion
             label = { Text("Calificanos ") },
             selected = false,
@@ -73,13 +72,13 @@ fun NavigationDrawerClientList(
                         "https://github.com/Vacaroja/LIstaDeCompraCriolla".toUri()
                     )
                 )  },
-            icon = { Icon(imageVector = Icons.Default.Favorite, "Calificanos", tint = Blue) }
+            icon = { Icon(imageVector = Icons.Default.Favorite, "Calificanos", tint = oro) }
         )
         NavigationDrawerItem(//pantalla de acerca de la aplicacion
             label = { Text("Info de app") },
             selected = false,
             onClick = { onAbout() },
-            icon = { Icon(imageVector = Icons.Default.Info, "info",tint = Red) }
+            icon = { Icon(imageVector = Icons.Default.Info, "info",tint = Blue) }
         )
         HorizontalDivider()
 
@@ -87,7 +86,7 @@ fun NavigationDrawerClientList(
             label = { Text("Enviar comentarios") },
             selected = false,
             onClick = { sendFeedback(context) },
-            icon = { Icon(imageVector = Icons.AutoMirrored.Filled.Send, "enviar comentarios", tint = oro) }
+            icon = { Icon(imageVector = Icons.AutoMirrored.Filled.Send, "enviar comentarios", tint = Red) }
         )
     }
 }

@@ -173,8 +173,7 @@ fun CreateFoodScreen(
                     enableButton = false
                     viewModel.actualizeProduct(-1)
                     navigateToback()
-                },
-                saveProduct = savedProduct
+                }
             )
         },
 //------------------------------------------bottombar-----------------------------------------

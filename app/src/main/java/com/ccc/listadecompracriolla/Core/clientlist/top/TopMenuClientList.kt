@@ -39,8 +39,10 @@ import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.clientlist.alertbox.AlertBoxDeleteClient
 import com.ccc.listadecompracriolla.R
-import com.ccc.listadecompracriolla.ui.theme.Orange
-import com.ccc.listadecompracriolla.ui.theme.OrangeBlack
+import com.ccc.listadecompracriolla.ui.theme.greenMinus
+import com.ccc.listadecompracriolla.ui.theme.purpleHeart
+import com.ccc.listadecompracriolla.ui.theme.purpleHeartblack
+import com.ccc.listadecompracriolla.ui.theme.white
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,11 +70,11 @@ fun TopMenu(
     val isEmptyClient by viewModel.emptyClient.collectAsState()
 
     val animatedColorBs by animateColorAsState(
-        targetValue = if (isPressed) OrangeBlack else Orange,
+        targetValue = if (isPressed) purpleHeartblack else purpleHeart,
         animationSpec = tween(durationMillis = 200)
     )
     val animatedColorDolar by animateColorAsState(
-        targetValue = if (!isPressed) OrangeBlack else Orange,
+        targetValue = if (!isPressed) purpleHeartblack else purpleHeart,
         animationSpec = tween(durationMillis = 200)
     )
     val secondAnimationTop = 800
@@ -120,7 +122,8 @@ fun TopMenu(
                     Icon(
                         painter = painterResource(id = R.drawable.dolar),
                         contentDescription = "Settings",
-                        modifier = modifier.size(45.dp)
+                        modifier = modifier.size(45.dp),
+                        tint = greenMinus
                     )
                 }
 //------------------------------------------VerticalDivider-----------------------------------------
@@ -150,9 +153,10 @@ fun TopMenu(
                     )
                 ) {//BOTON PARA LAS CAMBIAR A DOLAR BCV
                     Icon(
-                        painter = painterResource(id = R.drawable.bcv_icon),
+                        painter = painterResource(id = R.drawable.bs_icono),
                         contentDescription = "bcv",
-                        modifier = modifier.size(50.dp)
+                        modifier = modifier.size(50.dp),
+                        tint = greenMinus
                     )
                 }
 
@@ -188,11 +192,11 @@ fun TopMenu(
             },
 //------------------------------------------colores-----------------------------------------
             colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Orange,
-                scrolledContainerColor = Orange,
-                navigationIconContentColor = Color.Black,
-                titleContentColor = Color.Black,
-                actionIconContentColor = Color.Black,
+                containerColor = purpleHeart,
+                scrolledContainerColor = purpleHeart,
+                navigationIconContentColor = white,
+                titleContentColor = white,
+                actionIconContentColor = white,
             )
         )
 

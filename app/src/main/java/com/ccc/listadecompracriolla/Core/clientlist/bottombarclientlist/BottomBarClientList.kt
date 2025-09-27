@@ -15,7 +15,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -23,8 +22,8 @@ import androidx.compose.ui.unit.sp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.formatterdata.formatNumber
 import com.ccc.listadecompracriolla.R
-import com.ccc.listadecompracriolla.ui.theme.Orange
-import com.ccc.listadecompracriolla.ui.theme.black
+import com.ccc.listadecompracriolla.ui.theme.white
+import com.ccc.listadecompracriolla.ui.theme.purpleHeart
 
 @Composable
 fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel) {
@@ -36,7 +35,7 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
 //------------------------------------------Variables-----------------------------------------
     val fontSizeTasa = 120.dp
 
-    BottomAppBar(containerColor = Orange) {
+    BottomAppBar(containerColor = purpleHeart) {
 
 
 //------------------------------------------BottomInCarPrice-----------------------------------------
@@ -46,7 +45,7 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
             modifier
                 .size(40.dp)
                 .padding(start = 5.dp),
-            tint = black
+            tint = white
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -55,13 +54,13 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
             Text(
                 text = "En carrito",
                 fontWeight = FontWeight.Bold,
-                color = black
+                color = white
             )
             Text(
                 text = formatNumber(inCar),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = black
+                color = white
             )
 
         }
@@ -69,7 +68,7 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
 
 
         VerticalDivider(
-            color = Color.Black, thickness = 2.dp,
+            color = white, thickness = 2.dp,
             modifier = modifier.padding(
                 vertical = 7.dp, horizontal = 20.dp
             )
@@ -82,7 +81,7 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
             modifier
                 .size(40.dp)
                 .padding(start = 5.dp),
-            tint = black
+            tint = white
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -92,13 +91,13 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
             Text(
                 text = "TOTAL",
                 fontWeight = FontWeight.Bold,
-                color = black
+                color = white
             )
             Text(
                 text = formatNumber(total),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = black
+                color = white
             )
         }
     }

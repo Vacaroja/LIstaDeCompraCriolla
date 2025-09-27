@@ -39,7 +39,7 @@ fun ForcedUpdateDialog(onDismiss: () -> Unit) {
                         context.startActivity(
                             Intent(
                                 Intent.ACTION_VIEW,
-                                "https://play.google.com/apps/testing/com.ccc.listadecompracriolla".toUri()
+                                "https://play.google.com/store/apps/details?id=com.ccc.listadecompracriolla".toUri()
                             )
                         )
                     } catch (_: Exception) {
@@ -61,7 +61,7 @@ fun ForcedUpdateDialog(onDismiss: () -> Unit) {
                     onDismiss()
                 }
             ) {
-                Text("Lo hago luego")
+                Text("Tal vez luego")
             }
         }
     )
