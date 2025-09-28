@@ -40,6 +40,7 @@ fun PriceCreateFood(
     modifier: Modifier = Modifier,
     precio: String,
     isPressed: Boolean,
+    validTasa: Boolean,
     newPrice: (String) -> Unit,
     onBsPrice: () -> Unit,
     onDollarPrice: () -> Unit,
@@ -60,7 +61,8 @@ fun PriceCreateFood(
         OutlinedTextField(
             modifier = modifier
                 .width(textFieldMediumWidth)
-                .heightIn(min = textFieldMediumHeight).focusRequester(focusPrice),
+                .heightIn(min = textFieldMediumHeight)
+                .focusRequester(focusPrice),
 
             value = precio,
             onValueChange = { nuevoValor ->
@@ -87,51 +89,53 @@ fun PriceCreateFood(
         )
 
         //----------------------------boton pa costo en dolares--------------------------
-        Card(
-            modifier = modifier
-                .padding(start = 5.dp, top = 5.dp)
-                .clickable {
-                    onDollarPrice()
-                },
-            elevation = CardDefaults.cardElevation(
-                // Cambiar la elevación para simular el hundimiento
-                defaultElevation = if (!isPressed) 2.dp else 15.dp
-            ),
-            colors = CardDefaults.cardColors(
-                containerColor = animatedColorDolar
-            )
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.dolar),
-                contentDescription = "bolivares",
-                modifier = modifier.size(50.dp),
-                tint = black
-            )
+        if(!validTasa){
+            Card(
+                modifier = modifier
+                    .padding(start = 5.dp, top = 5.dp)
+                    .clickable {
+                        onDollarPrice()
+                    },
+                elevation = CardDefaults.cardElevation(
+                    // Cambiar la elevación para simular el hundimiento
+                    defaultElevation = if (!isPressed) 2.dp else 15.dp
+                ),
+                colors = CardDefaults.cardColors(
+                    containerColor = animatedColorDolar
+                )
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.dolar),
+                    contentDescription = "bolivares",
+                    modifier = modifier.size(50.dp),
+                    tint = black
+                )
 
-        }
-        //----------------------------boton pa costo en bolivares--------------------------
-        Card(
-            modifier = modifier
-                .padding(start = 5.dp, top = 5.dp)
-                .clickable {
-                    onBsPrice()
+            }
+            //----------------------------boton pa costo en bolivares--------------------------
+            Card(
+                modifier = modifier
+                    .padding(start = 5.dp, top = 5.dp)
+                    .clickable {
+                        onBsPrice()
 
-                },
-            elevation = CardDefaults.cardElevation(
-                // Cambiar la elevación para simular el hundimiento
-                defaultElevation = if (isPressed) 2.dp else 15.dp
-            ),
-            colors = CardDefaults.cardColors(
-                containerColor = animatedColorBs
-            )
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_bolivar),
-                contentDescription = "bolivares",
-                modifier = modifier.size(50.dp),
-                tint = black
-            )
+                    },
+                elevation = CardDefaults.cardElevation(
+                    // Cambiar la elevación para simular el hundimiento
+                    defaultElevation = if (isPressed) 2.dp else 15.dp
+                ),
+                colors = CardDefaults.cardColors(
+                    containerColor = animatedColorBs
+                )
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_bolivar),
+                    contentDescription = "bolivares",
+                    modifier = modifier.size(50.dp),
+                    tint = black
+                )
 
+            }
         }
 
     }

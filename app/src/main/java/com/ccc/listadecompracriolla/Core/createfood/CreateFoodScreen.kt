@@ -222,6 +222,7 @@ fun CreateFoodScreen(
                 textFieldMediumHeight = textFieldMediumHeight,
                 precio = precio,
                 isPressed = isPressed,
+                validTasa = viewModel.validTasa(),
                 newPrice = { nuevoValor -> precio = nuevoValor },
                 onBsPrice = { viewModel.actualizarTasa(ProductViewModel.TipoConversion.DOLAR_A_BCV) },
                 onDollarPrice = { viewModel.actualizarTasa() },
