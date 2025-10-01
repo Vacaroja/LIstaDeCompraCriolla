@@ -43,7 +43,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -76,6 +78,8 @@ fun CreateFoodScreen(
     var cantidad by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
     var inCarProduct by remember { mutableStateOf(false) }
+
+    val haptic = LocalHapticFeedback.current
 
 
     val isPressed by viewModel.isBcv.collectAsState()
@@ -120,6 +124,7 @@ fun CreateFoodScreen(
         if (nombre.isBlank()) {
             focusManager.clearFocus()
             scope.launch {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 val vacio = snackbarHostState.showSnackbar(
                     message = "Debe colocar un nombre",
                     actionLabel = "OK",
