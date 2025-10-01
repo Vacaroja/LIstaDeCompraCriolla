@@ -1,6 +1,5 @@
 package com.ccc.listadecompracriolla.Core.clases
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ccc.listadecompracriolla.database.entities.ToClientList
@@ -159,7 +158,7 @@ class ProductViewModel @Inject constructor(
 
     val completedActualList: StateFlow<Boolean> =
         combine(_productos, actualList) { products, actList ->
-            products.filter { it.client == actList.id }.all { it.checked }
+            products.none { it.client == actList.id }
         }
             .stateIn(
                 scope = viewModelScope,
