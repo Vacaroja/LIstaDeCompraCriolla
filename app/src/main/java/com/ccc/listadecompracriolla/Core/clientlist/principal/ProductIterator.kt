@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -72,7 +73,7 @@ fun ProducIterator(
 
     //-------------------------------------paddingValues-----------------------------
 
-    val namePaddingValues = 90.dp
+    val namePaddingValues = 100.dp
 //------------------------------------------variables de estado-----------------------------------------
     val isSelected = if (selected) Blue else Purple80
 
@@ -120,8 +121,9 @@ fun ProducIterator(
             Row(modifier = modifier.padding(horizontal = 5.dp)) {
 
                 Text(
-                    text = "${product.cant} ${product.medida}",
-                    modifier = modifier.widthIn(max = 60.dp),
+                    text = formatNumber(product.cant) +" "+ product.medida,
+                    modifier = modifier.width( 60.dp),
+                    fontSize = fontSizePrice
                 )
             }
 //------------------------------------------Price*Cant-----------------------------------------
