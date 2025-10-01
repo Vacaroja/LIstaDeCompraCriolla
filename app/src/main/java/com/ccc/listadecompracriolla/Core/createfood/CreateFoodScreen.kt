@@ -1,11 +1,7 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
 package com.ccc.listadecompracriolla.Core.createfood
-/*Cosas por hacer
-//cambiar tipo de teclado en selector de cantidad y precio
-//cambiar por lista desplegable la medida
-arreglar error con el .
- */
+
 
 
 import androidx.activity.compose.BackHandler
@@ -295,19 +291,16 @@ fun CreateFoodScreen(
                     )
                 },
                 shape = MaterialTheme.shapes.medium,
-                modifier = modifier.padding(bottom = 15.dp),
+                modifier = modifier.padding(bottom = 10.dp),
                 maxLines = 3
 
             )
-            Box(contentAlignment = Alignment.TopCenter) {
-                AdBanner()
-            }
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(vertical = 5.dp),
+                    .padding(top = 5.dp),
             ) {
                 Button(
                     modifier = modifier.padding(horizontal = 10.dp),
@@ -332,6 +325,9 @@ fun CreateFoodScreen(
                 }
 
 
+            }
+            Box(contentAlignment = Alignment.TopCenter) {
+                AdBanner()
             }
 
         }
