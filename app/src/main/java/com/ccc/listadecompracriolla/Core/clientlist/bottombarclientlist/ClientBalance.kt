@@ -88,13 +88,13 @@ fun ClientBalance(
                         }
                     },
                     leadingIcon = {
-                        if (tasa == 1f){
+                        if (tasa == 1f) {
                             Icon(
                                 painter = painterResource(id = R.drawable.dolar),
                                 contentDescription = "Presupuesto dolares",
                                 modifier = Modifier.size(30.dp),
                             )
-                        }else{
+                        } else {
                             Icon(
                                 painter = painterResource(id = R.drawable.bolivar),
                                 contentDescription = "Presupuesto Bolivares",
@@ -114,7 +114,12 @@ fun ClientBalance(
                     keyboardActions = KeyboardActions(onDone = {
                         onDimiss()
                     }),
-                    placeholder = {Text("Presupuesto", fontSize = 13.sp)}
+                    placeholder = {
+                        Text(
+                            if (presupuesto.isNotEmpty()) "${presupuesto.toFloat() * tasa}" else "Presupuesto",
+                            fontSize = 13.sp
+                        )
+                    }
                 )
                 LaunchedEffect(Unit) { focusElements.requestFocus() }
             }
@@ -122,7 +127,10 @@ fun ClientBalance(
             Card(colors = CardDefaults.cardColors(animatedColorpresu)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(
-                        onClick = { onDimiss() }
+                        onClick = {
+                            textFieldValue = TextFieldValue("")
+                            onDimiss()
+                        }
                     ) {
 
                         Icon(
@@ -140,7 +148,10 @@ fun ClientBalance(
 
                     }
                     if (presupuesto.isNotEmpty() && presupuesto != "0") {
-                        TextButton(onClick = { onDimiss() }) {
+                        TextButton(onClick = {
+                            textFieldValue = TextFieldValue("")
+                            onDimiss()
+                        }) {
                             Text(
                                 text = (formatNumber((presupuesto.toFloat() * tasa) - (inCar)) + bsOrDollar),
                                 fontSize = 16.sp,

@@ -251,19 +251,20 @@ class ProductViewModel @Inject constructor(
 
     fun addPresu(clientId: Int?, presu: String) {
         val presuDivtasa = try {
-            if (presu.isEmpty() || presu == ".") 0 else presu.toFloat() / _tasa.value
+            if (presu.isEmpty() || presu == ".") 0f else presu.toFloat() / _tasa.value
         } catch (_: Exception) {
-            0
+            0f
         }
-        _presupuesto.value = presuDivtasa.toString()
+        val newpresu = presuDivtasa.toString()
+        _presupuesto.value = newpresu
         _clientList.update { currentList ->
             currentList.map { client ->
-                if (client.id == clientId) client.copy(presupuesto = presu)
+                if (client.id == clientId) client.copy(presupuesto = newpresu)
                 else client
             }
         }
         viewModelScope.launch {
-            clientRepository.updatePresuClient(clientId, presu)
+            clientRepository.updatePresuClient(clientId, newpresu)
         }
 
     }
@@ -542,9 +543,6 @@ class ProductViewModel @Inject constructor(
                 df.decimalFormatSymbols = symbols
                 if (response != null) {
                     _bcvData.value = response
-                    Log.d("Miapp",response.toString())
-                    Log.d("Miapp",df.format(response.usd))
-
                     _bcvPriceFloat.value = df.format(response.usd).toFloat()
                 } else {
                     _bcvPriceFloat.value = -1f
