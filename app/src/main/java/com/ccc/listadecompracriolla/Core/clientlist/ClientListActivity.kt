@@ -68,6 +68,7 @@ import com.ccc.listadecompracriolla.Core.clientlist.principal.LazyListClient
 import com.ccc.listadecompracriolla.Core.clientlist.top.CreateClientList
 import com.ccc.listadecompracriolla.Core.clientlist.top.TopClientListSelected
 import com.ccc.listadecompracriolla.Core.clientlist.top.TopMenu
+import com.ccc.listadecompracriolla.Core.formatterdata.formatNumber
 import com.ccc.listadecompracriolla.Core.versionmanager.ForcedUpdateDialog
 import com.ccc.listadecompracriolla.adds.loadInterstitialAd
 import com.ccc.listadecompracriolla.adds.showInterstitialAd
@@ -98,6 +99,7 @@ fun ClientListScreen(
     val isCompleted by viewModel.completedActualList.collectAsState()
     val isSelected by viewModel.selectedProductIds.collectAsState()
     val isEmptyClient by viewModel.emptyClient.collectAsState()
+    val tasa by viewModel.bcvPriceFloat.collectAsState()
 
     var createNewList by remember { mutableStateOf(false) }
     var showUpdateDialog by remember { mutableStateOf(false) }
@@ -121,6 +123,10 @@ fun ClientListScreen(
     val activity = context as? Activity
     val appVersionManager = remember { VersionManager(context) }
     val secondAnimationTop = 500
+
+    val onWeekend: () -> Unit = {
+        if (isWeekend) alertDialogIsWeekend = true else viewModel.searchDolarBcv()
+    }
 
     if (alertDialogIsWeekend) AlertDialogIsWeekend(
         onDismiss = {
@@ -154,7 +160,7 @@ fun ClientListScreen(
     ) {
         PullToRefreshBox(state = refreshState, isRefreshing = loading, onRefresh = {
             coroutineScope.launch {
-                if (isWeekend) alertDialogIsWeekend = true else viewModel.searchDolarBcv()
+                onWeekend()
             }
         }) {
             //------------------------------------------Variables-----------------------------------------
@@ -163,7 +169,6 @@ fun ClientListScreen(
                 topBar = {
                     AnimatedContent(
                         targetState = isSelected.isNotEmpty(),
-
                         transitionSpec = {
                             if (targetState) { // Content is entering (isSelected becomes not empty)
                                 fadeIn(animationSpec = tween(durationMillis = secondAnimationTop)) togetherWith
@@ -198,6 +203,28 @@ fun ClientListScreen(
                                     coroutineScope.launch {
                                         drawerState.apply {
                                             if (isClosed) open() else close()
+                                        }
+                                    }
+                                },
+                                showRateActual = {
+                                    coroutineScope.launch {
+                                        val result = snackbarHostState.showSnackbar(
+                                            message = "TASA ACTUAL: " + try {
+                                                formatNumber(tasa!!)
+                                            } catch (_: Exception) {
+                                                "$tasa"
+                                            },
+                                            actionLabel = "NO ES LA TASA",
+                                            withDismissAction = true,
+                                            duration = SnackbarDuration.Short
+                                        )
+                                        when (result) {
+                                            SnackbarResult.Dismissed -> {
+                                            }
+
+                                            SnackbarResult.ActionPerformed -> {
+                                                onWeekend()
+                                            }
                                         }
                                     }
                                 },
@@ -321,7 +348,6 @@ fun ClientListScreen(
                                 createNewList = false
                             }
                         }
-
                     } else {
                         if (enableButton) {
                             LazyListClient(

@@ -52,7 +52,7 @@ fun TopMenu(
     viewModel: ProductViewModel,
     onFailureApi: () -> Unit,
     onOpenDrawer: () -> Unit,
-
+    showRateActual: () -> Unit,
     ) {
     var bottomSheetClient by remember { mutableStateOf(false) }
     var bottomSheetNewClient by remember { mutableStateOf(false) }
@@ -145,6 +145,7 @@ fun TopMenu(
                         if (viewModel.validTasa()) {
                             onFailureApi()
                         } else {
+                            showRateActual()
                             viewModel.actualizarTasa(ProductViewModel.TipoConversion.DOLAR_A_BCV)
                         }
                     },
