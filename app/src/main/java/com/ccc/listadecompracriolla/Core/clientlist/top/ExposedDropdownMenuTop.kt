@@ -1,6 +1,7 @@
 package com.ccc.listadecompracriolla.Core.clientlist.top
 
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -21,8 +22,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.core.net.toUri
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
-import com.ccc.listadecompracriolla.Core.clientlist.drawer.sendFeedback
 import com.ccc.listadecompracriolla.R
 
 @Composable
@@ -93,7 +94,12 @@ fun DropDownMenuTop(
             HorizontalDivider()
             DropdownMenuItem(
                 onClick = {
-                    sendFeedback(context)
+                    context.startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            "https://play.google.com/store/apps/details?id=com.ccc.listadecompracriolla".toUri()
+                        )
+                    )
                 },
                 text = { Text("Calificanos <3") },
                 leadingIcon = { Icon(painter =painterResource(R.drawable.starrate), contentDescription = "Calificar") },

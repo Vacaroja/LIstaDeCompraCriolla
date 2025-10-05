@@ -51,7 +51,7 @@ fun NavigationDrawerClientList(
 
         HorizontalDivider()
 
-       /* NavigationDrawerItem(//pantalla de acerca de la aplicacion
+       /* NavigationDrawerItem(//PREMIUM
             label = { Text("Premium") },
             selected = false,
             onClick = { context.startActivity(
@@ -62,14 +62,14 @@ fun NavigationDrawerClientList(
             ) },
             icon = { Icon(imageVector = Icons.Default.Star, "Premiun", tint = oro) }
         )*/
-        NavigationDrawerItem(//pantalla de acerca de la aplicacion
+        NavigationDrawerItem(//RATE US
             label = { Text("Calificanos ") },
             selected = false,
             onClick = {
                 context.startActivity(
                     Intent(
                         Intent.ACTION_VIEW,
-                        "https://github.com/Vacaroja/LIstaDeCompraCriolla".toUri()
+                        "https://play.google.com/store/apps/details?id=com.ccc.listadecompracriolla".toUri()
                     )
                 )  },
             icon = { Icon(imageVector = Icons.Default.Favorite, "Calificanos", tint = oro) }
@@ -82,7 +82,7 @@ fun NavigationDrawerClientList(
         )
         HorizontalDivider()
 
-        NavigationDrawerItem(//pantalla de acerca de la aplicacion
+        NavigationDrawerItem(//SEND FEEDBACK
             label = { Text("Enviar comentarios") },
             selected = false,
             onClick = { sendFeedback(context) },
