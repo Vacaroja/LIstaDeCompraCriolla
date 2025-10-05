@@ -127,6 +127,15 @@ fun ClientListScreen(
     val onWeekend: () -> Unit = {
         if (isWeekend) alertDialogIsWeekend = true else viewModel.searchDolarBcv()
     }
+    BackHandler(enabled = isSelected.isNotEmpty()) {
+        viewModel.clearSelections()
+    }
+
+    LaunchedEffect(Unit) {
+        appVersionManager.checkForUpdates {
+            showUpdateDialog = true
+        }
+    }
 
     if (alertDialogIsWeekend) AlertDialogIsWeekend(
         onDismiss = {
@@ -139,15 +148,7 @@ fun ClientListScreen(
         }
     )
 
-    BackHandler(enabled = isSelected.isNotEmpty()) {
-        viewModel.clearSelections()
-    }
 
-    LaunchedEffect(Unit) {
-        appVersionManager.checkForUpdates {
-            showUpdateDialog = true
-        }
-    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -252,7 +253,7 @@ fun ClientListScreen(
                                             }
 
                                             SnackbarResult.ActionPerformed -> {
-                                                viewModel.searchDolarBcv()
+                                                onWeekend()
                                             }
                                         }
                                     }
