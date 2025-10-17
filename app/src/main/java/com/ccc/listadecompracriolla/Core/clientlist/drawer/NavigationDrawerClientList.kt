@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
+import com.ccc.listadecompracriolla.Core.directions.Directions.CALIFICATE
 import com.ccc.listadecompracriolla.ui.theme.Blue
 import com.ccc.listadecompracriolla.ui.theme.Red
 import com.ccc.listadecompracriolla.ui.theme.oro
@@ -69,7 +70,7 @@ fun NavigationDrawerClientList(
                 context.startActivity(
                     Intent(
                         Intent.ACTION_VIEW,
-                        "https://play.google.com/store/apps/details?id=com.ccc.listadecompracriolla".toUri()
+                        CALIFICATE.toUri()
                     )
                 )  },
             icon = { Icon(imageVector = Icons.Default.Favorite, "Calificanos", tint = oro) }

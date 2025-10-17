@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.net.toUri
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
+import com.ccc.listadecompracriolla.Core.directions.Directions.CALIFICATE
 import com.ccc.listadecompracriolla.R
 
 @Composable
@@ -97,7 +98,7 @@ fun DropDownMenuTop(
                     context.startActivity(
                         Intent(
                             Intent.ACTION_VIEW,
-                            "https://play.google.com/store/apps/details?id=com.ccc.listadecompracriolla".toUri()
+                            CALIFICATE.toUri()
                         )
                     )
                 },

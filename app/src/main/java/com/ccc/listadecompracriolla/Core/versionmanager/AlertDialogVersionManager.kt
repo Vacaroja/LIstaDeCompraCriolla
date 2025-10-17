@@ -12,6 +12,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import com.ccc.listadecompracriolla.Core.directions.Directions.CALIFICATE
+import com.ccc.listadecompracriolla.Core.directions.Directions.UPDATE
 import com.ccc.listadecompracriolla.R
 
 @Composable
@@ -39,14 +41,14 @@ fun ForcedUpdateDialog(onDismiss: () -> Unit) {
                         context.startActivity(
                             Intent(
                                 Intent.ACTION_VIEW,
-                                "https://play.google.com/store/apps/details?id=com.ccc.listadecompracriolla".toUri()
+                                UPDATE.toUri()
                             )
                         )
                     } catch (_: Exception) {
                         context.startActivity(
                             Intent(
                                 Intent.ACTION_VIEW,
-                                "https://play.google.com/apps/testing/com.ccc.listadecompracriolla".toUri()
+                                CALIFICATE.toUri()
                             )
                         )
                     }
