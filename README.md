@@ -1,12 +1,19 @@
 # Lista de compra criolla  
-![logo 3](https://github.com/user-attachments/assets/136b8b41-c1fa-47bf-afcc-9338eeaf4e06)
-  
+<img src="https://github.com/user-attachments/assets/136b8b41-c1fa-47bf-afcc-9338eeaf4e06" alt="LISTA DE COMPRA CRIOLLA" width="300" height="300">
+
 ¿Cansado de hacer compras y tener que usar la calculadora para saber si te queda suficiente?
 Con Lista de compra criolla se acabara todo esto, con ella puedes colocar rapidamente la cantidad que dinero que posees y podras llevar un control sobre que es lo que estas comprando
-  
+
+
+
 > [!IMPORTANT] 
 > Lista de compra criolla puede usarse sin conexion pero primera mente debe conectarse a internet al menos 1 vez para poder llamar a la API que provee la tasa del dolar del dia
-  
+
+## Ya disponible en:
+<a href="https://appgallery.huawei.com/app/C115633673">
+    <img src="https://github.com/user-attachments/assets/a29d232c-c5e4-4158-8b81-1d6e00aacd91" alt="Descargar en AppGallery" width="200" height="200">
+</a>
+
 ## Funcionamiento de la App
 Primero creas una lista nueva dandole en AÑADIR LISTA o en icono principal
 
