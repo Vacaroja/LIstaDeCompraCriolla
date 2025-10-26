@@ -13,8 +13,8 @@ Con Lista de compra criolla se acabara todo esto, con ella puedes colocar rapida
 <a href="https://appgallery.huawei.com/app/C115633673">
     <img src="https://github.com/user-attachments/assets/a29d232c-c5e4-4158-8b81-1d6e00aacd91" alt="Descargar en AppGallery" width="200" height="200">
 </a><br/>
-<a href='https://listadecompracriolla.en.uptodown.com/android' title='Download listaDeCompraCriolla' >
-                <img src='https://stc.utdstc.com/img/mediakit/download-gio-big-b.png' alt='Download listaDeCompraCriolla'>
+<a href='https://listadecompracriolla.uptodown.com/android' title='Descargar listaDeCompraCriolla' >
+                <img src='https://stc.utdstc.com/img/mediakit/download-gio-big-b.png' alt='Descargar listaDeCompraCriolla'>
                 </a>
 
 ## Funcionamiento de la App
