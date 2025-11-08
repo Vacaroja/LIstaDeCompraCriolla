@@ -26,8 +26,8 @@ val purpleHeart = Color(0xFF705cdd)
 val purpleHeartblack = Color(0xFF30256d)
 
 
-val unPressedColorButton = Color(0xFFB0B0BB)
-val pressedColorButton = Color(0xFF7B7B85)
+val unPressedColorButton = Color(0xFF16190B)
+val pressedColorButton = Color(0xFF808080)
 
 val black = Color(0xFF171616)
 val white = Color(0xFFFFFFFF)
