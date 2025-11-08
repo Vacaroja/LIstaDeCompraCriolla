@@ -29,6 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
@@ -62,9 +64,13 @@ fun ClientBalance(
         targetValue = if (deathPresu) Red else greenApple,
         animationSpec = tween(durationMillis = 200)
     )
+    val haptic = LocalHapticFeedback.current
     var textFieldValue by remember { mutableStateOf(TextFieldValue("")) }
     val bsOrDollar = if (tasa == 1f) "$" else " Bs."
 
+    LaunchedEffect(deathPresu) {//feedback para cuando se pasa de presupuesto
+        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+    }
     AnimatedContent(
         targetState = stateOfBalance,
         modifier = modifier.padding(all = 5.dp)
