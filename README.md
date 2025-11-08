@@ -10,6 +10,9 @@ Con Lista de compra criolla se acabara todo esto, con ella puedes colocar rapida
 > Lista de compra criolla puede usarse sin conexion pero primera mente debe conectarse a internet al menos 1 vez para poder llamar a la API que provee la tasa del dolar del dia
 
 ## Ya disponible en:
+<a href="https://play.google.com/store/apps/details?id=com.ccc.listadecompracriolla">
+    <img src="https://github.com/user-attachments/assets/647f2b4b-eb0d-479f-b9d0-40989938484b" alt="Descargar en Play Store" width="200" height="200">
+</a><br/>
 <a href="https://appgallery.huawei.com/app/C115633673">
     <img src="https://github.com/user-attachments/assets/a29d232c-c5e4-4158-8b81-1d6e00aacd91" alt="Descargar en AppGallery" width="200" height="200">
 </a><br/>
