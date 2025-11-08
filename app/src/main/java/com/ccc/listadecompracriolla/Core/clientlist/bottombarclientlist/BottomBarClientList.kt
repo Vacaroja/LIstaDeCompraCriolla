@@ -31,6 +31,8 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
 
     val total by viewModel.total.collectAsState()
     val inCar by viewModel.inCar.collectAsState()
+    val tasa by viewModel.tasa.collectAsState()
+
 
 //------------------------------------------Variables-----------------------------------------
     val fontSizeTasa = 120.dp
@@ -65,8 +67,6 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
 
         }
 
-
-
         VerticalDivider(
             color = white, thickness = 2.dp,
             modifier = modifier.padding(
@@ -76,9 +76,9 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
 //------------------------------------------BottomTotalPrice-----------------------------------------
 
         Icon(
-            painter = painterResource(id = R.drawable.dinero),
-            contentDescription = "",
-            modifier
+            painter = if (tasa == 1f) painterResource(id = R.drawable.dinero) else painterResource(R.drawable.bs_icono),
+            contentDescription = "Total",
+            modifier = modifier
                 .size(40.dp)
                 .padding(start = 5.dp),
             tint = white
