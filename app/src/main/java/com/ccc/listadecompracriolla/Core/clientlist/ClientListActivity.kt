@@ -215,7 +215,7 @@ fun ClientListScreen(
                                             } catch (_: Exception) {
                                                 "$tasa"
                                             },
-                                            actionLabel = "NO ES LA TASA",
+                                            actionLabel = "¿Fin de semana?",
                                             withDismissAction = true,
                                             duration = SnackbarDuration.Short
                                         )
