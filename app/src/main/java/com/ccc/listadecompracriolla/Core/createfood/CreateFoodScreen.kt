@@ -316,6 +316,7 @@ fun CreateFoodScreen(
                     .padding(top = 5.dp),
             ) {
                 Button(
+                    enabled = enableButton,
                     modifier = modifier.padding(horizontal = 10.dp),
                     onClick = { savedProduct() }) {
                     Text("Guardar")
@@ -325,6 +326,7 @@ fun CreateFoodScreen(
                     )
                 }
                 Button(
+                    enabled = enableButton,
                     modifier = modifier.padding(horizontal = 10.dp),
                     onClick = {
                         inCarProduct = true
