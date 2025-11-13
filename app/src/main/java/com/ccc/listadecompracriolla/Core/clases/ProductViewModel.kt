@@ -38,18 +38,29 @@ class ProductViewModel @Inject constructor(
     private val _bcvData = MutableStateFlow<ApiDolarServices?>(null)
 
     //StateFlow para el precio como Float
+    private val _bcvPriceEurFloat = MutableStateFlow<Float?>(null)
+    val bcvPriceEurFloat: StateFlow<Float?> = _bcvPriceEurFloat.asStateFlow()
     private val _bcvPriceFloat = MutableStateFlow<Float?>(null)
     val bcvPriceFloat: StateFlow<Float?> = _bcvPriceFloat.asStateFlow()
 
     private val _tasa = MutableStateFlow(1f)
     val tasa: StateFlow<Float> = _tasa.asStateFlow()
 
-    val isBcv: StateFlow<Boolean> = tasa.map { currentTasa ->
-        currentTasa != 1f
+    val isBcv: StateFlow<Int> = tasa.map { currentTasa ->
+        /*
+        1 = dollar
+        2 = bolivar * dollar
+        3 = bolivar * euro
+        */
+        when(currentTasa){
+            bcvPriceFloat.value -> 2
+            bcvPriceEurFloat.value -> 3
+            else -> 1
+        }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(200),
-        initialValue = _tasa.value != 1f
+        initialValue = 1
     )
 
     //--------------------------------------EMPTYCLIENT------------------------------------------
@@ -477,10 +488,13 @@ class ProductViewModel @Inject constructor(
             val responseFromDB = bcvRepository.getBcvData()
             if (responseFromDB != null) {
                 val bcvPrice = responseFromDB.usd
+                val bcvEur = responseFromDB.eur
                 _bcvData.value = responseFromDB
                 _bcvPriceFloat.value = bcvPrice?.toFloat()
+                _bcvPriceEurFloat.value = bcvEur?.toFloat()
             } else {
                 _bcvPriceFloat.value = -2f
+                _bcvPriceEurFloat.value = -2f
             }
         }
     }
@@ -494,7 +508,7 @@ class ProductViewModel @Inject constructor(
                 _tasa.value = when (tipoConversion) {
                     TipoConversion.DIRECTA -> 1f
                     TipoConversion.DOLAR_A_BCV -> bcvPriceFloat.value ?: 1f
-                    TipoConversion.DOLAR_A_BS_USDT -> 129f
+                    TipoConversion.DOLAR_A_BS_EUR -> bcvPriceEurFloat.value ?: 2f
                 }
             } catch (_: NumberFormatException) {
                 tipoConversion
@@ -502,7 +516,7 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    enum class TipoConversion { DIRECTA, DOLAR_A_BCV, DOLAR_A_BS_USDT }
+    enum class TipoConversion { DIRECTA, DOLAR_A_BCV, DOLAR_A_BS_EUR }
 
     //------------------------------------------validar tasa-----------------------------------
     fun validTasa(): Boolean {
@@ -543,12 +557,16 @@ class ProductViewModel @Inject constructor(
                 if (response != null) {
                     _bcvData.value = response
                     _bcvPriceFloat.value = df.format(response.usd).toFloat()
+                    _bcvPriceEurFloat.value = df.format(response.eur).toFloat()
                 } else {
                     _bcvPriceFloat.value = -1f
+                    _bcvPriceEurFloat.value = -1f
+
                 }
             } catch (_: Exception) {
                 // Manejo de fallos de red o excepciones de parseo
                 _bcvPriceFloat.value = -1f
+                _bcvPriceEurFloat.value = -1f
             } finally {
                 delay(1500)
                 _isLoading.value = false // Indica que la carga ha terminado

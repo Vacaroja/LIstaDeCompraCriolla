@@ -1,7 +1,5 @@
 package com.ccc.listadecompracriolla.Core.createfood
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
@@ -28,10 +26,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.R
+import com.ccc.listadecompracriolla.ui.buttoncolor.animateColorButtonClientList
 import com.ccc.listadecompracriolla.ui.theme.black
 import com.ccc.listadecompracriolla.ui.theme.greenApple
 import com.ccc.listadecompracriolla.ui.theme.pressedColorButton
-import com.ccc.listadecompracriolla.ui.theme.unPressedColorButton
 
 @Composable
 fun PriceCreateFood(
@@ -40,22 +38,25 @@ fun PriceCreateFood(
     focusPrice: FocusRequester,
     modifier: Modifier = Modifier,
     precio: String,
-    isPressed: Boolean,
+    isPressed: Int,
     validTasa: Boolean,
     newPrice: (String) -> Unit,
     onBsPrice: () -> Unit,
     onDollarPrice: () -> Unit,
-    onCantRequest:()-> Unit
+    onEurPrice: () -> Unit,
+    onCantRequest: () -> Unit
 
-    ) {
-    val animatedColorBs by animateColorAsState(
-        targetValue = if (!isPressed) pressedColorButton else greenApple,
-        animationSpec = tween(durationMillis = 200)
-    )
-    val animatedColorDolar by animateColorAsState(
-        targetValue = if (isPressed) pressedColorButton else greenApple,
-        animationSpec = tween(durationMillis = 200)
-    )
+) {
+    val animatedColorDollar by animateColorButtonClientList(isPressed,primaryColor = greenApple, secondaryColor = pressedColorButton)
+    val animatedColorBs by animateColorButtonClientList(isPressed,2,primaryColor = greenApple, secondaryColor = pressedColorButton)
+    val animatedColorEur by animateColorButtonClientList(isPressed,3,primaryColor = greenApple, secondaryColor = pressedColorButton)
+    val elevateLevel :(Int)-> Dp = { selected ->
+        if (isPressed == selected) 15.dp
+        else 2.dp
+
+    }
+
+
 
 
     Row {
@@ -71,7 +72,10 @@ fun PriceCreateFood(
                     newPrice(nuevoValor)
                 }
             },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            ),
             keyboardActions = KeyboardActions(onNext = {
                 onCantRequest()
             }),
@@ -90,7 +94,7 @@ fun PriceCreateFood(
         )
 
         //----------------------------boton pa costo en dolares--------------------------
-        if(!validTasa){
+        if (!validTasa) {
             Card(
                 modifier = modifier
                     .padding(start = 5.dp, top = 5.dp)
@@ -99,10 +103,10 @@ fun PriceCreateFood(
                     },
                 elevation = CardDefaults.cardElevation(
                     // Cambiar la elevación para simular el hundimiento
-                    defaultElevation = if (!isPressed) 2.dp else 15.dp
+                    defaultElevation = elevateLevel(1)
                 ),
                 colors = CardDefaults.cardColors(
-                    containerColor = animatedColorDolar
+                    containerColor = animatedColorDollar
                 )
             ) {
                 Icon(
@@ -123,7 +127,7 @@ fun PriceCreateFood(
                     },
                 elevation = CardDefaults.cardElevation(
                     // Cambiar la elevación para simular el hundimiento
-                    defaultElevation = if (isPressed) 2.dp else 15.dp
+                    defaultElevation = elevateLevel(2)
                 ),
                 colors = CardDefaults.cardColors(
                     containerColor = animatedColorBs
@@ -131,6 +135,29 @@ fun PriceCreateFood(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.bs_icono),
+                    contentDescription = "bolivares",
+                    modifier = modifier.size(50.dp),
+                    tint = black
+                )
+
+            }
+            Card(
+                modifier = modifier
+                    .padding(start = 5.dp, top = 5.dp)
+                    .clickable {
+                        onEurPrice()
+
+                    },
+                elevation = CardDefaults.cardElevation(
+                    // Cambiar la elevación para simular el hundimiento
+                    defaultElevation = elevateLevel(3)
+                ),
+                colors = CardDefaults.cardColors(
+                    containerColor = animatedColorEur
+                )
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.euro_symbol),
                     contentDescription = "bolivares",
                     modifier = modifier.size(50.dp),
                     tint = black

@@ -1,7 +1,6 @@
 package com.ccc.listadecompracriolla.Core.clientlist.top
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeOut
@@ -9,21 +8,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -32,16 +26,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.clientlist.alertbox.AlertBoxDeleteClient
-import com.ccc.listadecompracriolla.R
-import com.ccc.listadecompracriolla.ui.theme.greenMinus
 import com.ccc.listadecompracriolla.ui.theme.purpleHeart
-import com.ccc.listadecompracriolla.ui.theme.purpleHeartblack
 import com.ccc.listadecompracriolla.ui.theme.white
 
 
@@ -50,17 +38,13 @@ import com.ccc.listadecompracriolla.ui.theme.white
 fun TopMenu(
     modifier: Modifier = Modifier,
     viewModel: ProductViewModel,
-    onFailureApi: () -> Unit,
     onOpenDrawer: () -> Unit,
-    showRateActual: () -> Unit,
-    ) {
+) {
     var bottomSheetClient by remember { mutableStateOf(false) }
     var bottomSheetNewClient by remember { mutableStateOf(false) }
     var isExpandedMenu by remember { mutableStateOf(false) }
     var reseterPrices by remember { mutableStateOf(false) }
 
-
-    val isPressed by viewModel.isBcv.collectAsState()
 
     var deleteAll by remember { mutableStateOf(false) }
     var changedClientName: String? by remember { mutableStateOf(null) }
@@ -69,137 +53,82 @@ fun TopMenu(
     val actualList by viewModel.actualList.collectAsState()
     val isEmptyClient by viewModel.emptyClient.collectAsState()
 
-    val animatedColorBs by animateColorAsState(
-        targetValue = if (isPressed) purpleHeartblack else purpleHeart,
-        animationSpec = tween(durationMillis = 200)
-    )
-    val animatedColorDolar by animateColorAsState(
-        targetValue = if (!isPressed) purpleHeartblack else purpleHeart,
-        animationSpec = tween(durationMillis = 200)
-    )
+
     val secondAnimationTop = 800
 
     TopAppBar(
-            title = {
+        title = {
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { bottomSheetClient = true },
-                    horizontalArrangement = Arrangement.Center, // Centra el contenido en el Row
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = if (isEmptyClient) "Añadir lista" else "${actualList.name}",
-                        textAlign = TextAlign.Center,
-                    )
-                    Icon(Icons.Default.ArrowDropDown, contentDescription = "Listas")
-                }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { bottomSheetClient = true },
+                horizontalArrangement = Arrangement.Center, // Centra el contenido en el Row
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = if (isEmptyClient) "Añadir lista" else "${actualList.name}",
+                    textAlign = TextAlign.Center,
+                )
+                Icon(Icons.Default.ArrowDropDown, contentDescription = "Listas")
+            }
 
 
 //------------------------------------------NavigationIcons-----------------------------------------
 
-            }, navigationIcon = {
-                IconButton(onClick = { onOpenDrawer() }) {//BOTON PARA DRAWER
-                    Icon(
-                        imageVector = Icons.Default.Menu,
-                        contentDescription = "Back"
-                    )
-                }
+        }, navigationIcon = {
+            IconButton(onClick = { onOpenDrawer() }) {//BOTON PARA DRAWER
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = "Back"
+                )
+            }
 
 
-            }, actions = {
-//------------------------------------------DolarToDolar-----------------------------------------
+        }, actions = {
 
-                Card(
-                    modifier.clickable {
-                        viewModel.actualizarTasa(ProductViewModel.TipoConversion.DIRECTA)
-                    },
-                    colors = CardDefaults.cardColors(
-                        containerColor = animatedColorDolar
-                    )
-                ) {//BOTON PARA LAS CAMBIAR A DOLAR
-                    Icon(
-                        painter = painterResource(id = R.drawable.dolar),
-                        contentDescription = "Settings",
-                        modifier = modifier.size(45.dp),
-                        tint = greenMinus
-                    )
-                }
 //------------------------------------------VerticalDivider-----------------------------------------
 
-                VerticalDivider(
-                    color = Color.Black, thickness = 2.dp,
-                    modifier = modifier.padding(
-                        top = 3.dp,
-                        bottom = 4.dp,
-                        start = 4.dp,
-                        end = 2.dp
-                    )
-                )
-//------------------------------------------DolarToBCV-----------------------------------------
-
-                Card(
-                    modifier.clickable {
-
-                        if (viewModel.validTasa()) {
-                            onFailureApi()
-                        } else {
-                            showRateActual()
-                            viewModel.actualizarTasa(ProductViewModel.TipoConversion.DOLAR_A_BCV)
-                        }
-                    },
-                    colors = CardDefaults.cardColors(
-                        containerColor = animatedColorBs
-                    )
-                ) {//BOTON PARA LAS CAMBIAR A DOLAR BCV
-                    Icon(
-                        painter = painterResource(id = R.drawable.bs_icono),
-                        contentDescription = "bcv",
-                        modifier = modifier.size(50.dp),
-                        tint = greenMinus
-                    )
-                }
 
 //------------------------------------------ButtonMore-----------------------------------------
 
-                IconButton(onClick = { isExpandedMenu = true }) {//BOTON PARA LAS OPCIONES
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "More"
-                    )
-                }
-                AnimatedVisibility(
-                    true,
-                    enter = expandVertically(),
-                    exit = fadeOut(animationSpec = tween(durationMillis = secondAnimationTop))
-                ) {
-                    DropDownMenuTop(
-                        expanded = isExpandedMenu,
-                        viewModel = viewModel,
-                        onExpandex = { isExpandedMenu = !isExpandedMenu },
-                        onDeleteAll = {
-                            deleteAll = true
-                            isExpandedMenu = false
-                        },
-                        onAllToggle = { toggle ->
-                            viewModel.toggleCheckAllByClient(actualList.id, toggle)
-                            isExpandedMenu = false
-                        }
-                    ) {
-                        reseterPrices = true
+            IconButton(onClick = { isExpandedMenu = true }) {//BOTON PARA LAS OPCIONES
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "More"
+                )
+            }
+            AnimatedVisibility(
+                true,
+                enter = expandVertically(),
+                exit = fadeOut(animationSpec = tween(durationMillis = secondAnimationTop))
+            ) {
+                DropDownMenuTop(
+                    expanded = isExpandedMenu,
+                    viewModel = viewModel,
+                    onExpandex = { isExpandedMenu = !isExpandedMenu },
+                    onDeleteAll = {
+                        deleteAll = true
+                        isExpandedMenu = false
+                    },
+                    onAllToggle = { toggle ->
+                        viewModel.toggleCheckAllByClient(actualList.id, toggle)
+                        isExpandedMenu = false
                     }
+                ) {
+                    reseterPrices = true
                 }
-            },
+            }
+        },
 //------------------------------------------colores-----------------------------------------
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = purpleHeart,
-                scrolledContainerColor = purpleHeart,
-                navigationIconContentColor = white,
-                titleContentColor = white,
-                actionIconContentColor = white,
-            )
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = purpleHeart,
+            scrolledContainerColor = purpleHeart,
+            navigationIconContentColor = white,
+            titleContentColor = white,
+            actionIconContentColor = white,
         )
+    )
 
     if (bottomSheetClient) {
         ModalBottomSheetClientList(
