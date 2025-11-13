@@ -35,7 +35,9 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.clientlist.alertbox.AlertBoxDeleteClient
-
+/*
+        Pantalla para mostrar y crear las listas
+*/
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ModalBottomSheetClientList(
@@ -106,8 +108,6 @@ fun ModalBottomSheetClientList(
                                     .widthIn(min = 120.dp, max = 120.dp)
                                     .padding(6.dp)
                             )
-
-
 
                             IconButton(onClick = {
                                 onChangeName(client.name, client.id)
