@@ -45,6 +45,7 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
     val inCar by viewModel.inCar.collectAsState()
     var pressedPercent by remember { mutableStateOf(false) }
     val isPressed by viewModel.isBcv.collectAsState()
+    val isEmptyClient by viewModel.emptyClient.collectAsState()
 
     val iconSymbol by viewModel.iconSymbol.collectAsState()
 
@@ -89,19 +90,21 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
                     vertical = 7.dp, horizontal = 20.dp
                 )
             )
-            Card(
-                border = BorderStroke(1.dp, white), modifier = modifier.clickable(
-                    onClick = { pressedPercent = true },
-                ), colors = CardDefaults.cardColors(oro)
-            ) {
-                IconButton(onClick = { pressedPercent = true }) {
-                    Icon(
-                        painter = painterResource(R.drawable.percent_icon),
-                        contentDescription = "Cuotas",
-                        tint = black
-                    )
-                }
+            if(!isEmptyClient){
+                Card(
+                    border = BorderStroke(1.dp, white), modifier = modifier.clickable(
+                        onClick = { pressedPercent = true },
+                    ), colors = CardDefaults.cardColors(oro)
+                ) {
+                    IconButton(onClick = { pressedPercent = true }) {
+                        Icon(
+                            painter = painterResource(R.drawable.percent_icon),
+                            contentDescription = "Cuotas",
+                            tint = black
+                        )
+                    }
 
+                }
             }
 
         }
