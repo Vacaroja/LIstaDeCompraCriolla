@@ -42,6 +42,7 @@ fun CoutesModal(
     modifier: Modifier = Modifier,
     total: Float = 1f,
     viewModel: ProductViewModel,
+    isPressed: Int,
     onDismiss: () -> Unit
 ) {
     // valores iniciales
@@ -56,13 +57,8 @@ fun CoutesModal(
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
     )
-    val isPressed by viewModel.isBcv.collectAsState()
+    val moneySymbol by viewModel.moneySymbol.collectAsState()
 
-    val moneySymbol = when (isPressed) {
-        3 -> "€"
-        2 -> "Bs"
-        else -> "$"
-    }
 
 
 

@@ -32,6 +32,7 @@ import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.clientlist.bottombarclientlist.coutesview.CoutesModal
 import com.ccc.listadecompracriolla.Core.formatterdata.formatNumber
 import com.ccc.listadecompracriolla.R
+import com.ccc.listadecompracriolla.ui.theme.black
 import com.ccc.listadecompracriolla.ui.theme.oro
 import com.ccc.listadecompracriolla.ui.theme.purpleHeart
 import com.ccc.listadecompracriolla.ui.theme.white
@@ -42,8 +43,10 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
 
     val total by viewModel.total.collectAsState()
     val inCar by viewModel.inCar.collectAsState()
-    val tasa by viewModel.tasa.collectAsState()
     var pressedPercent by remember { mutableStateOf(false) }
+    val isPressed by viewModel.isBcv.collectAsState()
+
+    val iconSymbol by viewModel.iconSymbol.collectAsState()
 
 
 //------------------------------------------Variables-----------------------------------------
@@ -95,6 +98,7 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
                     Icon(
                         painter = painterResource(R.drawable.percent_icon),
                         contentDescription = "Cuotas",
+                        tint = black
                     )
                 }
 
@@ -104,7 +108,7 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
 //------------------------------------------BottomTotalPrice-----------------------------------------
 
         Icon(
-            painter = if (tasa == 1f) painterResource(id = R.drawable.dinero) else painterResource(R.drawable.bs_icono),
+            painter = painterResource(iconSymbol),
             contentDescription = "Total",
             modifier = modifier
                 .size(40.dp)
@@ -129,7 +133,10 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
             )
         }
         if (pressedPercent) {
-            CoutesModal(viewModel = viewModel, total = total) { pressedPercent = false }
+            CoutesModal(
+                viewModel = viewModel, total = total,
+                isPressed =  isPressed,
+            ) { pressedPercent = false }
         }
     }
 }

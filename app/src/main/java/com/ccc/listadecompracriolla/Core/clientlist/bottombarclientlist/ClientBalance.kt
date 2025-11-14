@@ -66,7 +66,8 @@ fun ClientBalance(
     )
     val haptic = LocalHapticFeedback.current
     var textFieldValue by remember { mutableStateOf(TextFieldValue("")) }
-    val bsOrDollar = if (tasa == 1f) "$" else " Bs."
+    val moneySymbol by viewModel.moneySymbol.collectAsState()
+    val iconSymbol by viewModel.iconSymbol.collectAsState()
 
     LaunchedEffect(deathPresu) {//feedback para cuando se pasa de presupuesto
         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -94,19 +95,13 @@ fun ClientBalance(
                         }
                     },
                     leadingIcon = {
-                        if (tasa == 1f) {
+
                             Icon(
-                                painter = painterResource(id = R.drawable.dolar),
-                                contentDescription = "Presupuesto dolares",
+                                painter = painterResource(id = iconSymbol),
+                                contentDescription = "Presupuesto moneda",
                                 modifier = Modifier.size(30.dp),
                             )
-                        } else {
-                            Icon(
-                                painter = painterResource(id = R.drawable.bolivar),
-                                contentDescription = "Presupuesto Bolivares",
-                                modifier = Modifier.size(30.dp),
-                            )
-                        }
+
                     },
                     shape = MaterialTheme.shapes.large,
                     singleLine = true,
@@ -159,7 +154,7 @@ fun ClientBalance(
                             onDimiss()
                         }) {
                             Text(
-                                text = (formatNumber((presupuesto.toFloat() * tasa) - (inCar)) + bsOrDollar),
+                                text = (formatNumber((presupuesto.toFloat() * tasa) - (inCar)) + moneySymbol),
                                 fontSize = 16.sp,
                                 maxLines = 1,
                                 color = black
