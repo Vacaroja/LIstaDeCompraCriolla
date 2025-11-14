@@ -83,7 +83,7 @@ fun RateButton(
                     )
                 ) {//BOTON PARA LAS CAMBIAR A DOLAR BCV
                     Icon(
-                        painter = painterResource(id = R.drawable.bs_icono),
+                        painter = painterResource(id = R.drawable.bsdollar),
                         contentDescription = "DollarBCV",
                         modifier = modifier
                             .size(50.dp)
@@ -108,7 +108,7 @@ fun RateButton(
                     )
                 ) {//BOTON PARA LAS CAMBIAR A DOLAR BCV
                     Icon(
-                        painter = painterResource(id = R.drawable.euro_symbol),
+                        painter = painterResource(id = R.drawable.bseur),
                         contentDescription = "EuroBCV",
                         modifier = modifier
                             .size(50.dp)

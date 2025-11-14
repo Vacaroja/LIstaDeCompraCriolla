@@ -134,7 +134,7 @@ fun PriceCreateFood(
                 )
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.bs_icono),
+                    painter = painterResource(R.drawable.bsdollar),
                     contentDescription = "bolivares",
                     modifier = modifier.size(50.dp),
                     tint = black
@@ -157,7 +157,7 @@ fun PriceCreateFood(
                 )
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.euro_symbol),
+                    painter = painterResource(R.drawable.bseur),
                     contentDescription = "bolivares",
                     modifier = modifier.size(50.dp),
                     tint = black

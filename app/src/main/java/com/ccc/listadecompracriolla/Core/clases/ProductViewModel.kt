@@ -211,8 +211,8 @@ class ProductViewModel @Inject constructor(
 
     val iconSymbol: StateFlow<Int> = isBcv.map { isPressedValue ->
         when (isPressedValue) {
-            3 -> R.drawable.euro_symbol // Asegúrate de que R.drawable.euro_symbol existe
-            2 -> R.drawable.bs_icono    // Asegúrate de que R.drawable.bs_icono existe
+            3 -> R.drawable.bseur // Asegúrate de que R.drawable.euro_symbol existe
+            2 -> R.drawable.bsdollar    // Asegúrate de que R.drawable.bs_icono existe
             else -> R.drawable.dinero   // Asegúrate de que R.drawable.dinero existe
         }
     }.stateIn(
@@ -224,8 +224,8 @@ class ProductViewModel @Inject constructor(
     // 3. Valor Derivado 2: Símbolo de Texto (String) para la Moneda
     val moneySymbol: StateFlow<String> = isBcv.map { isPressedValue ->
         when (isPressedValue) {
-            3 -> " €"
-            2 -> " Bs"
+            3 -> " Bs/€"
+            2 -> " Bs/$"
             else -> " $"
         }
     }.stateIn(
