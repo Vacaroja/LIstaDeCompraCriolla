@@ -18,7 +18,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -65,6 +64,7 @@ import com.ccc.listadecompracriolla.Core.clientlist.drawer.NavigationDrawerClien
 import com.ccc.listadecompracriolla.Core.clientlist.lottieanimations.AnimationAddList
 import com.ccc.listadecompracriolla.Core.clientlist.lottieanimations.AnimationArrowAddList
 import com.ccc.listadecompracriolla.Core.clientlist.principal.LazyListClient
+import com.ccc.listadecompracriolla.Core.clientlist.principal.ratesbuttons.RateButton
 import com.ccc.listadecompracriolla.Core.clientlist.top.CreateClientList
 import com.ccc.listadecompracriolla.Core.clientlist.top.TopClientListSelected
 import com.ccc.listadecompracriolla.Core.clientlist.top.TopMenu
@@ -99,7 +99,20 @@ fun ClientListScreen(
     val isCompleted by viewModel.completedActualList.collectAsState()
     val isSelected by viewModel.selectedProductIds.collectAsState()
     val isEmptyClient by viewModel.emptyClient.collectAsState()
-    val tasa by viewModel.bcvPriceFloat.collectAsState()
+    val tasa by viewModel.tasa.collectAsState()
+    val bsBcv by viewModel.bcvPriceFloat.collectAsState()
+    val eurBcv by viewModel.bcvPriceEurFloat.collectAsState()
+    val isPressed by viewModel.isBcv.collectAsState()
+
+    val showTasa :()-> String = {
+            "Tasa Actual: \n" + try {
+                "$ ${formatNumber(bsBcv!!)} / € ${formatNumber(eurBcv!!)}"
+            } catch (_: Exception) {
+                "$tasa"
+            }
+
+    }
+
 
     var createNewList by remember { mutableStateOf(false) }
     var showUpdateDialog by remember { mutableStateOf(false) }
@@ -206,58 +219,7 @@ fun ClientListScreen(
                                             if (isClosed) open() else close()
                                         }
                                     }
-                                },
-                                showRateActual = {
-                                    coroutineScope.launch {
-                                        val result = snackbarHostState.showSnackbar(
-                                            message = "TASA ACTUAL: " + try {
-                                                formatNumber(tasa!!)
-                                            } catch (_: Exception) {
-                                                "$tasa"
-                                            },
-                                            actionLabel = "¿Fin de semana?",
-                                            withDismissAction = true,
-                                            duration = SnackbarDuration.Short
-                                        )
-                                        when (result) {
-                                            SnackbarResult.Dismissed -> {
-                                            }
-
-                                            SnackbarResult.ActionPerformed -> {
-                                                onWeekend()
-                                            }
-                                        }
-                                    }
-                                },
-                                onFailureApi = {//on failure Api show snackBar to internet
-                                    coroutineScope.launch {
-                                        val result = snackbarHostState.showSnackbar(
-                                            message = "Debe conectarse a internet para usar el conversor de tasas",
-                                            actionLabel = "Ya estoy conectado",
-                                            duration = SnackbarDuration.Short
-                                        )
-                                        when (result) {
-                                            SnackbarResult.Dismissed -> {
-                                                viewModel.chargeDolarFromDB()
-                                                if (viewModel.validTasa()) {
-                                                    snackbarHostState.showSnackbar(
-                                                        "Se usara la ultima tasa guardada, recargue para volver a intenter buscar la tasa",
-                                                        actionLabel = "OK"
-                                                    )
-                                                } else {
-                                                    snackbarHostState.showSnackbar(
-                                                        "No se encuentra ninguna tasa guardada para usar, conectese a internet si quiere usar el convertidor de tasas",
-                                                        actionLabel = "OK"
-                                                    )
-                                                }
-                                            }
-
-                                            SnackbarResult.ActionPerformed -> {
-                                                onWeekend()
-                                            }
-                                        }
-                                    }
-                                },
+                                }
                             )
                         }
                     }
@@ -361,12 +323,65 @@ fun ClientListScreen(
                                     viewModel.clearSelections()
                                 }
                             )
-                            Row(
+                            Column(
                                 modifier = modifier
                                     .align(Alignment.BottomStart)
                                     .padding(innerpadding)
                                 // Asegura que el botón esté por encima
                             ) {
+                                RateButton(
+                                    viewModel = viewModel,
+                                    onFailureApi = {
+                                        //on failure Api show snackBar to internet
+                                        coroutineScope.launch {
+                                            val result = snackbarHostState.showSnackbar(
+                                                message = "Debe conectarse a internet",
+                                                actionLabel = "Recargar app",
+                                                withDismissAction = true,
+                                                duration = SnackbarDuration.Short
+                                            )
+                                            when (result) {
+                                                SnackbarResult.Dismissed -> {
+                                                    viewModel.chargeDolarFromDB()
+                                                    if (viewModel.validTasa()) {
+                                                        snackbarHostState.showSnackbar(
+                                                            "Se usara la ultima tasa guardada, recargue para volver a buscar la tasa",
+                                                            actionLabel = "OK"
+                                                        )
+                                                    } else {
+                                                        snackbarHostState.showSnackbar(
+                                                            "No se encuentra ninguna tasa guardada para usar, conectese a internet si quiere usar el convertidor de tasas",
+                                                            actionLabel = "OK"
+                                                        )
+                                                    }
+                                                }
+
+                                                SnackbarResult.ActionPerformed -> {
+                                                    onWeekend()
+                                                }
+                                            }
+                                        }
+                                    },
+                                    showActualRate = {
+                                        coroutineScope.launch {
+                                            val result = snackbarHostState.showSnackbar(
+                                                message = showTasa(),
+                                                actionLabel = "¿Fin de semana?",
+                                                withDismissAction = true,
+                                                duration = SnackbarDuration.Short
+                                            )
+                                            when (result) {
+                                                SnackbarResult.Dismissed -> {
+                                                }
+
+                                                SnackbarResult.ActionPerformed -> {
+                                                    onWeekend()
+                                                }
+                                            }
+                                        }
+                                    },
+                                    isPressed = isPressed,
+                                )
                                 ClientBalance(viewModel, stateOfBalance = stateOfBalance) {
                                     stateOfBalance = !stateOfBalance
                                 }

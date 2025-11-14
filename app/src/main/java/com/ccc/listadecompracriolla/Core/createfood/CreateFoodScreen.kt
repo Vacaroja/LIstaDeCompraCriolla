@@ -235,6 +235,7 @@ fun CreateFoodScreen(
                 newPrice = { nuevoValor -> precio = nuevoValor },
                 onBsPrice = { viewModel.actualizarTasa(ProductViewModel.TipoConversion.DOLAR_A_BCV) },
                 onDollarPrice = { viewModel.actualizarTasa() },
+                onEurPrice = {viewModel.actualizarTasa(ProductViewModel.TipoConversion.DOLAR_A_BS_EUR)},
                 onCantRequest = { focusCant.requestFocus() },
             )
 

@@ -1,6 +1,7 @@
 package com.ccc.listadecompracriolla.Core.clientlist.bottombarclientlist
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -10,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -30,6 +32,7 @@ import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.clientlist.bottombarclientlist.coutesview.CoutesModal
 import com.ccc.listadecompracriolla.Core.formatterdata.formatNumber
 import com.ccc.listadecompracriolla.R
+import com.ccc.listadecompracriolla.ui.theme.oro
 import com.ccc.listadecompracriolla.ui.theme.purpleHeart
 import com.ccc.listadecompracriolla.ui.theme.white
 
@@ -44,7 +47,7 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
 
 
 //------------------------------------------Variables-----------------------------------------
-    val fontSizeTasa = 120.dp
+    val fontSizeTasa = 110.dp
 
     BottomAppBar(containerColor = purpleHeart) {
 
@@ -76,20 +79,25 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
 
         }
 
-        Box(contentAlignment = Alignment.Center){
+        Box(contentAlignment = Alignment.Center) {
             VerticalDivider(
                 color = white, thickness = 2.dp,
                 modifier = modifier.padding(
                     vertical = 7.dp, horizontal = 20.dp
                 )
             )
-            Card(border = BorderStroke(1.dp, white)) {
+            Card(
+                border = BorderStroke(1.dp, white), modifier = modifier.clickable(
+                    onClick = { pressedPercent = true },
+                ), colors = CardDefaults.cardColors(oro)
+            ) {
                 IconButton(onClick = { pressedPercent = true }) {
                     Icon(
                         painter = painterResource(R.drawable.percent_icon),
                         contentDescription = "Cuotas",
                     )
                 }
+
             }
 
         }
@@ -120,8 +128,8 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
                 color = white
             )
         }
-        if (pressedPercent){
-            CoutesModal(total = total){pressedPercent = false }
+        if (pressedPercent) {
+            CoutesModal(total = total) { pressedPercent = false }
         }
     }
 }
