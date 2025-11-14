@@ -110,7 +110,6 @@ fun ClientListScreen(
             } catch (_: Exception) {
                 "$tasa"
             }
-
     }
 
 

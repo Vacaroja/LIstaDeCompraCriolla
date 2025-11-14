@@ -129,7 +129,7 @@ fun BottomClientList(modifier: Modifier = Modifier, viewModel: ProductViewModel)
             )
         }
         if (pressedPercent) {
-            CoutesModal(total = total) { pressedPercent = false }
+            CoutesModal(viewModel = viewModel, total = total) { pressedPercent = false }
         }
     }
 }
