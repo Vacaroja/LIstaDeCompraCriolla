@@ -2,6 +2,7 @@ package com.ccc.listadecompracriolla.Core.clases
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ccc.listadecompracriolla.R
 import com.ccc.listadecompracriolla.database.entities.ToClientList
 import com.ccc.listadecompracriolla.database.entities.toProduct
 import com.ccc.listadecompracriolla.pydolarnetwork.ApiDolarServices
@@ -207,6 +208,31 @@ class ProductViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(200),
             initialValue = Pair(emptyList(), emptyList())
         )
+
+    val iconSymbol: StateFlow<Int> = isBcv.map { isPressedValue ->
+        when (isPressedValue) {
+            3 -> R.drawable.euro_symbol // Asegúrate de que R.drawable.euro_symbol existe
+            2 -> R.drawable.bs_icono    // Asegúrate de que R.drawable.bs_icono existe
+            else -> R.drawable.dinero   // Asegúrate de que R.drawable.dinero existe
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = R.drawable.dinero
+    )
+
+    // 3. Valor Derivado 2: Símbolo de Texto (String) para la Moneda
+    val moneySymbol: StateFlow<String> = isBcv.map { isPressedValue ->
+        when (isPressedValue) {
+            3 -> " €"
+            2 -> " Bs"
+            else -> " $"
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = "$"
+    )
 
     //--------------------------------------------INIT-----------------------------------------------
     init {
