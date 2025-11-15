@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -24,8 +23,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.ccc.listadecompracriolla.R
+import com.ccc.listadecompracriolla.ui.animation.InfiniteAnimationIconRates
 import com.ccc.listadecompracriolla.ui.buttoncolor.animateColorButtonClientList
-import com.ccc.listadecompracriolla.ui.theme.black
 import com.ccc.listadecompracriolla.ui.theme.greenApple
 import com.ccc.listadecompracriolla.ui.theme.pressedColorButton
 
@@ -50,7 +49,6 @@ fun PriceCreateFood(
     val elevateLevel :(Int)-> Dp = { selected ->
         if (isPressed == selected) 15.dp
         else 2.dp
-
     }
     Row {
         OutlinedTextField(
@@ -84,7 +82,7 @@ fun PriceCreateFood(
             shape = MaterialTheme.shapes.medium,  // Esquinas redondeadas
         )
 
-        //----------------------------boton pa costo en dolares--------------------------
+        //------------------------------------ USD -------------------------------------------
         if (!validTasa) {
             Card(
                 modifier = modifier
@@ -100,21 +98,18 @@ fun PriceCreateFood(
                     containerColor = animatedColorDollar
                 )
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.dolar),
-                    contentDescription = "bolivares",
-                    modifier = modifier.size(50.dp),
-                    tint = black
+                InfiniteAnimationIconRates(
+                    modifier = modifier,
+                    secondaryIcon = R.drawable.dolar,
                 )
 
             }
-            //----------------------------boton pa costo en bolivares--------------------------
+//--------------------------------- BS / USD RATE ----------------------------------------
             Card(
                 modifier = modifier
                     .padding(start = 5.dp, top = 5.dp)
                     .clickable {
                         onBsPrice()
-
                     },
                 elevation = CardDefaults.cardElevation(
                     // Cambiar la elevación para simular el hundimiento
@@ -124,20 +119,18 @@ fun PriceCreateFood(
                     containerColor = animatedColorBs
                 )
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.bsdollar),
-                    contentDescription = "bolivares",
-                    modifier = modifier.size(50.dp),
-                    tint = black
+                InfiniteAnimationIconRates(
+                    modifier = modifier,
+                    secondaryIcon = R.drawable.bs_icono,
+                    primaryIcon = R.drawable.bsdollar,
                 )
-
             }
+//------------------------------------------- BS / Eur Rate ---------------------------------------------
             Card(
                 modifier = modifier
                     .padding(start = 5.dp, top = 5.dp)
                     .clickable {
                         onEurPrice()
-
                     },
                 elevation = CardDefaults.cardElevation(
                     // Cambiar la elevación para simular el hundimiento
@@ -147,11 +140,10 @@ fun PriceCreateFood(
                     containerColor = animatedColorEur
                 )
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.bseur),
-                    contentDescription = "bolivares",
-                    modifier = modifier.size(50.dp),
-                    tint = black
+                InfiniteAnimationIconRates(
+                    modifier = modifier,
+                    secondaryIcon = R.drawable.euro_symbol,
+                    primaryIcon = R.drawable.bseur,
                 )
 
             }

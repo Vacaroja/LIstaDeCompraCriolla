@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ccc.listadecompracriolla.Core.clases.ProductViewModel
 import com.ccc.listadecompracriolla.Core.clases.coutes.funtioncoutes
+import com.ccc.listadecompracriolla.Core.clientlist.bottombarclientlist.ClientBalance
 import com.ccc.listadecompracriolla.Core.clientlist.principal.ratesbuttons.RateButton
 import com.ccc.listadecompracriolla.Core.formatterdata.formatNumber
 import kotlin.math.roundToInt

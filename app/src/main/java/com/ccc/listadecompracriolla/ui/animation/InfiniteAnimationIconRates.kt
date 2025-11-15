@@ -15,15 +15,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-
+import com.ccc.listadecompracriolla.ui.theme.black
+/*
+    -First Icon for the no principal Icon
+    -Second Icon for the principal Icon
+ */
 @Composable
 fun InfiniteAnimationIconRates(
     modifier: Modifier,
-    animatedColorNoPressed: Color,
-    icono1: Int,
-    icono2: Int = icono1
+    animatedColorNoPressed: Color = black,
+    secondaryIcon: Int,
+    primaryIcon: Int = secondaryIcon
 ) {
     val duration = 5000
 
@@ -40,7 +45,7 @@ fun InfiniteAnimationIconRates(
 
     Box(modifier = modifier) {
         Icon(
-            painter = painterResource(id = icono1),
+            painter = painterResource(id = primaryIcon),
             contentDescription = "DollarBCV",
             modifier = modifier
                 .size(50.dp)
@@ -52,7 +57,7 @@ fun InfiniteAnimationIconRates(
             tint = animatedColorNoPressed
         )
         Icon(
-            painter = painterResource(id = icono2),
+            painter = painterResource(id = secondaryIcon),
             contentDescription = "DollarBCV",
             modifier = modifier
                 .size(50.dp)
