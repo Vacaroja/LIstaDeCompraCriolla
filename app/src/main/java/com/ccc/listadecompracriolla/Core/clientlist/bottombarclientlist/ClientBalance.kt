@@ -2,6 +2,7 @@ package com.ccc.listadecompracriolla.Core.clientlist.bottombarclientlist
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
@@ -64,13 +65,20 @@ fun ClientBalance(
         targetValue = if (deathPresu) Red else greenApple,
         animationSpec = tween(durationMillis = 200)
     )
-    val haptic = LocalHapticFeedback.current
     var textFieldValue by remember { mutableStateOf(TextFieldValue("")) }
     val moneySymbol by viewModel.moneySymbol.collectAsState()
     val iconSymbol by viewModel.iconSymbol.collectAsState()
 
+    //HAPTIC AND VISUAL FEEDBACK
+    val haptic = LocalHapticFeedback.current
+    val cardSize = 15f
+    val animateCard = remember { Animatable(cardSize) }
+
     LaunchedEffect(deathPresu) {//feedback para cuando se pasa de presupuesto
         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+        animateCard.animateTo(cardSize*2, animationSpec = tween(500))
+        animateCard.animateTo(cardSize, animationSpec = tween(500))
+
     }
     AnimatedContent(
         targetState = stateOfBalance,
@@ -142,7 +150,7 @@ fun ClientBalance(
                                 else painterResource(id = R.drawable.okcard)
                             },
                             contentDescription = "Presupuesto",
-                            modifier = Modifier.size(30.dp),
+                            modifier = Modifier.size(animateCard.value.dp*2),
                             tint = black
                         )
 
@@ -155,7 +163,7 @@ fun ClientBalance(
                         }) {
                             Text(
                                 text = (formatNumber((presupuesto.toFloat() * tasa) - (inCar)) + moneySymbol),
-                                fontSize = 16.sp,
+                                fontSize = cardSize.sp,
                                 maxLines = 1,
                                 color = black
                             )
