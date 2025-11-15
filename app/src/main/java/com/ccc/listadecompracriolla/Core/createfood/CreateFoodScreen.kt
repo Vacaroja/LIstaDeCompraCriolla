@@ -41,6 +41,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -111,8 +112,6 @@ fun CreateFoodScreen(
 
     val focusManager = LocalFocusManager.current
     val focusname = remember { FocusRequester() }
-    val focusPrice = remember { FocusRequester() }
-    val focusCant = remember { FocusRequester() }
 
 
     //-----------------------------TextFieldParameter--------------------------
@@ -221,12 +220,11 @@ fun CreateFoodScreen(
                     imeAction = ImeAction.Next
                 ),
                 keyboardActions = KeyboardActions(onNext = {
-                    focusPrice.requestFocus()
+                    focusManager.moveFocus(FocusDirection.Down)
                 }),
             )
 
             PriceCreateFood(
-                focusPrice = focusPrice,
                 textFieldMediumWidth = textFieldMediumWidth,
                 textFieldMediumHeight = textFieldMediumHeight,
                 precio = precio,
@@ -236,7 +234,7 @@ fun CreateFoodScreen(
                 onBsPrice = { viewModel.actualizarTasa(ProductViewModel.TipoConversion.DOLAR_A_BCV) },
                 onDollarPrice = { viewModel.actualizarTasa() },
                 onEurPrice = {viewModel.actualizarTasa(ProductViewModel.TipoConversion.DOLAR_A_BS_EUR)},
-                onCantRequest = { focusCant.requestFocus() },
+                onCantRequest = { focusManager.moveFocus(FocusDirection.Down) },
             )
 
 
@@ -255,8 +253,7 @@ fun CreateFoodScreen(
                     modifier = modifier
                         .padding(horizontal = 5.dp)
                         .width(textFieldMediumWidth)
-                        .heightIn(min = textFieldMediumHeight)
-                        .focusRequester(focusCant),
+                        .heightIn(min = textFieldMediumHeight),
                     value = cantidad,
                     onValueChange = { nuevoValor ->
                         if (nuevoValor.isEmpty() || nuevoValor.matches(Regex("^\\d*\\.?\\d*$"))) {
