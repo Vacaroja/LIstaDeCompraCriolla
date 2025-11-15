@@ -17,8 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -35,7 +33,6 @@ import com.ccc.listadecompracriolla.ui.theme.pressedColorButton
 fun PriceCreateFood(
     textFieldMediumWidth: Dp,
     textFieldMediumHeight: Dp,
-    focusPrice: FocusRequester,
     modifier: Modifier = Modifier,
     precio: String,
     isPressed: Int,
@@ -55,17 +52,11 @@ fun PriceCreateFood(
         else 2.dp
 
     }
-
-
-
-
     Row {
         OutlinedTextField(
             modifier = modifier
                 .width(textFieldMediumWidth)
-                .heightIn(min = textFieldMediumHeight)
-                .focusRequester(focusPrice),
-
+                .heightIn(min = textFieldMediumHeight),
             value = precio,
             onValueChange = { nuevoValor ->
                 if (nuevoValor.isEmpty() || nuevoValor.matches(Regex("^\\d*\\.?\\d*$"))) {
